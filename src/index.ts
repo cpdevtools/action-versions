@@ -59,7 +59,7 @@ function getBranchMeta(branch: string) {
 
     branchMeta.version = isLatestBranch ? latest.version : branchMeta.version;
 
-    const brachVersion = semver.parse(branchMeta.version)!;
+    const brachVersion = semver.parse(branchMeta.version, true)!;
 
 
     const versionValidReleaseMinimum = semver.gt(ver, brachVersion);
