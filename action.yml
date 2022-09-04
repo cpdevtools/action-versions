@@ -8,9 +8,30 @@ inputs:
     default: ./package.json
 
 outputs:
-  version-major:
-    description: 'The major part of the version'
-  
+  branch:
+    description: The source branch
+  isReleaseSourceBranch:
+    description: The branch is a release source branch
+  isReleaseTargetBranch:
+    description: The branch is a release target branch
+  version:
+    description: The version specified in the version file
+  versionMajor:
+    description: The major component of the version
+  versionMinor:
+    description: The minor component of the version
+  versionPatch:
+    description: The patch component of the version
+  versionBuild:
+    description: The build components of the version
+  versionPrerelease:
+    description: The prerelease component of the version
+  versionPrereleaseBuild:
+    description: The prerelease build component of the version
+  versionIsPrerelease:
+    description: The version has a prerelease component
+  versionIsStable:
+    description: The version does not have a prerelease component and is version 1.0 or greater
 
 runs: 
   using: 'node16'
