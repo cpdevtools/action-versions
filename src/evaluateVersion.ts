@@ -3,7 +3,7 @@ import { compareVersions } from './compareVersions';
 import { getBranchMeta } from './getBranchMeta';
 import { VersionEvaluation } from './VersionEvaluation';
 
-export function evaluateVersion(branch: string, targetVersion: semver.SemVer, existingVersions: semver.SemVer[]): VersionEvaluation {
+export function evaluateVersion(targetVersion: semver.SemVer, existingVersions: semver.SemVer[], branch: string = ''): VersionEvaluation {
     const branchMeta = getBranchMeta(branch);
     existingVersions = existingVersions.slice().sort(compareVersions).reverse();
     const latest = existingVersions[0] ?? semver.parse('0.0.0');
@@ -60,8 +60,10 @@ export function evaluateVersion(branch: string, targetVersion: semver.SemVer, ex
         branch: branchMeta.branch,
         isSource: branchMeta.isReleaseSourceBranch,
         isTarget: branchMeta.isReleaseTargetBranch,
+        sourceVersion: branchLatest,
         targetVersion: targetVersion.version,
         versionUnchanged: targetVersion.version === branchLatest,
+        
         versionMajor: targetVersion.major,
         versionMinor: targetVersion.minor,
         versionPatch: targetVersion.patch,
@@ -72,7 +74,6 @@ export function evaluateVersion(branch: string, targetVersion: semver.SemVer, ex
         versionIsStable: !targetVersion.prerelease?.length && (targetVersion.major ?? 0) >= 1,
         versionValidReleaseMinimum,
         versionValidReleaseMaximum,
-        sourceVersion: branchLatest
     };
 
     return out;

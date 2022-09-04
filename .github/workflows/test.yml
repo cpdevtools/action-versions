@@ -36,6 +36,15 @@ jobs:
       
       - name: Run 
         uses: ./
+        with:
+          existingVersions: |
+            v0.0.1-dev.0
+            v1.0.0
+            some-other-tag
+            v1.1.0
+            v1.1.1
+            v1.1.2
+            v1.2.0-dev.0
 
 
 

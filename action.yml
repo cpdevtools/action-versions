@@ -2,11 +2,20 @@ name: Dev Tools Version Action
 description: Version Stuff
 
 inputs:
-  version-file:
-    description: Path to a json file that contains the verion
+  versionFile:
+    description: Path to a json file that contains the target verion
     required: false
-    default: ./package.json
+  version:
+    description: The target version
+    required: false
 
+  branch:
+    description: "Override the branch. {v | release}/{latest | {major}[.{minor}] } {major}[.{minor}]. examples: v/1  v/1.1  release/1.1 v/latest"
+    required: false
+
+  existingVersions:
+    description: Override the released versions. One per line
+    required: false
 
 outputs:
   branch:
