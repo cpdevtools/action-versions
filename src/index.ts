@@ -57,6 +57,8 @@ function compareVersions(a: semver.SemVer, b: semver.SemVer): number {
         const bV = prereleaseComapreValues[b.prerelease[0] as keyof typeof prereleaseComapreValues] ?? prereleaseComapreValues.dev;
         console.log('cv pre compare', aV, bV, aV === bV ? 0 : (aV > bV ? 1 : -1));
         return aV === bV ? 0 : (aV > bV ? 1 : -1);
+    }else if(comp === 0){
+        return semver.compare(a, b);
     }
     return comp;
 }
