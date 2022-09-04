@@ -8,10 +8,10 @@ interface VersionOutputs {
     branch: string;
     isReleaseSourceBranch: boolean;
     isReleaseTargetBranch: boolean;
-    version?: string;
-    versionMajor?: number;
-    versionMinor?: number;
-    versionPatch?: number;
+    version: string;
+    versionMajor: number;
+    versionMinor: number;
+    versionPatch: number;
     versionBuild?: string[];
     versionPrerelease?: string;
     versionPrereleaseBuild?: number;
@@ -40,11 +40,11 @@ function getBranchMeta(branch: string) {
     const branchMeta = getBranchMeta(branch);
 
     const versionFile = getInput('version-file', { trimWhitespace: true });
-    let ver: semver.SemVer | null = null;
+    let ver: semver.SemVer = new semver.SemVer('0.0.0');
     if (existsSync(versionFile)) {
         const verObj = JSON.parse(readFileSync(versionFile, { encoding: 'utf-8' }));
         const verStr = (verObj.version ?? '') as string;
-        ver = semver.parse(verStr);
+        ver = semver.parse(verStr) ?? new semver.SemVer('0.0.0');
     }
 
     const git = simpleGit('.');
@@ -55,18 +55,23 @@ function getBranchMeta(branch: string) {
 
     branchMeta.version = branchMeta.version === 'latest' ? latest.version : branchMeta.version;
 
-    console.log('branchMeta.version', branchMeta.version);
+    const brachVersion = semver.parse(branchMeta.version)!;
+
+
+    console.log('brachVersion', ver.version, brachVersion.version, semver.gt(ver, brachVersion));
+
+   // if(semver.gt(ver, branchMeta.version))
 
 
     const out: VersionOutputs = {
         branch: branchMeta.branch,
         isReleaseSourceBranch: branchMeta.isReleaseSourceBranch,
         isReleaseTargetBranch: branchMeta.isReleaseTargetBranch,
-        version: ver?.version ?? undefined,
-        versionMajor: ver?.major ?? undefined,
-        versionMinor: ver?.minor ?? undefined,
-        versionPatch: ver?.patch ?? undefined,
-        versionBuild: ver?.build as string[] | undefined,
+        version: ver.version,
+        versionMajor: ver.major,
+        versionMinor: ver.minor,
+        versionPatch: ver.patch,
+        versionBuild: ver.build as string[] | undefined,
         versionPrerelease: (ver?.prerelease[0] as string) ?? undefined,
         versionPrereleaseBuild: (ver?.prerelease[1] as number) ?? undefined,
         versionIsPrerelease: !!ver?.prerelease.length,
