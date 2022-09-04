@@ -33,7 +33,7 @@ export function evaluateVersion(targetVersion: semver.SemVer, existingVersions: 
         }
     }
 
-    const branchVersion = branchVersions[0];
+    const branchVersion = branchVersions[0] ?? new semver.SemVer('0.0.0');
     const branchLatest = branchVersion.version;
     let versionValidReleaseMinimum = compareVersions(targetVersion, brachVersion) === 1;
     let versionValidReleaseMaximum = true;
