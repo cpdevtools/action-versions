@@ -13,6 +13,12 @@ const versionInput = getInput('version', { trimWhitespace: true }) || undefined;
 const existingVersionsInput = getMultilineInput('branch', { trimWhitespace: true });
 
 
+console.log('branchInput', branchInput);
+console.log('versionFileInput', versionFileInput);
+console.log('versionInput', versionInput);
+console.log('existingVersionsInput', existingVersionsInput);
+
+
 (async () => {
     const git = simpleGit('.');
 
@@ -34,16 +40,6 @@ const existingVersionsInput = getMultilineInput('branch', { trimWhitespace: true
     }
     ver ??= semver.parse('0.0.0');
 
-    /*
-
-    'v0.0.1-dev.0',
-            'v1.0.0',
-            'some-other-tag',
-            'v1.1.0',
-            'v1.1.1',
-            'v1.1.2',
-            'v1.2.0-dev.0',
-            */
     let existingVerStrings = existingVersionsInput.length ? existingVersionsInput : (await git.tags()).all;
 
     let existingVersions = existingVerStrings
