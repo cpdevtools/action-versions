@@ -4,7 +4,7 @@ import { existsSync, readFileSync } from 'fs';
 import semver from 'semver';
 import simpleGit from 'simple-git';
 import { evaluateVersion } from './evaluateVersion';
-import {Octokit} from '@octokit/rest';
+import { Octokit } from '@octokit/rest';
 import { createTokenAuth } from "@octokit/auth-token";
 
 export async function inspectVersion() {
@@ -40,13 +40,10 @@ export async function inspectVersion() {
         .map(i => semver.parse(i))
         .filter(i => !!i) as semver.SemVer[];
 
+    const octokit = new Octokit({ auth: githubTokenInput });
 
-        console.log('githubTokenInput', githubTokenInput?.length, githubTokenInput)
-    const octokit = new Octokit({auth: githubTokenInput});
-    
-    
     const pulls = await octokit.pulls.list({
-        owner: context.repo.owner, 
+        owner: context.repo.owner,
         repo: context.repo.repo,
         sort: 'created',
         direction: 'desc'
