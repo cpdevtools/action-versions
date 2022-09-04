@@ -52,7 +52,16 @@ function getBranchMeta(branch: string) {
     }
 
     const git = simpleGit('.');
-    const versionTags = (await git.tags()).all.map(tag => semver.parse(tag)).filter(ver => ver !== null) as semver.SemVer[];
+    //const versionTags = (await git.tags()).all.map(tag => semver.parse(tag)).filter(ver => ver !== null) as semver.SemVer[];
+    const versionTags = [
+        'v0.0.1-dev.0',
+        'v1.0.0',
+        'some-other-tag',
+        'v1.1.0',
+        'v1.1.1',
+        'v1.1.2',
+    ].map(tag => semver.parse(tag)).filter(ver => ver !== null) as semver.SemVer[];
+    
     versionTags.sort(semver.compare);
 
     const latest = versionTags[versionTags.length - 1] ?? semver.parse('0.0.0');
@@ -64,22 +73,40 @@ function getBranchMeta(branch: string) {
     branchMeta.version = isLatestBranch ? latest.version : branchMeta.version;
 
 
+    let branchTags:semver.SemVer[] = [];
     const branchVersionParts = branchMeta.version!.split('.');
     let brachVersion: SemVer | null = new semver.SemVer(`0.0.0`);
     if (branchVersionParts.length === 1) {
         brachVersion = new semver.SemVer(`${branchVersionParts[0]}.0.0`);
+        branchTags = versionTags.filter(t => t.major === +branchVersionParts[0]);
     } else if (branchVersionParts.length === 2) {
         brachVersion = new semver.SemVer(`${branchVersionParts[0]}.${branchVersionParts[1]}.0`);
+        branchTags = versionTags.filter(t => 
+            t.major === +branchVersionParts[0] &&
+            t.minor === +branchVersionParts[1]
+        );
     } else {
         brachVersion = new semver.SemVer(`${branchVersionParts[0]}.${branchVersionParts[1]}.${branchVersionParts[2]}`);
+        branchTags = versionTags.filter(t => 
+            t.major === +branchVersionParts[0] &&
+            t.minor === +branchVersionParts[1] &&
+            t.patch === +branchVersionParts[2]
+        );
     }
 
-    console.log('brachVersion', brachVersion);
+    console.log('branchTags', branchTags);
 
-    const versionValidReleaseMinimum = semver.gt(ver, brachVersion);
-
+    
+    let versionValidReleaseMinimum = semver.gt(ver, brachVersion);
     let versionValidReleaseMaximum = true;
+    
+  
+    
+    
     if (!isLatestBranch) {
+        //const tags = versionTags.filter(tag => )
+        const highestBranchTag = branchTags[0];
+
         if (branchVersionParts.length > 2) {
             versionValidReleaseMaximum = false;
         }
