@@ -7,17 +7,24 @@ inputs:
     required: false
     default: ./package.json
 
+
 outputs:
   branch:
     description: The source branch
   branchLatest:
     description: The latest version for this branch
-  isReleaseSourceBranch:
+  isSource:
     description: The branch is a release source branch
-  isReleaseTargetBranch:
+  isTarget:
     description: The branch is a release target branch
-  version:
+  targetVersion:
     description: The version specified in the version file
+  sourceVersion:
+    description: The the highest version of the branch
+  versionUnchanged:
+    description: If version specified matches the highest branch version
+
+
   versionMajor:
     description: The major component of the version
   versionMinor:
