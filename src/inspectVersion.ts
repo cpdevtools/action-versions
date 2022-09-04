@@ -57,7 +57,7 @@ export async function inspectVersion() {
         sort: 'created',
         direction: 'desc',
         base: `release/${baseTag}`,
-        head: data.branch
+        head: `${context.repo.owner}:${data.branch}`
     });
 
     console.log(`release/${baseTag}`);
