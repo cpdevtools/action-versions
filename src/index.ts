@@ -117,7 +117,7 @@ function compareVersions(a: semver.SemVer, b: semver.SemVer): number {
     const branchLatest = branchTags[0].version;
 
 
-
+console.log(`compareVersions(${ver.version}, ${brachVersion.version})`, compareVersions(ver, brachVersion))
 
     let versionValidReleaseMinimum = compareVersions(ver, brachVersion) === 1;
     let versionValidReleaseMaximum = true;
@@ -129,6 +129,8 @@ function compareVersions(a: semver.SemVer, b: semver.SemVer): number {
         const highestBranchTag = branchTags[0];
 
         console.log('highestBranchTag', highestBranchTag);
+        console.log(`compareVersions(${ver.version}, ${highestBranchTag.version})`, compareVersions(ver, highestBranchTag))
+
         versionValidReleaseMinimum = compareVersions(ver, highestBranchTag) === 1;
 
         if (branchVersionParts.length > 2) {
