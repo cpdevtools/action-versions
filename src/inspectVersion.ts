@@ -59,7 +59,7 @@ export async function inspectVersion() {
         base: `release/${baseTag}`
     });
 
-    console.log(pulls.data[0]);
+    console.log(pulls.data);
 
 
 
