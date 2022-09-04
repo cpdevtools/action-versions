@@ -10,7 +10,7 @@ import { VersionEvaluation } from './VersionEvaluation';
 const branchInput = getInput('branch', { trimWhitespace: true }) || undefined;
 const versionFileInput = getInput('versionFile', { trimWhitespace: true }) || undefined;
 const versionInput = getInput('version', { trimWhitespace: true }) || undefined;
-const existingVersionsInput = getMultilineInput('branch', { trimWhitespace: true });
+const existingVersionsInput = getMultilineInput('existingVersions', { trimWhitespace: true });
 
 
 console.log('branchInput', branchInput);
