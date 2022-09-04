@@ -21,6 +21,12 @@ jobs:
           cache: 'pnpm'
           cache-dependency-path: pnpm-lock.yaml
 
+      - uses: pnpm/action-setup@v2.2.2
+        with:
+          version: 7.6.0
+          run_install: false
+          
+
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile --ignore-scripts 
 
