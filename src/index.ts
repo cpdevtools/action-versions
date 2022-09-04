@@ -46,8 +46,8 @@ const prereleaseComapreValues = {
 
 function compareVersions(a: semver.SemVer, b: semver.SemVer): number {
 
-    const aB = new semver.SemVer(a, {includePrerelease: false});
-    const bB = new semver.SemVer(b, {includePrerelease: false});
+    const aB = new semver.SemVer(a.version.split('-')[0]);
+    const bB = new semver.SemVer(b.version.split('-')[0]);
     console.log('cv', a.version, b.version);
     console.log('clean cv', aB.version, bB.version);
     let comp = semver.compare(aB, bB);
