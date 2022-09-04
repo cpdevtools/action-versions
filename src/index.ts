@@ -41,6 +41,8 @@ function getBranchMeta(branch: string) {
     const branch = context.ref.slice("refs/heads/".length);
     const branchMeta = getBranchMeta(branch);
 
+    console.log('branchMeta', branchMeta);
+
     const versionFile = getInput('version-file', { trimWhitespace: true });
     let ver: semver.SemVer = new semver.SemVer('0.0.0');
     if (existsSync(versionFile)) {
@@ -55,12 +57,16 @@ function getBranchMeta(branch: string) {
 
     const latest = versionTags[versionTags.length-1] ?? semver.parse('0.0.0');
 
+
+
     const isLatestBranch = branchMeta.version === 'latest';
 
     branchMeta.version = isLatestBranch ? latest.version : branchMeta.version;
 
+console.log('branchMeta', branchMeta);
+    
     const brachVersion = semver.parse(branchMeta.version, true)!;
-
+    console.log('brachVersion', brachVersion);
 
     const versionValidReleaseMinimum = semver.gt(ver, brachVersion);
 
