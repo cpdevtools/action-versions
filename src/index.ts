@@ -99,7 +99,7 @@ function getBranchMeta(branch: string) {
 
     const branchLatest = branchTags[0].version;
 
-    console.log('branchTags', branchTags);
+    
 
     
     let versionValidReleaseMinimum = semver.gt(ver, brachVersion);
@@ -109,8 +109,11 @@ function getBranchMeta(branch: string) {
     
     
     if (!isLatestBranch) {
-        //const tags = versionTags.filter(tag => )
         const highestBranchTag = branchTags[0];
+
+        console.log('highestBranchTag', highestBranchTag);
+        versionValidReleaseMinimum =  semver.gt(ver, highestBranchTag);
+
 
         if (branchVersionParts.length > 2) {
             versionValidReleaseMaximum = false;
