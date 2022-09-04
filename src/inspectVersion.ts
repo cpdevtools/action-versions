@@ -48,7 +48,7 @@ export async function inspectVersion() {
         sort: 'created',
         direction: 'desc'
     });
-    console.log(pulls);
+    console.log(pulls.data[0]);
 
     return evaluateVersion(ver!, existingVersions, branch);
 }
