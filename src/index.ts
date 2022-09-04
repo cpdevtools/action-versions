@@ -18,7 +18,7 @@ console.log('versionFileInput', versionFileInput);
 console.log('versionInput', versionInput);
 console.log('existingVersionsInput', existingVersionsInput);
 
-/*
+
 (async () => {
     const git = simpleGit('.');
 
@@ -58,4 +58,3 @@ console.log('existingVersionsInput', existingVersionsInput);
     console.table(table);
 })();
 
-*/
