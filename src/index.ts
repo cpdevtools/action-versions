@@ -42,8 +42,6 @@ function getBranchMeta(branch: string) {
     const branch = context.ref.slice("refs/heads/".length);
     const branchMeta = getBranchMeta(branch);
 
-    console.log('branchMeta', branchMeta);
-
     const versionFile = getInput('version-file', { trimWhitespace: true });
     let ver: semver.SemVer = new semver.SemVer('0.0.0');
     if (existsSync(versionFile)) {
@@ -129,8 +127,6 @@ function getBranchMeta(branch: string) {
             }
         }
     }
-    console.log('brachVersion', ver.version, brachVersion.version, semver.gt(ver, brachVersion));
-
 
     const out: VersionOutputs = {
         branch: branchMeta.branch,
