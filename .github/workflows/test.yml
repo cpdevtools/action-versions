@@ -15,16 +15,18 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - uses: pnpm/action-setup@v2.2.2
+        with:
+          version: 7.6.0
+          run_install: false
+
+          
       - uses: actions/setup-node@v3
         with:
           node-version: 16.17.x
           cache: 'pnpm'
           cache-dependency-path: pnpm-lock.yaml
 
-      - uses: pnpm/action-setup@v2.2.2
-        with:
-          version: 7.6.0
-          run_install: false
           
 
       - name: Install Dependencies
