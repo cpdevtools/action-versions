@@ -29,3 +29,5 @@ export interface VersionEvaluation {
     versionValidReleaseMinimum: boolean;
     versionValidReleaseMaximum: boolean;
 }
+
+

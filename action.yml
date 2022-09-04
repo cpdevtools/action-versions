@@ -25,6 +25,10 @@ inputs:
 outputs:
   branch:
     description: The source branch
+
+  pullRequest: 
+    description: The id of the release pull request
+
   branchLatest:
     description: The latest version for this branch
   isSource:
@@ -72,8 +76,6 @@ outputs:
     description: targetVersion has a prerelease component
   targetIsStable:
     description: targetVersion does not have a prerelease component and is 1.0 or greater
- 
-
  
  
   versionValidReleaseMinimum:

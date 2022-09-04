@@ -6,6 +6,7 @@ import simpleGit from 'simple-git';
 import { evaluateVersion } from './evaluateVersion';
 import { Octokit } from '@octokit/rest';
 import { createTokenAuth } from "@octokit/auth-token";
+import { VersionStatus } from './VersionStatus';
 
 export async function inspectVersion() {
     const branchInput = getInput('branch', { trimWhitespace: true }) || undefined;
@@ -44,11 +45,12 @@ export async function inspectVersion() {
 
     const data = evaluateVersion(ver!, existingVersions, branch);
 
-    
+
 
     const baseTag = data.branch === 'main' || data.branch === 'master'
         ? 'latest'
         : data.branch.split('/')[1];
+
 
     const pulls = await octokit.pulls.list({
         owner: context.repo.owner,
@@ -64,7 +66,8 @@ export async function inspectVersion() {
     console.log(data.branch);
     console.log(pulls.data);
 
-
-
-    return data;
+    return {
+        ...data,
+        pullRequest: pulls.data[0]?.id
+    } as VersionStatus;
 }
