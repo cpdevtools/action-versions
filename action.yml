@@ -26,6 +26,11 @@ inputs:
     description: if set to true and isNewValidVersion is true ang there is not pullRequest yet, create it
     default: 'false'
     required: false
+
+  failIfNotValidNew:
+    description: if set to true action will fail unless the targetVersion is new and in range
+    default: 'false'
+    required: false
     
 outputs:
   branch:

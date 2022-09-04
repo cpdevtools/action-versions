@@ -1,8 +1,8 @@
-import { setOutput } from '@actions/core';
+import { setOutput, getBooleanInput, setFailed } from '@actions/core';
 import { inspectVersion } from './inspectVersion';
 import { VersionEvaluation } from './VersionEvaluation';
 
-
+const failIfNotValidNew = getBooleanInput('failIfNotValidNew');
 
 (async () => {
     const out = await inspectVersion();
@@ -15,6 +15,11 @@ import { VersionEvaluation } from './VersionEvaluation';
         setOutput(key, value);
     });
     console.table(table);
+
+    if(failIfNotValidNew && !out.isNewValidVersion){
+        const msg = `Error: ${out.targetVersion} is not a valid new version.`;
+        setFailed(msg);
+    }
 })();
 
 
