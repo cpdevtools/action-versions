@@ -44,7 +44,7 @@ export async function inspectVersion() {
 
     const data = evaluateVersion(ver!, existingVersions, branch);
 
-    data.branch === 'main' || data.branch === 'master'
+    
 
     const baseTag = data.branch === 'main' || data.branch === 'master'
         ? 'latest'
@@ -56,7 +56,8 @@ export async function inspectVersion() {
         state: 'open',
         sort: 'created',
         direction: 'desc',
-        base: `release/${baseTag}`
+        base: `release/${baseTag}`,
+        head: data.branch
     });
 
     console.log(`release/${baseTag}`);
