@@ -42,13 +42,26 @@ export async function inspectVersion() {
 
     const octokit = new Octokit({ auth: githubTokenInput });
 
+    const data = evaluateVersion(ver!, existingVersions, branch);
+
+    data.branch === 'main' || data.branch === 'master'
+
+    const baseTag = data.branch === 'main' || data.branch === 'master'
+        ? 'latest'
+        : data.branch.split('/')[1];
+
     const pulls = await octokit.pulls.list({
         owner: context.repo.owner,
         repo: context.repo.repo,
+        state: 'open',
         sort: 'created',
-        direction: 'desc'
+        direction: 'desc',
+        base: `release/${baseTag}`
     });
+
     console.log(pulls.data[0]);
 
-    return evaluateVersion(ver!, existingVersions, branch);
+
+
+    return data;
 }
