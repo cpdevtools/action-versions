@@ -59,6 +59,7 @@ function getBranchMeta(branch: string) {
         'v1.1.0',
         'v1.1.1',
         'v1.1.2',
+        'v1.2.0-dev.0',
     ].map(tag => semver.parse(tag)).filter(ver => ver !== null) as semver.SemVer[];
     
     versionTags.sort(semver.compare).reverse();
