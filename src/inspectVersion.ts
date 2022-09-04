@@ -42,7 +42,7 @@ export async function inspectVersion() {
 
 
         console.log('githubTokenInput', githubTokenInput?.length, githubTokenInput)
-    const octokit = new Octokit({auth: createTokenAuth(githubTokenInput)});
+    const octokit = new Octokit({auth: githubTokenInput});
     
     
     const pulls = await octokit.pulls.list({
