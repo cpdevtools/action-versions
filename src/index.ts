@@ -15,6 +15,7 @@ const versionFile = getInput('version-file', { trimWhitespace: true });
 
 console.log('branch', branch);
 console.log('releaseScope', releaseScope);
+console.log('scopeVersion', scopeVersion);
 console.log('isStagingScope', isStagingScope);
 console.log('versionFile', versionFile);
 console.log('exists', existsSync(versionFile));
