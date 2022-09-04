@@ -64,6 +64,8 @@ function getBranchMeta(branch: string) {
     
     versionTags.sort(semver.compare).reverse();
 
+    console.log(versionTags.map(v => v.version));
+
     const latest = versionTags[0] ?? semver.parse('0.0.0');
 
 
