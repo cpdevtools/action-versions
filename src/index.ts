@@ -1,4 +1,8 @@
 //import {} from '@actions/core'
 import {context} from '@actions/github'
 
-console.log('hi', context);
+
+const branch = context.ref.slice("refs/heads/".length);
+
+
+console.log('hi', branch);
