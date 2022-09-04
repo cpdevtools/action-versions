@@ -1,4 +1,4 @@
-import { getInput, getMultilineInput } from '@actions/core';
+import { getInput, getMultilineInput, getBooleanInput } from '@actions/core';
 import { context } from '@actions/github';
 import { existsSync, readFileSync } from 'fs';
 import semver from 'semver';
@@ -14,6 +14,7 @@ export async function inspectVersion() {
     const versionInput = getInput('version', { trimWhitespace: true }) || undefined;
     const existingVersionsInput = getMultilineInput('existingVersions', { trimWhitespace: true });
     const githubTokenInput = getInput('githubToken', { trimWhitespace: true });
+    const autoCreatePullRequestInput = getBooleanInput('autoCreatePullRequest');
 
     const git = simpleGit('.');
 
@@ -62,12 +63,23 @@ export async function inspectVersion() {
         head: `${context.repo.owner}:${data.branch}`
     });
 
-    console.log(`release/${baseTag}`);
-    console.log(data.branch);
-    console.log(pulls.data);
+    let pullRequest:number | undefined = pulls.data[0]?.id;
+    if(!pullRequest && autoCreatePullRequestInput){
+        console.log('create pull request');
+        const r = await octokit.pulls.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            base: `release/${baseTag}`,
+            head: data.branch,
+            draft: true,
+            title: `v${ver?.version}`,
+            body: `Generated New Version. ${data.sourceVersion} -> ${data.targetVersion}`,
+        });
+        pullRequest = r.data.id;
+    }
 
     return {
         ...data,
-        pullRequest: pulls.data[0]?.id
+        pullRequest
     } as VersionStatus;
 }
