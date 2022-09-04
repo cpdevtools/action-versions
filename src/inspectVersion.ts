@@ -41,6 +41,7 @@ export async function inspectVersion() {
         .filter(i => !!i) as semver.SemVer[];
 
 
+        console.log('githubTokenInput', githubTokenInput?.length, githubTokenInput)
     const octokit = new Octokit({auth: createTokenAuth(githubTokenInput)});
     
     
