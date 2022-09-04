@@ -4,12 +4,15 @@ import { existsSync, readFileSync } from 'fs';
 import semver from 'semver';
 import simpleGit from 'simple-git';
 import { evaluateVersion } from './evaluateVersion';
+import {Octokit} from '@octokit/rest';
+import { createTokenAuth } from "@octokit/auth-token";
 
 export async function inspectVersion() {
     const branchInput = getInput('branch', { trimWhitespace: true }) || undefined;
     const versionFileInput = getInput('versionFile', { trimWhitespace: true }) || undefined;
     const versionInput = getInput('version', { trimWhitespace: true }) || undefined;
     const existingVersionsInput = getMultilineInput('existingVersions', { trimWhitespace: true });
+    const githubTokenInput = getInput('githubToken', { trimWhitespace: true });
 
     const git = simpleGit('.');
 
@@ -36,6 +39,18 @@ export async function inspectVersion() {
     let existingVersions = existingVerStrings
         .map(i => semver.parse(i))
         .filter(i => !!i) as semver.SemVer[];
+
+
+    const octokit = new Octokit({auth: createTokenAuth(githubTokenInput)});
+    
+    
+    const pulls = await octokit.pulls.list({
+        owner: context.repo.owner, 
+        repo: context.repo.repo,
+        sort: 'created',
+        direction: 'desc'
+    });
+    console.log(pulls);
 
     return evaluateVersion(ver!, existingVersions, branch);
 }

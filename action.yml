@@ -16,6 +16,11 @@ inputs:
   existingVersions:
     description: Override the released versions. One per line
     required: false
+  
+  githubToken:
+    description: The GitHub token used to create an authenticated client
+    default: ${{ github.token }}
+    required: false
 
 outputs:
   branch:
