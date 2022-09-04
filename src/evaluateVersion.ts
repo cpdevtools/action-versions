@@ -1,3 +1,4 @@
+import { context } from '@actions/github';
 import semver, { SemVer } from 'semver';
 import { compareVersions } from './compareVersions';
 import { getBranchMeta } from './getBranchMeta';
@@ -32,7 +33,8 @@ export function evaluateVersion(targetVersion: semver.SemVer, existingVersions: 
         }
     }
 
-    const branchLatest = branchVersions[0].version;
+    const branchVersion = branchVersions[0];
+    const branchLatest = branchVersion.version;
     let versionValidReleaseMinimum = compareVersions(targetVersion, brachVersion) === 1;
     let versionValidReleaseMaximum = true;
 
@@ -56,6 +58,14 @@ export function evaluateVersion(targetVersion: semver.SemVer, existingVersions: 
         }
     }
 
+    const isNewValidVersion =
+        (branchMeta.isReleaseSourceBranch || branchMeta.isReleaseTargetBranch) &&
+        targetVersion.version !== branchLatest &&
+        versionValidReleaseMinimum &&
+        versionValidReleaseMaximum;
+
+    
+
     const out: VersionEvaluation = {
         branch: branchMeta.branch,
         isSource: branchMeta.isReleaseSourceBranch,
@@ -63,15 +73,27 @@ export function evaluateVersion(targetVersion: semver.SemVer, existingVersions: 
         sourceVersion: branchLatest,
         targetVersion: targetVersion.version,
         versionUnchanged: targetVersion.version === branchLatest,
-        
-        versionMajor: targetVersion.major,
-        versionMinor: targetVersion.minor,
-        versionPatch: targetVersion.patch,
-        versionBuild: targetVersion.build as string[] | undefined,
-        versionPrerelease: (targetVersion.prerelease?.[0] as string) ?? undefined,
-        versionPrereleaseBuild: (targetVersion.prerelease?.[1] as number) ?? undefined,
-        versionIsPrerelease: !!targetVersion.prerelease?.length,
-        versionIsStable: !targetVersion.prerelease?.length && (targetVersion.major ?? 0) >= 1,
+        isNewValidVersion,
+
+        sourceMajor: branchVersion.major,
+        sourceMinor: branchVersion.minor,
+        sourcePatch: branchVersion.patch,
+        sourceBuild: branchVersion.build as string[] | undefined,
+        sourcePrerelease: (branchVersion.prerelease?.[0] as string) ?? undefined,
+        sourcePrereleaseBuild: (branchVersion.prerelease?.[1] as number) ?? undefined,
+        sourceIsPrerelease: !!branchVersion.prerelease?.length,
+        sourceIsStable: !branchVersion.prerelease?.length && (branchVersion.major ?? 0) >= 1,
+
+        targetMajor: targetVersion.major,
+        targetMinor: targetVersion.minor,
+        targetPatch: targetVersion.patch,
+        targetBuild: targetVersion.build as string[] | undefined,
+        targetPrerelease: (targetVersion.prerelease?.[0] as string) ?? undefined,
+        targetPrereleaseBuild: (targetVersion.prerelease?.[1] as number) ?? undefined,
+        targetIsPrerelease: !!targetVersion.prerelease?.length,
+        targetIsStable: !targetVersion.prerelease?.length && (targetVersion.major ?? 0) >= 1,
+
+
         versionValidReleaseMinimum,
         versionValidReleaseMaximum,
     };

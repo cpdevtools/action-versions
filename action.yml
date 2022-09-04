@@ -32,24 +32,45 @@ outputs:
     description: The the highest version of the branch
   versionUnchanged:
     description: If version specified matches the highest branch version
+  isNewValidVersion:
+    description: if in a sourse or target branch and the version number is new and vaild
+  sourceMajor:
+    description: The major component of sourceVersion
+  sourceMinor:
+    description: The minor component of sourceVersion
+  sourcePatch:
+    description: The patch component of sourceVersion
+  sourceBuild:
+    description: The build components of sourceVersion
+  sourcePrerelease:
+    description: The prerelease component of sourceVersion
+  sourcePrereleaseBuild:
+    description: The prerelease build component of sourceVersion
+  sourceIsPrerelease:
+    description: sourceVersion has a prerelease component
+  sourceIsStable:
+    description: sourceVersion does not have a prerelease component and is 1.0 or greater
+ 
+  targetMajor:
+    description: The major component of targetVersion
+  targetMinor:
+    description: The minor component of targetVersion
+  targetPatch:
+    description: The patch component of targetVersion
+  targetBuild:
+    description: The build components of targetVersion
+  targetPrerelease:
+    description: The prerelease component of targetVersion
+  targetPrereleaseBuild:
+    description: The prerelease build component of targetVersion
+  targetIsPrerelease:
+    description: targetVersion has a prerelease component
+  targetIsStable:
+    description: targetVersion does not have a prerelease component and is 1.0 or greater
+ 
 
-
-  versionMajor:
-    description: The major component of the version
-  versionMinor:
-    description: The minor component of the version
-  versionPatch:
-    description: The patch component of the version
-  versionBuild:
-    description: The build components of the version
-  versionPrerelease:
-    description: The prerelease component of the version
-  versionPrereleaseBuild:
-    description: The prerelease build component of the version
-  versionIsPrerelease:
-    description: The version has a prerelease component
-  versionIsStable:
-    description: The version does not have a prerelease component and is version 1.0 or greater
+ 
+ 
   versionValidReleaseMinimum:
     description: The version passes minimum ver validation for release
   versionValidReleaseMaximum:
