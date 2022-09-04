@@ -61,6 +61,7 @@ export async function inspectVersion() {
     });
 
     console.log(`release/${baseTag}`);
+    console.log(data.branch);
     console.log(pulls.data);
 
 
