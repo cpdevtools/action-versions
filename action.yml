@@ -1,0 +1,6 @@
+name: Dev Tools Version Action
+description: Version Stuff
+
+runs: 
+  using: 'node16'
+  main: 'dist/index.js'
