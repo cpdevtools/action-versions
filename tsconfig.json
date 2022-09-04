@@ -1,7 +1,7 @@
 {
     "$schema": "https://json.schemastore.org/tsconfig",
     "compilerOptions": {
-        "target": "ES2022",
+        "target": "ESNext",
         "module": "CommonJS",
         "outDir": "dist",
         "rootDir": "src",
@@ -17,7 +17,7 @@
             "src/types"
         ],
         "lib": [
-            "ES2022"
+            "ESNext"
         ],
         "types": [
             "node"

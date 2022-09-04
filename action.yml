@@ -1,6 +1,17 @@
 name: Dev Tools Version Action
 description: Version Stuff
 
+inputs:
+  version-file:
+    description: Path to a json file that contains the verion
+    required: false
+    default: ./package.json
+
+outputs:
+  version-major:
+    description: 'The major part of the version'
+  
+
 runs: 
   using: 'node16'
   main: 'dist/index.js'
