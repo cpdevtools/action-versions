@@ -46,19 +46,9 @@ export async function inspectVersion() {
 
     const data = evaluateVersion(ver!, existingVersions, branch);
 
-
-
     let baseTag = data.branch === 'main' || data.branch === 'master'
         ? 'latest'
         : data.branch.split('/')[1];
-
-
-    if(data.targetIsPrerelease){
-        if(baseTag === 'latest'){
-            baseTag = 'next';
-        }
-    }
-
 
 
     const pulls = await octokit.pulls.list({
