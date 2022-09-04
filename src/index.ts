@@ -17,6 +17,8 @@ interface VersionOutputs {
     versionPrereleaseBuild?: number;
     versionIsPrerelease?: boolean;
     versionIsStable?: boolean;
+    versionValidReleaseMinimum:boolean;
+    versionValidReleaseMaximum:boolean;
 }
 
 
@@ -53,16 +55,22 @@ function getBranchMeta(branch: string) {
 
     const latest = versionTags[versionTags.length-1] ?? semver.parse('0.0.0');
 
-    branchMeta.version = branchMeta.version === 'latest' ? latest.version : branchMeta.version;
+    const isLatestBranch = branchMeta.version === 'latest';
+
+    branchMeta.version = isLatestBranch ? latest.version : branchMeta.version;
 
     const brachVersion = semver.parse(branchMeta.version)!;
 
 
+    const versionValidReleaseMinimum = semver.gt(ver, brachVersion);
+
+    let versionValidReleaseMaximum = true;
+    if(!isLatestBranch){
+
+    }
     console.log('brachVersion', ver.version, brachVersion.version, semver.gt(ver, brachVersion));
 
-   // if(semver.gt(ver, branchMeta.version))
-
-
+  
     const out: VersionOutputs = {
         branch: branchMeta.branch,
         isReleaseSourceBranch: branchMeta.isReleaseSourceBranch,
@@ -76,6 +84,8 @@ function getBranchMeta(branch: string) {
         versionPrereleaseBuild: (ver?.prerelease[1] as number) ?? undefined,
         versionIsPrerelease: !!ver?.prerelease.length,
         versionIsStable: !ver?.prerelease.length && (ver?.major ?? 0) >= 1,
+        versionValidReleaseMinimum,
+        versionValidReleaseMaximum
     };
 
 

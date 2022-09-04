@@ -32,6 +32,10 @@ outputs:
     description: The version has a prerelease component
   versionIsStable:
     description: The version does not have a prerelease component and is version 1.0 or greater
+  versionValidReleaseMinimum:
+    description: The version passes minimum ver validation for release
+  versionValidReleaseMaximum:
+    description: The version passes maximum ver validation for release
 
 runs: 
   using: 'node16'
