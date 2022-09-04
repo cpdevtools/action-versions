@@ -1,7 +1,7 @@
 import { getInput, setOutput } from '@actions/core';
 import { context } from '@actions/github';
 import { existsSync, readFileSync } from 'fs';
-import semver from 'semver';
+import semver, { SemVer } from 'semver';
 import simpleGit from 'simple-git';
 
 interface VersionOutputs {
@@ -17,8 +17,8 @@ interface VersionOutputs {
     versionPrereleaseBuild?: number;
     versionIsPrerelease?: boolean;
     versionIsStable?: boolean;
-    versionValidReleaseMinimum:boolean;
-    versionValidReleaseMaximum:boolean;
+    versionValidReleaseMinimum: boolean;
+    versionValidReleaseMaximum: boolean;
 }
 
 
@@ -55,7 +55,7 @@ function getBranchMeta(branch: string) {
     const versionTags = (await git.tags()).all.map(tag => semver.parse(tag)).filter(ver => ver !== null) as semver.SemVer[];
     versionTags.sort(semver.compare);
 
-    const latest = versionTags[versionTags.length-1] ?? semver.parse('0.0.0');
+    const latest = versionTags[versionTags.length - 1] ?? semver.parse('0.0.0');
 
 
 
@@ -63,20 +63,40 @@ function getBranchMeta(branch: string) {
 
     branchMeta.version = isLatestBranch ? latest.version : branchMeta.version;
 
-console.log('branchMeta', branchMeta);
-    
-    const brachVersion = semver.parse('v' + branchMeta.version, true)!;
+
+    const branchVersionParts = branchMeta.version!.split('.');
+    let brachVersion: SemVer | null = new semver.SemVer(`0.0.0`);
+    if (branchVersionParts.length === 1) {
+        brachVersion = new semver.SemVer(`${branchVersionParts[0]}.0.0`);
+    } else if (branchVersionParts.length === 2) {
+        brachVersion = new semver.SemVer(`${branchVersionParts[0]}.${branchVersionParts[1]}.0`);
+    } else {
+        brachVersion = new semver.SemVer(`${branchVersionParts[0]}.${branchVersionParts[1]}.${branchVersionParts[2]}`);
+    }
+
     console.log('brachVersion', brachVersion);
 
     const versionValidReleaseMinimum = semver.gt(ver, brachVersion);
 
     let versionValidReleaseMaximum = true;
-    if(!isLatestBranch){
-
+    if (!isLatestBranch) {
+        if (branchVersionParts.length > 2) {
+            versionValidReleaseMaximum = false;
+        }
+        if (branchVersionParts.length >= 1) {
+            if (ver.major !== brachVersion.major) {
+                versionValidReleaseMaximum = false;
+            }
+        }
+        if (branchVersionParts.length === 2) {
+            if (ver.minor !== brachVersion.minor) {
+                versionValidReleaseMaximum = false;
+            }
+        }
     }
     console.log('brachVersion', ver.version, brachVersion.version, semver.gt(ver, brachVersion));
 
-  
+
     const out: VersionOutputs = {
         branch: branchMeta.branch,
         isReleaseSourceBranch: branchMeta.isReleaseSourceBranch,
