@@ -53,10 +53,10 @@ function getBranchMeta(branch: string) {
 
     const latest = versionTags[versionTags.length-1] ?? semver.parse('0.0.0');
 
+    branchMeta.version = branchMeta.version === 'latest' ? latest.version : branchMeta.version;
 
-    console.log(branchMeta);
-    console.log(versionTags);
-    console.log('latest:', latest);
+    console.log('branchMeta.version', branchMeta.version);
+
 
     const out: VersionOutputs = {
         branch: branchMeta.branch,
