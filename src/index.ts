@@ -6,6 +6,7 @@ import simpleGit from 'simple-git';
 
 interface VersionOutputs {
     branch: string;
+    branchLatest: string;
     isReleaseSourceBranch: boolean;
     isReleaseTargetBranch: boolean;
     version: string;
@@ -62,9 +63,9 @@ function getBranchMeta(branch: string) {
         'v1.1.2',
     ].map(tag => semver.parse(tag)).filter(ver => ver !== null) as semver.SemVer[];
     
-    versionTags.sort(semver.compare);
+    versionTags.sort(semver.compare).reverse();
 
-    const latest = versionTags[versionTags.length - 1] ?? semver.parse('0.0.0');
+    const latest = versionTags[0] ?? semver.parse('0.0.0');
 
 
 
@@ -73,7 +74,7 @@ function getBranchMeta(branch: string) {
     branchMeta.version = isLatestBranch ? latest.version : branchMeta.version;
 
 
-    let branchTags:semver.SemVer[] = [];
+    let branchTags:semver.SemVer[] = versionTags;
     const branchVersionParts = branchMeta.version!.split('.');
     let brachVersion: SemVer | null = new semver.SemVer(`0.0.0`);
     if (branchVersionParts.length === 1) {
@@ -87,12 +88,16 @@ function getBranchMeta(branch: string) {
         );
     } else {
         brachVersion = new semver.SemVer(`${branchVersionParts[0]}.${branchVersionParts[1]}.${branchVersionParts[2]}`);
-        branchTags = versionTags.filter(t => 
-            t.major === +branchVersionParts[0] &&
-            t.minor === +branchVersionParts[1] &&
-            t.patch === +branchVersionParts[2]
-        );
+        if (!isLatestBranch) {
+            branchTags = versionTags.filter(t => 
+                t.major === +branchVersionParts[0] &&
+                t.minor === +branchVersionParts[1] &&
+                t.patch === +branchVersionParts[2]
+            );
+        }
     }
+
+    const branchLatest = branchTags[0].version;
 
     console.log('branchTags', branchTags);
 
@@ -138,7 +143,8 @@ function getBranchMeta(branch: string) {
         versionIsPrerelease: !!ver?.prerelease.length,
         versionIsStable: !ver?.prerelease.length && (ver?.major ?? 0) >= 1,
         versionValidReleaseMinimum,
-        versionValidReleaseMaximum
+        versionValidReleaseMaximum,
+        branchLatest
     };
 
 

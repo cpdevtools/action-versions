@@ -10,6 +10,8 @@ inputs:
 outputs:
   branch:
     description: The source branch
+  branchLatest:
+    description: The latest version for this branch
   isReleaseSourceBranch:
     description: The branch is a release source branch
   isReleaseTargetBranch:
