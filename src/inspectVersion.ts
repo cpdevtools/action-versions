@@ -12,6 +12,14 @@ export async function inspectVersion() {
     console.log(context.action);
     console.log(context.eventName);
     console.log(context.workflow);
+
+    const pr = context.payload.pull_request as any;
+    const fromRef = pr.head.ref;
+    const toRef = pr.base.ref;
+
+   console.log('fromRef', fromRef);
+   console.log('toRef', toRef);
+
    // console.log(context.payload.repository);
     
 
