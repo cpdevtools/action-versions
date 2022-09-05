@@ -22,8 +22,7 @@ export async function inspectVersion() {
 
     console.log('sourceRef', sourceRef);
 
-    // todo pull requests are broke
-    const branch = branchInput ?? sourceRef.startsWith("refs/heads/") ? sourceRef.slice(11) : undefined;
+    const branch = branchInput ?? sourceRef.startsWith("refs/heads/") ? sourceRef.slice(11) : sourceRef;
 
     let ver: semver.SemVer | null = null;
     if (versionInput !== undefined && versionFileInput === undefined) {
