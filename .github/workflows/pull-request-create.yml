@@ -1,4 +1,4 @@
-name: Create Version Request 
+name: Create pull request on version change
 
 on:
   push:
