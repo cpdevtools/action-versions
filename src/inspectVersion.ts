@@ -8,6 +8,9 @@ import { Octokit } from '@octokit/rest';
 import { VersionStatus } from './VersionStatus';
 
 export async function inspectVersion() {
+
+    console.log(context);
+
     const branchInput = getInput('branch', { trimWhitespace: true }) || undefined;
     const versionFileInput = getInput('versionFile', { trimWhitespace: true }) || undefined;
     const versionInput = getInput('version', { trimWhitespace: true }) || undefined;
