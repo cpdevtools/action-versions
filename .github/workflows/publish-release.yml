@@ -53,20 +53,14 @@ jobs:
           script: |
             var tag = ("${{ steps.pkgVersion.outputs.targetIsPrerelease }}" === "true" ? "${{ steps.pkgVersion.outputs.targetPrerelease }}" : "latest");
             try{
-              github.git.deleteRef({
+              await github.git.deleteRef({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 ref: "tags/" + tag
               });
             } catch{}
 
-      - name: Apply latest/prerelease tag
-        uses: actions/github-script@v3
-        with:
-          github-token: ${{secrets.GITHUB_TOKEN}}          
-          script: |
-            var tag = ("${{ steps.pkgVersion.outputs.targetIsPrerelease }}" === "true" ? "${{ steps.pkgVersion.outputs.targetPrerelease }}" : "latest");
-            github.git.createRef({
+             await github.git.createRef({
               owner: context.repo.owner,
               repo: context.repo.repo,
               ref: "refs/tags/" + tag,
