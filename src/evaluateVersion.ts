@@ -7,6 +7,7 @@ import { VersionEvaluation } from './VersionEvaluation';
 export function evaluateVersion(targetVersion: semver.SemVer, existingVersions: semver.SemVer[], branch: string = ''): VersionEvaluation {
     const branchMeta = getBranchMeta(branch);
     existingVersions = existingVersions.slice().sort(compareVersions).reverse();
+
     const latest = existingVersions[0] ?? semver.parse('0.0.0');
     const isLatestBranch = branchMeta.version === 'latest';
     branchMeta.version = (isLatestBranch ? latest.version : branchMeta.version) ?? '0.0.0';

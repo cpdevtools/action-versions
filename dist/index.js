@@ -14,7 +14,10 @@ const failIfNotValidNew = (0, core_1.getBooleanInput)('failIfNotValidNew');
     });
     console.table(table);
     if (failIfNotValidNew && !out.isNewValidVersion) {
-        const msg = `Error: ${out.targetVersion} is not a valid new version.`;
+        let msg = `Error: ${out.targetVersion} is not a valid version.`;
+        if (out.targetVersion === out.sourceVersion) {
+            msg = `Error: ${out.targetVersion} is not a new version.`;
+        }
         (0, core_1.setFailed)(msg);
     }
 })();

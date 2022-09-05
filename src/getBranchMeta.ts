@@ -1,5 +1,4 @@
 export function getBranchMeta(branch: string) {
-    console.log('getBranchMeta', branch);
     const scope = branch === 'main' || branch === 'master' ? 'v/latest' : branch;
     const isReleaseBranch = scope.startsWith('release/');
     const isPrepBranch = scope.startsWith('v/');

@@ -15,7 +15,7 @@ export async function inspectVersion() {
     const githubTokenInput = getInput('githubToken', { trimWhitespace: true });
     const autoCreatePullRequestInput = getBooleanInput('autoCreatePullRequest');
 
-    const git = simpleGit('.');
+//    const git = simpleGit('.');
     const pr = context.payload.pull_request as any;
     const sourceRef = context.eventName === 'pull_request' ? pr.head.ref : context.ref;
     const branch = branchInput ?? sourceRef.startsWith("refs/heads/") ? sourceRef.slice(11) : sourceRef;
@@ -36,13 +36,20 @@ export async function inspectVersion() {
     }
     ver ??= semver.parse('0.0.0');
 
-    let existingVerStrings = existingVersionsInput.length ? existingVersionsInput : (await git.tags()).all;
+    const octokit = new Octokit({ auth: githubTokenInput });
+
+    let existingVerStrings = existingVersionsInput.length 
+        ? existingVersionsInput 
+        : (await octokit.repos.listTags({   
+            owner: context.repo.owner,
+            repo: context.repo.repo
+        })).data.map(t => t.name);
 
     let existingVersions = existingVerStrings
         .map(i => semver.parse(i))
         .filter(i => !!i) as semver.SemVer[];
 
-    const octokit = new Octokit({ auth: githubTokenInput });
+    
 
     const data = evaluateVersion(ver!, existingVersions, branch);
     let pullRequest: number | undefined;
@@ -64,7 +71,6 @@ export async function inspectVersion() {
 
         pullRequest = pulls.data[0]?.id;
         if (!pullRequest && autoCreatePullRequestInput) {
-            console.log('create pull request');
             const r = await octokit.pulls.create({
                 owner: context.repo.owner,
                 repo: context.repo.repo,

@@ -8,7 +8,6 @@ const core_1 = require("@actions/core");
 const github_1 = require("@actions/github");
 const fs_1 = require("fs");
 const semver_1 = __importDefault(require("semver"));
-const simple_git_1 = __importDefault(require("simple-git"));
 const evaluateVersion_1 = require("./evaluateVersion");
 const rest_1 = require("@octokit/rest");
 async function inspectVersion() {
@@ -18,7 +17,7 @@ async function inspectVersion() {
     const existingVersionsInput = (0, core_1.getMultilineInput)('existingVersions', { trimWhitespace: true });
     const githubTokenInput = (0, core_1.getInput)('githubToken', { trimWhitespace: true });
     const autoCreatePullRequestInput = (0, core_1.getBooleanInput)('autoCreatePullRequest');
-    const git = (0, simple_git_1.default)('.');
+    //    const git = simpleGit('.');
     const pr = github_1.context.payload.pull_request;
     const sourceRef = github_1.context.eventName === 'pull_request' ? pr.head.ref : github_1.context.ref;
     const branch = branchInput ?? sourceRef.startsWith("refs/heads/") ? sourceRef.slice(11) : sourceRef;
@@ -38,11 +37,16 @@ async function inspectVersion() {
         }
     }
     ver ??= semver_1.default.parse('0.0.0');
-    let existingVerStrings = existingVersionsInput.length ? existingVersionsInput : (await git.tags()).all;
+    const octokit = new rest_1.Octokit({ auth: githubTokenInput });
+    let existingVerStrings = existingVersionsInput.length
+        ? existingVersionsInput
+        : (await octokit.repos.listTags({
+            owner: github_1.context.repo.owner,
+            repo: github_1.context.repo.repo
+        })).data.map(t => t.name);
     let existingVersions = existingVerStrings
         .map(i => semver_1.default.parse(i))
         .filter(i => !!i);
-    const octokit = new rest_1.Octokit({ auth: githubTokenInput });
     const data = (0, evaluateVersion_1.evaluateVersion)(ver, existingVersions, branch);
     let pullRequest;
     if (data.isNewValidVersion) {
@@ -60,7 +64,6 @@ async function inspectVersion() {
         });
         pullRequest = pulls.data[0]?.id;
         if (!pullRequest && autoCreatePullRequestInput) {
-            console.log('create pull request');
             const r = await octokit.pulls.create({
                 owner: github_1.context.repo.owner,
                 repo: github_1.context.repo.repo,
