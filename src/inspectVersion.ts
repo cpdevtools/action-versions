@@ -45,8 +45,6 @@ export async function inspectVersion() {
             repo: context.repo.repo
         })).data.map(t => t.name);
 
-    console.log('existingVerStrings', existingVerStrings);
-
     let existingVersions = existingVerStrings
         .map(i => semver.parse(i))
         .filter(i => !!i) as semver.SemVer[];

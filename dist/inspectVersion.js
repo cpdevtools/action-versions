@@ -44,7 +44,6 @@ async function inspectVersion() {
             owner: github_1.context.repo.owner,
             repo: github_1.context.repo.repo
         })).data.map(t => t.name);
-    console.log('existingVerStrings', existingVerStrings);
     let existingVersions = existingVerStrings
         .map(i => semver_1.default.parse(i))
         .filter(i => !!i);
