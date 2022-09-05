@@ -44,31 +44,34 @@ async function inspectVersion() {
         .filter(i => !!i);
     const octokit = new rest_1.Octokit({ auth: githubTokenInput });
     const data = (0, evaluateVersion_1.evaluateVersion)(ver, existingVersions, branch);
-    let baseTag = data.branch === 'main' || data.branch === 'master'
-        ? 'latest'
-        : data.branch.split('/')[1];
-    const pulls = await octokit.pulls.list({
-        owner: github_1.context.repo.owner,
-        repo: github_1.context.repo.repo,
-        state: 'open',
-        sort: 'created',
-        direction: 'desc',
-        base: `release/${baseTag}`,
-        head: `${github_1.context.repo.owner}:${data.branch}`
-    });
-    let pullRequest = pulls.data[0]?.id;
-    if (!pullRequest && autoCreatePullRequestInput) {
-        console.log('create pull request');
-        const r = await octokit.pulls.create({
+    let pullRequest;
+    if (data.isNewValidVersion) {
+        let baseTag = data.branch === 'main' || data.branch === 'master'
+            ? 'latest'
+            : data.branch.split('/')[1];
+        const pulls = await octokit.pulls.list({
             owner: github_1.context.repo.owner,
             repo: github_1.context.repo.repo,
+            state: 'open',
+            sort: 'created',
+            direction: 'desc',
             base: `release/${baseTag}`,
-            head: data.branch,
-            draft: true,
-            title: `v${ver?.version}`,
-            body: `Generated New Version. ${data.sourceVersion} -> ${data.targetVersion}`,
+            head: `${github_1.context.repo.owner}:${data.branch}`
         });
-        pullRequest = r.data.id;
+        pullRequest = pulls.data[0]?.id;
+        if (!pullRequest && autoCreatePullRequestInput) {
+            console.log('create pull request');
+            const r = await octokit.pulls.create({
+                owner: github_1.context.repo.owner,
+                repo: github_1.context.repo.repo,
+                base: `release/${baseTag}`,
+                head: data.branch,
+                draft: true,
+                title: `v${ver?.version}`,
+                body: `Generated New Version. ${data.sourceVersion} -> ${data.targetVersion}`,
+            });
+            pullRequest = r.data.id;
+        }
     }
     return {
         ...data,
