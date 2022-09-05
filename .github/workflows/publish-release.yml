@@ -33,23 +33,42 @@ jobs:
         with:
           failIfNotValidNew: true
 
-
       - name: Create tag
-  #      id: tag_version
         uses: mathieudutour/github-tag-action@v5.5
         with:
-#          github_token: ${{ github.token }}
+          github_token: ${{ github.token }}
           custom_tag: v${{ steps.version.outputs.targetVersion }}
-      
-      - name: Create release
- #       id: create_release
-        uses: softprops/action-gh-release@v1
- #       env:
-    #      GITHUB_TOKEN: ${{ github.token }}
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
         with:
           tag_name: v${{ steps.version.outputs.targetVersion }}
-          name: Version ${{ steps.version.outputs.targetVersion }}
+          release_name: Release v${{ steps.version.outputs.targetVersion }}
           body: |
-            Generated Release ${{ steps.version.outputs.targetVersion }}
+            Generated Release v${{ steps.version.outputs.targetVersion }}
           draft: false
           prerelease: ${{ steps.pkgVersion.outputs.targetIsPrerelease }}
+
+
+      - name: Apply latest/prerelease tag tag
+        uses: actions/github-script@v3
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}          
+          script: |
+            var tag = ("${{ steps.pkgVersion.outputs.targetIsPrerelease }}" === "true" ? "${{ steps.pkgVersion.outputs.targetPrerelease }}" : "latest");
+
+            github.git.deleteRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: "tags/" + tag
+            });
+
+            github.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: "refs/tags/" + tag,
+              sha: context.sha
+            });
