@@ -8,21 +8,6 @@ import { Octokit } from '@octokit/rest';
 import { VersionStatus } from './VersionStatus';
 
 export async function inspectVersion() {
-
-    console.log(context.action);
-    console.log(context.eventName);
-    console.log(context.workflow);
-
-    const pr = context.payload.pull_request as any;
-    const fromRef = pr.head.ref;
-    const toRef = pr.base.ref;
-
-   console.log('fromRef', fromRef);
-   console.log('toRef', toRef);
-
-   // console.log(context.payload.repository);
-    
-
     const branchInput = getInput('branch', { trimWhitespace: true }) || undefined;
     const versionFileInput = getInput('versionFile', { trimWhitespace: true }) || undefined;
     const versionInput = getInput('version', { trimWhitespace: true }) || undefined;
@@ -32,8 +17,11 @@ export async function inspectVersion() {
 
     const git = simpleGit('.');
 
+
+    const sourceRef = context.eventName === 'pull_request' ? pr.head.ref : context.ref;
+
     // todo pull requests are broke
-    const branch = branchInput ?? context.ref.startsWith("refs/heads/") ? context.ref.slice(11) : undefined;
+    const branch = branchInput ?? sourceRef.startsWith("refs/heads/") ? sourceRef.slice(11) : undefined;
 
     let ver: semver.SemVer | null = null;
     if (versionInput !== undefined && versionFileInput === undefined) {
