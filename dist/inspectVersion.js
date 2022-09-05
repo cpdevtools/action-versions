@@ -64,7 +64,6 @@ async function inspectVersion() {
         });
         pullRequest = pulls.data[0]?.id;
         if (!pullRequest && autoCreatePullRequestInput) {
-            console.log('create pull request');
             const r = await octokit.pulls.create({
                 owner: github_1.context.repo.owner,
                 repo: github_1.context.repo.repo,

@@ -71,7 +71,6 @@ export async function inspectVersion() {
 
         pullRequest = pulls.data[0]?.id;
         if (!pullRequest && autoCreatePullRequestInput) {
-            console.log('create pull request');
             const r = await octokit.pulls.create({
                 owner: context.repo.owner,
                 repo: context.repo.repo,

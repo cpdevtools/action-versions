@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getBranchMeta = void 0;
 function getBranchMeta(branch) {
-    console.log('getBranchMeta', branch);
     const scope = branch === 'main' || branch === 'master' ? 'v/latest' : branch;
     const isReleaseBranch = scope.startsWith('release/');
     const isPrepBranch = scope.startsWith('v/');

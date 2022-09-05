@@ -10,7 +10,6 @@ const getBranchMeta_1 = require("./getBranchMeta");
 function evaluateVersion(targetVersion, existingVersions, branch = '') {
     const branchMeta = (0, getBranchMeta_1.getBranchMeta)(branch);
     existingVersions = existingVersions.slice().sort(compareVersions_1.compareVersions).reverse();
-    console.log(existingVersions);
     const latest = existingVersions[0] ?? semver_1.default.parse('0.0.0');
     const isLatestBranch = branchMeta.version === 'latest';
     branchMeta.version = (isLatestBranch ? latest.version : branchMeta.version) ?? '0.0.0';
