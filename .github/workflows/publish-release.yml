@@ -33,27 +33,20 @@ jobs:
         with:
           failIfNotValidNew: true
 
-      - name: Create tag
-        uses: mathieudutour/github-tag-action@v5.5
-        with:
-          github_token: ${{ github.token }}
-          custom_tag: v${{ steps.version.outputs.targetVersion }}
-
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1.0.1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
         with:
-          tag_name: ${{ steps.version.outputs.targetVersion }}
+          tag_name: v${{ steps.version.outputs.targetVersion }}
           release_name: Release v${{ steps.version.outputs.targetVersion }}
           body: |
             Generated Release v${{ steps.version.outputs.targetVersion }}
           draft: false
           prerelease: ${{ steps.pkgVersion.outputs.targetIsPrerelease }}
 
-
-      - name: Apply latest/prerelease tag tag
+      - name: Remove latest/prerelease tag
         uses: actions/github-script@v3
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}          
@@ -67,6 +60,12 @@ jobs:
               });
             } catch{}
 
+      - name: Apply latest/prerelease tag
+        uses: actions/github-script@v3
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}          
+          script: |
+            var tag = ("${{ steps.pkgVersion.outputs.targetIsPrerelease }}" === "true" ? "${{ steps.pkgVersion.outputs.targetPrerelease }}" : "latest");
             github.git.createRef({
               owner: context.repo.owner,
               repo: context.repo.repo,
