@@ -9,9 +9,9 @@ import { VersionStatus } from './VersionStatus';
 
 export async function inspectVersion() {
 
-    console.log(context.payload.action);
-    console.log(context.payload.pull_request);
-    console.log(context.payload.repository);
+    console.log('--- action ---', context.payload.action);
+   // console.log(context.payload.pull_request);
+   // console.log(context.payload.repository);
     
 
     const branchInput = getInput('branch', { trimWhitespace: true }) || undefined;
