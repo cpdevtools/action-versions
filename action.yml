@@ -1,6 +1,98 @@
 name: Dev Tools Version Action
 description: Version Stuff
 
+inputs:
+  versionFile:
+    description: Path to a json file that contains the target verion
+    required: false
+  version:
+    description: The target version
+    required: false
+
+  branch:
+    description: "Override the branch. {v | release}/{latest | {major}[.{minor}] } {major}[.{minor}]. examples: v/1  v/1.1  release/1.1 v/latest"
+    required: false
+
+  existingVersions:
+    description: Override the released versions. One per line
+    required: false
+  
+  githubToken:
+    description: The GitHub token used to create an authenticated client
+    default: ${{ github.token }}
+    required: false
+
+  autoCreatePullRequest:
+    description: if set to true and isNewValidVersion is true ang there is not pullRequest yet, create it
+    default: 'false'
+    required: false
+
+  failIfNotValidNew:
+    description: if set to true action will fail unless the targetVersion is new and in range
+    default: 'false'
+    required: false
+    
+outputs:
+  branch:
+    description: The source branch
+
+  pullRequest: 
+    description: The id of the release pull request
+
+  branchLatest:
+    description: The latest version for this branch
+  isSource:
+    description: The branch is a release source branch
+  isTarget:
+    description: The branch is a release target branch
+  targetVersion:
+    description: The version specified in the version file
+  sourceVersion:
+    description: The the highest version of the branch
+  versionUnchanged:
+    description: If version specified matches the highest branch version
+  isNewValidVersion:
+    description: if in a sourse or target branch and the version number is new and vaild
+  sourceMajor:
+    description: The major component of sourceVersion
+  sourceMinor:
+    description: The minor component of sourceVersion
+  sourcePatch:
+    description: The patch component of sourceVersion
+  sourceBuild:
+    description: The build components of sourceVersion
+  sourcePrerelease:
+    description: The prerelease component of sourceVersion
+  sourcePrereleaseBuild:
+    description: The prerelease build component of sourceVersion
+  sourceIsPrerelease:
+    description: sourceVersion has a prerelease component
+  sourceIsStable:
+    description: sourceVersion does not have a prerelease component and is 1.0 or greater
+ 
+  targetMajor:
+    description: The major component of targetVersion
+  targetMinor:
+    description: The minor component of targetVersion
+  targetPatch:
+    description: The patch component of targetVersion
+  targetBuild:
+    description: The build components of targetVersion
+  targetPrerelease:
+    description: The prerelease component of targetVersion
+  targetPrereleaseBuild:
+    description: The prerelease build component of targetVersion
+  targetIsPrerelease:
+    description: targetVersion has a prerelease component
+  targetIsStable:
+    description: targetVersion does not have a prerelease component and is 1.0 or greater
+ 
+ 
+  versionValidReleaseMinimum:
+    description: The version passes minimum ver validation for release
+  versionValidReleaseMaximum:
+    description: The version passes maximum ver validation for release
+
 runs: 
   using: 'node16'
   main: 'dist/index.js'

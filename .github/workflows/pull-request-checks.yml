@@ -1,0 +1,64 @@
+name: Check pull request
+
+on:
+  pull_request:
+    branches:
+      - "release/*"
+
+jobs:
+  check_version_valid_and_new:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+    
+      - uses: pnpm/action-setup@v2.2.2
+        with:
+          version: 7.6.0
+          run_install: false
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16.17.x
+          cache: 'pnpm'
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile --ignore-scripts 
+
+      - name: Build 
+        run: pnpm run build
+
+      - name: Check Version
+        uses: ./
+        with:
+          failIfNotValidNew: true
+
+  check_build_comitted:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+    
+      - uses: pnpm/action-setup@v2.2.2
+        with:
+          version: 7.6.0
+          run_install: false
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16.17.x
+          cache: 'pnpm'
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile --ignore-scripts 
+
+      - name: Build 
+        run: pnpm run build
+
+      - name: Compare the expected and actual dist directories
+        run: |
+          if [ "$(git diff --ignore-space-at-eol dist/ | wc -l)" -gt "0" ]; then
+            echo "Detected uncommitted changes after build.  See status below:"
+            git diff
+            exit 1
+          fi
