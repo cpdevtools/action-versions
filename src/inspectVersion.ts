@@ -16,12 +16,8 @@ export async function inspectVersion() {
     const autoCreatePullRequestInput = getBooleanInput('autoCreatePullRequest');
 
     const git = simpleGit('.');
-
     const pr = context.payload.pull_request as any;
     const sourceRef = context.eventName === 'pull_request' ? pr.head.ref : context.ref;
-
-    console.log('sourceRef', sourceRef);
-
     const branch = branchInput ?? sourceRef.startsWith("refs/heads/") ? sourceRef.slice(11) : sourceRef;
 
     let ver: semver.SemVer | null = null;
@@ -53,7 +49,6 @@ export async function inspectVersion() {
     let baseTag = data.branch === 'main' || data.branch === 'master'
         ? 'latest'
         : data.branch.split('/')[1];
-
 
     const pulls = await octokit.pulls.list({
         owner: context.repo.owner,
