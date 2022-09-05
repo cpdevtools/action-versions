@@ -39,6 +39,7 @@ async function inspectVersion() {
     }
     ver ??= semver_1.default.parse('0.0.0');
     let existingVerStrings = existingVersionsInput.length ? existingVersionsInput : (await git.tags()).all;
+    console.log('existingVerStrings', existingVerStrings);
     let existingVersions = existingVerStrings
         .map(i => semver_1.default.parse(i))
         .filter(i => !!i);
