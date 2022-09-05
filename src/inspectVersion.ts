@@ -17,8 +17,9 @@ export async function inspectVersion() {
 
     const git = simpleGit('.');
 
-
+    const pr = context.payload.pull_request as any;
     const sourceRef = context.eventName === 'pull_request' ? pr.head.ref : context.ref;
+
 
     // todo pull requests are broke
     const branch = branchInput ?? sourceRef.startsWith("refs/heads/") ? sourceRef.slice(11) : undefined;
