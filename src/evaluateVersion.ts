@@ -9,7 +9,7 @@ export function evaluateVersion(targetVersion: semver.SemVer, existingVersions: 
     existingVersions = existingVersions.slice().sort(compareVersions).reverse();
     const latest = existingVersions[0] ?? semver.parse('0.0.0');
     const isLatestBranch = branchMeta.version === 'latest';
-    branchMeta.version = isLatestBranch ? latest.version : branchMeta.version;
+    branchMeta.version = (isLatestBranch ? latest.version : branchMeta.version) ?? '0.0.0';
 
     let branchVersions: semver.SemVer[] = existingVersions;
     const branchVersionParts = branchMeta.version!.split('.');

@@ -5,7 +5,6 @@ import semver from 'semver';
 import simpleGit from 'simple-git';
 import { evaluateVersion } from './evaluateVersion';
 import { Octokit } from '@octokit/rest';
-import { createTokenAuth } from "@octokit/auth-token";
 import { VersionStatus } from './VersionStatus';
 
 export async function inspectVersion() {
@@ -18,6 +17,7 @@ export async function inspectVersion() {
 
     const git = simpleGit('.');
 
+    // todo pull requests are broke
     const branch = branchInput ?? context.ref.startsWith("refs/heads/") ? context.ref.slice(11) : undefined;
 
     let ver: semver.SemVer | null = null;
