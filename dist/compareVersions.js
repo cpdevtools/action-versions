@@ -15,7 +15,7 @@ function compareVersions(a, b) {
     if (comp === 0 && a?.prerelease?.length && b?.prerelease?.length) {
         const aV = prereleaseComapreValues_1.prereleaseComapreValues[a.prerelease[0]] ?? prereleaseComapreValues_1.prereleaseComapreValues.dev;
         const bV = prereleaseComapreValues_1.prereleaseComapreValues[b.prerelease[0]] ?? prereleaseComapreValues_1.prereleaseComapreValues.dev;
-        return aV === bV ? 0 : (aV > bV ? 1 : -1);
+        return aV === bV ? semver_1.default.compare(a, b) : (aV > bV ? 1 : -1);
     }
     else if (comp === 0) {
         return semver_1.default.compare(a, b);
