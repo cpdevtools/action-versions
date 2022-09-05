@@ -59,12 +59,13 @@ jobs:
           github-token: ${{secrets.GITHUB_TOKEN}}          
           script: |
             var tag = ("${{ steps.pkgVersion.outputs.targetIsPrerelease }}" === "true" ? "${{ steps.pkgVersion.outputs.targetPrerelease }}" : "latest");
-
-            github.git.deleteRef({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              ref: "tags/" + tag
-            });
+            try{
+              github.git.deleteRef({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: "tags/" + tag
+              });
+            } catch{}
 
             github.git.createRef({
               owner: context.repo.owner,
