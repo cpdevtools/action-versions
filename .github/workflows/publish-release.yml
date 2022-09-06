@@ -58,6 +58,7 @@ jobs:
                 repo: context.repo.repo,
                 ref: "tags/" + tag
               });
+              console.info(`removed tag '${tag}'`);
             } catch{}
 
              await github.git.createRef({
@@ -66,3 +67,4 @@ jobs:
               ref: "refs/tags/" + tag,
               sha: context.sha
             });
+            console.info(`added tag '${tag}' @ ${context.sha}`);
