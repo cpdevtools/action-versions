@@ -1,4 +1,5 @@
 import { getBooleanInput, getInput, setFailed, setOutput } from '@actions/core';
+import { context } from '@actions/github';
 import { Octokit } from '@octokit/rest';
 import { VersionStatus } from 'VersionStatus';
 import { inspectVersion } from './inspectVersion';
@@ -88,7 +89,6 @@ async function applyTags(versionStatus: VersionStatus) {
             await applyTag(octokit, 'latest');
         }
     }
-
     if (createTags === 'all' || createTags === 'components') {
         if(versionStatus.latestMajor){
             await applyTag(octokit, `v${versionStatus.targetMajor}`);
@@ -99,6 +99,21 @@ async function applyTags(versionStatus: VersionStatus) {
     }
 }
 
-async function applyTag(octokit: Octokit, tag: string) {
+async function applyTag(github: Octokit, tag: string) {
+    try{
+      await github.git.deleteRef({
+        owner: context.repo.owner,
+        repo: context.repo.repo,
+        ref: "tags/" + tag
+      });
+      console.info(`removed tag '${tag}'`);
+    } catch{}
 
+     await github.git.createRef({
+      owner: context.repo.owner,
+      repo: context.repo.repo,
+      ref: "refs/tags/" + tag,
+      sha: context.sha
+    });
+    console.info(`added tag '${tag}' @ ${context.sha}`);
 }

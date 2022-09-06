@@ -88,9 +88,7 @@ export function evaluateVersion(targetVersion: semver.SemVer, existingVersions: 
     
     const existingHighestMajor = existingVersions.find(v => v.major === targetVersion.major) ?? new semver.SemVer('0.0.0');
     const highestMajor = compareVersions(targetVersion, existingHighestMajor) >= 0;
-    console.log('highestMajor', targetVersion.version, existingHighestMajor.version, highestMajor);
-
-    
+ 
     const existingHighestMinor = existingVersions.find(v => v.major === targetVersion.major && v.minor === targetVersion.minor) ?? new semver.SemVer('0.0.0');
     const highestMinor = compareVersions(targetVersion, existingHighestMinor) >= 0;
 
@@ -140,7 +138,5 @@ export function evaluateVersion(targetVersion: semver.SemVer, existingVersions: 
         validIsNewVersion,
         validCanCreate
     };
-
     return out;
-
 }

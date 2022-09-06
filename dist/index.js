@@ -15026,7 +15026,6 @@ function evaluateVersion(targetVersion, existingVersions, branch = '') {
     const targetIsPrerelease = !!targetVersion.prerelease?.length;
     const existingHighestMajor = existingVersions.find(v => v.major === targetVersion.major) ?? new semver_1.default.SemVer('0.0.0');
     const highestMajor = (0, compareVersions_1.compareVersions)(targetVersion, existingHighestMajor) >= 0;
-    console.log('highestMajor', targetVersion.version, existingHighestMajor.version, highestMajor);
     const existingHighestMinor = existingVersions.find(v => v.major === targetVersion.major && v.minor === targetVersion.minor) ?? new semver_1.default.SemVer('0.0.0');
     const highestMinor = (0, compareVersions_1.compareVersions)(targetVersion, existingHighestMinor) >= 0;
     const existingLatestMajor = existingVersions.find(v => !v.prerelease?.length && v.major === targetVersion.major) ?? new semver_1.default.SemVer('0.0.0');
@@ -15390,6 +15389,7 @@ var exports = __webpack_exports__;
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core_1 = __nccwpck_require__(5681);
+const github_1 = __nccwpck_require__(1340);
 const rest_1 = __nccwpck_require__(5342);
 const inspectVersion_1 = __nccwpck_require__(3082);
 const ValidationErrorMessages = {
@@ -15466,7 +15466,23 @@ async function applyTags(versionStatus) {
         }
     }
 }
-async function applyTag(octokit, tag) {
+async function applyTag(github, tag) {
+    try {
+        await github.git.deleteRef({
+            owner: github_1.context.repo.owner,
+            repo: github_1.context.repo.repo,
+            ref: "tags/" + tag
+        });
+        console.info(`removed tag '${tag}'`);
+    }
+    catch { }
+    await github.git.createRef({
+        owner: github_1.context.repo.owner,
+        repo: github_1.context.repo.repo,
+        ref: "refs/tags/" + tag,
+        sha: github_1.context.sha
+    });
+    console.info(`added tag '${tag}' @ ${github_1.context.sha}`);
 }
 
 })();
