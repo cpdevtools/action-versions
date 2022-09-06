@@ -33,6 +33,9 @@ jobs:
         with:
           failInvalidCanCreate: true
 
+      - name: Echo is prerelease
+        run: echo ${{ steps.version.outputs.targetIsPrerelease }}
+
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1.0.1
@@ -44,14 +47,14 @@ jobs:
           body: |
             Generated Release v${{ steps.version.outputs.targetVersion }}
           draft: false
-          prerelease: ${{ steps.pkgVersion.outputs.targetIsPrerelease == true}}
+          prerelease: ${{ steps.version.outputs.targetIsPrerelease }}
 
       - name: Apply latest/prerelease tag
         uses: actions/github-script@v3
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}          
           script: |
-            var tag = ("${{ steps.pkgVersion.outputs.targetIsPrerelease }}" === "true" ? "${{ steps.pkgVersion.outputs.targetPrerelease }}" : "latest");
+            var tag = ("${{ steps.version.outputs.targetIsPrerelease }}" === "true" ? "${{ steps.version.outputs.targetPrerelease }}" : "latest");
             try{
               await github.git.deleteRef({
                 owner: context.repo.owner,
