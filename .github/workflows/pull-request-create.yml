@@ -10,6 +10,8 @@ on:
 jobs:
   check_build_comitted:
     runs-on: ubuntu-latest
+    outputs:
+      buildMatches: ${{ steps.build.outputs.match }}
     steps:
       - uses: actions/checkout@v3
     
@@ -41,9 +43,9 @@ jobs:
           echo "::set-output match=::true"
 
   create_pull_on_new_version:
-    if: ${{ steps.build.outputs.match == 'true' }}
     name: Create a version pull request if nessisary
     needs: ['check_build_comitted']
+    if: ${{ needs.check_build_comitted.outputs.buildMatches == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
