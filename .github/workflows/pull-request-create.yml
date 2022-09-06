@@ -50,8 +50,9 @@ jobs:
     steps:
       - uses: actions/checkout@v3
   
+
       - name: Auto Create 
-        uses: cpdevtools/action-versions@dev
+        uses: ./
         with:
           autoCreatePullRequest: true
 
