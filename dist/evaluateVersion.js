@@ -49,7 +49,7 @@ function evaluateVersion(targetVersion, existingVersions, branch = '') {
     const branchVersionHighest = branchVersions[0] ?? new semver_1.default.SemVer('0.0.0');
     const branchHighest = branchVersionHighest.version;
     let validBranchVersionMinimum = (0, compareVersions_1.compareVersions)(targetVersion, brachVersionMin) >= 0;
-    let vaildBranchVersionMaximum = !validBranchVersionMinimum;
+    let vaildBranchVersionMaximum = isLatestBranch || !validBranchVersionMinimum;
     if (!vaildBranchVersionMaximum) {
         vaildBranchVersionMaximum = true;
         if (targetVersion.major > brachVersionMin.major) {
