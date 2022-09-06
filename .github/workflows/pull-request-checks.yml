@@ -2,7 +2,8 @@ name: Check pull request
 
 on:
   pull_request:
-
+     branches:
+      - "release/*"
 jobs:
   check_version_valid_and_new:
     runs-on: ubuntu-latest
