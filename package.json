@@ -1,6 +1,6 @@
 {
   "name": "@cpdevtools/action-versions",
-  "version": "0.3.0-rc.0",
+  "version": "0.3.0-rc.1",
   "description": "",
   "main": "dist/index.js",
   "repository": "git+https://github.com/cpdevtools/action-versions",
