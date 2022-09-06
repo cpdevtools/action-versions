@@ -1,4 +1,3 @@
-import { context } from '@actions/github';
 import semver, { SemVer } from 'semver';
 import { compareVersions } from './compareVersions';
 import { getBranchMeta } from './getBranchMeta';
@@ -10,9 +9,7 @@ export function evaluateVersion(targetVersion: semver.SemVer, existingVersions: 
 
     const isLatestBranch = branchMeta.version === 'latest';
     const latest = existingVersions[0] ?? semver.parse('0.0.0');
-
     branchMeta.version = (isLatestBranch ? latest.version : branchMeta.version) ?? '0.0.0';
-
 
     const branchVersionParts = branchMeta.version!.split('.');
     let brachVersionMin: SemVer = new semver.SemVer(`0.0.0`);
@@ -25,7 +22,6 @@ export function evaluateVersion(targetVersion: semver.SemVer, existingVersions: 
     } else {
         brachVersionMin = new semver.SemVer(`${branchVersionParts[0]}.${branchVersionParts[1]}.${branchVersionParts[2]}`);
     }
-
 
     let branchVersions: semver.SemVer[] = existingVersions.filter(v => {
         let isBranchV = semver.gte(v, brachVersionMin);
@@ -49,36 +45,27 @@ export function evaluateVersion(targetVersion: semver.SemVer, existingVersions: 
         return isBranchV;
     });
 
-
     const branchVersionHighest = branchVersions[0] ?? new semver.SemVer('0.0.0');
     const branchHighest = branchVersionHighest.version;
 
-    console.log('isLatestBranch:', isLatestBranch);
-    
     let validBranchVersionMinimum = compareVersions(targetVersion, brachVersionMin) >= 0;
     let vaildBranchVersionMaximum = isLatestBranch || !validBranchVersionMinimum;
-    console.log('max 1:', vaildBranchVersionMaximum);
     if (!vaildBranchVersionMaximum) {
         vaildBranchVersionMaximum = true;
-        console.log('max 2:', vaildBranchVersionMaximum);
         if (targetVersion.major > brachVersionMin.major) {
             vaildBranchVersionMaximum = false;
-            console.log('max 3:', vaildBranchVersionMaximum);
         }
         if (branchVersionMax >= 2 && targetVersion.major === brachVersionMin.major) {
             if (targetVersion.minor > brachVersionMin.minor) {
                 vaildBranchVersionMaximum = false;
-                console.log('max 4:', vaildBranchVersionMaximum);
             }
             if (branchVersionMax >= 1 && targetVersion.minor === brachVersionMin.minor) {
                 if (targetVersion.patch > brachVersionMin.patch) {
                     vaildBranchVersionMaximum = false;
-                    console.log('max 5:', vaildBranchVersionMaximum);
                 }
             }
         }
     }
-    console.log('max 6:', vaildBranchVersionMaximum);
 
     const validIsHighestVersion = compareVersions(targetVersion, existingVersions[0]) >= 0;
     const validIsHighestVersionInBranch = compareVersions(targetVersion, branchVersionHighest) >= 0;
