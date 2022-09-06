@@ -127,5 +127,4 @@ outputs:
 
 runs:
   using: "node16"
-  pre: "dist/install.js"
   main: "dist/index.js"
