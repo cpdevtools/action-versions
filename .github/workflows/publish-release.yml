@@ -46,7 +46,7 @@ jobs:
           draft: false
           prerelease: ${{ steps.pkgVersion.outputs.targetIsPrerelease }}
 
-      - name: Remove latest/prerelease tag
+      - name: Apply latest/prerelease tag
         uses: actions/github-script@v3
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}          

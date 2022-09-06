@@ -49,7 +49,7 @@ async function inspectVersion() {
         .filter(i => !!i);
     const data = (0, evaluateVersion_1.evaluateVersion)(ver, existingVersions, branch);
     let pullRequest;
-    if (data.isNewValidVersion) {
+    if (data.validCanCreate) {
         let baseTag = data.branch === 'main' || data.branch === 'master'
             ? 'latest'
             : data.branch.split('/')[1];

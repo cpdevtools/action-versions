@@ -49,10 +49,6 @@ outputs:
     description: The version specified in the version file
   sourceVersion:
     description: The the highest version of the branch
-  versionUnchanged:
-    description: If version specified matches the highest branch version
-  isNewValidVersion:
-    description: if in a sourse or target branch and the version number is new and vaild
   sourceMajor:
     description: The major component of sourceVersion
   sourceMinor:
@@ -88,11 +84,18 @@ outputs:
     description: targetVersion does not have a prerelease component and is 1.0 or greater
  
  
-  versionValidReleaseMinimum:
-    description: The version passes minimum ver validation for release
-  versionValidReleaseMaximum:
-    description: The version passes maximum ver validation for release
-
+  validCanCreate:
+    description: targetVersion meets all validation and is ready to be created
+  validBranchVersionMinimum:
+    description: targetVersion meets the minimum for the release range
+  vaildBranchVersionMaximum:
+    description: targetVersion meets the maximum for the release range
+  validIsNewVersion:
+    description: targetVersion is a new version tag
+  validIsHighestVersionInBranch:
+    description: targetVersion will be the highest version in the release range
+  validIsHighestVersion:
+    description: targetVersion will be the highest version
 runs: 
   using: 'node16'
   main: 'dist/index.js'

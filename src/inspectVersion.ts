@@ -53,7 +53,7 @@ export async function inspectVersion() {
 
     const data = evaluateVersion(ver!, existingVersions, branch);
     let pullRequest: number | undefined;
-    if (data.isNewValidVersion) {
+    if (data.validCanCreate) {
 
         let baseTag = data.branch === 'main' || data.branch === 'master'
             ? 'latest'
