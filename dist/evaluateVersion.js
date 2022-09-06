@@ -11,8 +11,10 @@ function evaluateVersion(targetVersion, existingVersions, branch = '') {
     const branchMeta = (0, getBranchMeta_1.getBranchMeta)(branch);
     existingVersions = existingVersions.slice().sort(compareVersions_1.compareVersions).reverse();
     const isLatestBranch = branchMeta.version === 'latest';
-    const latest = existingVersions[0] ?? semver_1.default.parse('0.0.0');
-    branchMeta.version = (isLatestBranch ? latest.version : branchMeta.version) ?? '0.0.0';
+    //const highestVersion = existingVersions[0] ?? semver.parse('0.0.0');
+    const highestVersion = existingVersions[0] ?? semver_1.default.parse('0.0.0');
+    const latestVersion = existingVersions.filter(v => !v.prerelease?.length)[0] ?? semver_1.default.parse('0.0.0');
+    branchMeta.version = (isLatestBranch ? highestVersion.version : branchMeta.version) ?? '0.0.0';
     const branchVersionParts = branchMeta.version.split('.');
     let brachVersionMin = new semver_1.default.SemVer(`0.0.0`);
     let branchVersionMax = Math.min(3, branchVersionParts.length);
@@ -88,7 +90,7 @@ function evaluateVersion(targetVersion, existingVersions, branch = '') {
         sourcePrerelease: branchVersionHighest.prerelease?.[0] ?? undefined,
         sourcePrereleaseBuild: branchVersionHighest.prerelease?.[1] ?? undefined,
         sourceIsPrerelease: !!branchVersionHighest.prerelease?.length,
-        sourceIsStable: !branchVersionHighest.prerelease?.length && (branchVersionHighest.major ?? 0) >= 1,
+        sourceIsStable: (branchVersionHighest.major ?? 0) >= 1,
         targetMajor: targetVersion.major,
         targetMinor: targetVersion.minor,
         targetPatch: targetVersion.patch,
@@ -96,7 +98,9 @@ function evaluateVersion(targetVersion, existingVersions, branch = '') {
         targetPrerelease: targetVersion.prerelease?.[0] ?? undefined,
         targetPrereleaseBuild: targetVersion.prerelease?.[1] ?? undefined,
         targetIsPrerelease: !!targetVersion.prerelease?.length,
-        targetIsStable: !targetVersion.prerelease?.length && (targetVersion.major ?? 0) >= 1,
+        targetIsStable: (targetVersion.major ?? 0) >= 1,
+        latestVersion: latestVersion.version,
+        highestVersion: highestVersion.version,
         validBranchVersionMinimum,
         vaildBranchVersionMaximum,
         validIsHighestVersion,

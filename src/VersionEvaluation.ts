@@ -24,12 +24,17 @@ export interface VersionEvaluation {
     targetIsPrerelease?: boolean;
     targetIsStable?: boolean;
 
+    highestVersion: string;
+    latestVersion: string;
+
     validCanCreate:boolean;
     validBranchVersionMinimum: boolean;
     vaildBranchVersionMaximum: boolean;
     validIsNewVersion:boolean;
     validIsHighestVersion:boolean;
     validIsHighestVersionInBranch:boolean;
+
+
 }
 
 
