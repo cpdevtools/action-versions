@@ -114,16 +114,22 @@ outputs:
     description: targetVersion does not have a prerelease component and is 1.0 or greater
 
   highestVersion: 
-    description: targetVersion is the highest version in the repository
+    description: the highest version in the repository
   latestVersion: 
-    description: targetVersion is the highest non-prerelease version in the repository
-  highestMajor:   
+    description: the highest release version in the repository
+
+  isHighestVersion: 
+    description: targetVersion is the highest version in the repository
+  isLatestVersion: 
+    description: targetVersion is the highest release version in the repository
+ 
+  isHighestMajor:   
     description: targetVersion is the highest version with the same major component
-  highestMinor:   
+  isHighestMinor:   
     description: targetVersion is the highest version with the same major & minor components
-  latestMajor:   
+  isLatestMajor:   
     description: targetVersion is the highest release version with the same major component
-  latestMinor:   
+  isLatestMinor:   
     description: targetVersion is the highest release version with the same major & minor components
 
   validCanCreate:

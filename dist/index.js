@@ -15025,13 +15025,17 @@ function evaluateVersion(targetVersion, existingVersions, branch = '') {
         (validIsHighestVersion || validIsHighestVersionInBranch);
     const targetIsPrerelease = !!targetVersion.prerelease?.length;
     const existingHighestMajor = existingVersions.find(v => v.major === targetVersion.major) ?? new semver_1.default.SemVer('0.0.0');
-    const highestMajor = (0, compareVersions_1.compareVersions)(targetVersion, existingHighestMajor) >= 0;
+    const isHighestMajor = (0, compareVersions_1.compareVersions)(targetVersion, existingHighestMajor) >= 0;
     const existingHighestMinor = existingVersions.find(v => v.major === targetVersion.major && v.minor === targetVersion.minor) ?? new semver_1.default.SemVer('0.0.0');
-    const highestMinor = (0, compareVersions_1.compareVersions)(targetVersion, existingHighestMinor) >= 0;
+    const isHighestMinor = (0, compareVersions_1.compareVersions)(targetVersion, existingHighestMinor) >= 0;
     const existingLatestMajor = existingVersions.find(v => !v.prerelease?.length && v.major === targetVersion.major) ?? new semver_1.default.SemVer('0.0.0');
-    const latestMajor = targetIsPrerelease ? false : ((0, compareVersions_1.compareVersions)(targetVersion, existingLatestMajor) >= 0);
+    const isLatestMajor = targetIsPrerelease ? false : ((0, compareVersions_1.compareVersions)(targetVersion, existingLatestMajor) >= 0);
     const existingLatestMinor = existingVersions.find(v => !v.prerelease?.length && v.major === targetVersion.major && v.minor === targetVersion.minor) ?? new semver_1.default.SemVer('0.0.0');
-    const latestMinor = targetIsPrerelease ? false : ((0, compareVersions_1.compareVersions)(targetVersion, existingLatestMinor) >= 0);
+    const isLatestMinor = targetIsPrerelease ? false : ((0, compareVersions_1.compareVersions)(targetVersion, existingLatestMinor) >= 0);
+    //   latestVersion: latestVersion.version,
+    //   highestVersion: highestVersion.version,
+    const isHighestVersion = (0, compareVersions_1.compareVersions)(targetVersion, highestVersion) >= 0;
+    const isLatestVersion = targetIsPrerelease ? false : ((0, compareVersions_1.compareVersions)(targetVersion, latestVersion) >= 0);
     const out = {
         branch: branchMeta.branch,
         isSource: branchMeta.isReleaseSourceBranch,
@@ -15056,10 +15060,12 @@ function evaluateVersion(targetVersion, existingVersions, branch = '') {
         targetIsStable: (targetVersion.major ?? 0) >= 1,
         latestVersion: latestVersion.version,
         highestVersion: highestVersion.version,
-        highestMajor,
-        highestMinor,
-        latestMajor,
-        latestMinor,
+        isHighestVersion,
+        isLatestVersion,
+        isHighestMajor,
+        isHighestMinor,
+        isLatestMajor,
+        isLatestMinor,
         validBranchVersionMinimum,
         vaildBranchVersionMaximum,
         validIsHighestVersion,
@@ -15450,18 +15456,18 @@ async function applyTags(versionStatus) {
     const githubTokenInput = (0, core_1.getInput)('githubToken', { trimWhitespace: true });
     const octokit = new rest_1.Octokit({ auth: githubTokenInput });
     if (createTags === 'all' || createTags === 'named') {
-        if (versionStatus.highestVersion) {
+        if (versionStatus.isHighestVersion) {
             await applyTag(octokit, 'next');
         }
-        if (versionStatus.latestVersion) {
+        if (versionStatus.isLatestVersion) {
             await applyTag(octokit, 'latest');
         }
     }
     if (createTags === 'all' || createTags === 'components') {
-        if (versionStatus.latestMajor) {
+        if (versionStatus.isLatestMajor) {
             await applyTag(octokit, `v${versionStatus.targetMajor}`);
         }
-        if (versionStatus.latestMinor) {
+        if (versionStatus.isLatestMinor) {
             await applyTag(octokit, `v${versionStatus.targetMajor}.${versionStatus.targetMinor}`);
         }
     }
