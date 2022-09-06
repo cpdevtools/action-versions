@@ -27,6 +27,11 @@ export interface VersionEvaluation {
     highestVersion: string;
     latestVersion: string;
 
+    highestMajor: boolean;
+    highestMinor: boolean;
+    latestMajor: boolean;
+    latestMinor: boolean;
+
     validCanCreate:boolean;
     validBranchVersionMinimum: boolean;
     vaildBranchVersionMaximum: boolean;

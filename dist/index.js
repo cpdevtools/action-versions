@@ -15023,6 +15023,15 @@ function evaluateVersion(targetVersion, existingVersions, branch = '') {
         validBranchVersionMinimum &&
         vaildBranchVersionMaximum &&
         (validIsHighestVersion || validIsHighestVersionInBranch);
+    const targetIsPrerelease = !!targetVersion.prerelease?.length;
+    const existingHighestMajor = existingVersions.find(v => v.major === targetVersion.major) ?? new semver_1.default.SemVer('0.0.0');
+    const highestMajor = semver_1.default.gte(targetVersion, existingHighestMajor);
+    const existingHighestMinor = existingVersions.find(v => v.major === targetVersion.major && v.minor === targetVersion.minor) ?? new semver_1.default.SemVer('0.0.0');
+    const highestMinor = semver_1.default.gte(targetVersion, existingHighestMinor);
+    const existingLatestMajor = existingVersions.find(v => !v.prerelease?.length && v.major === targetVersion.major) ?? new semver_1.default.SemVer('0.0.0');
+    const latestMajor = targetIsPrerelease ? false : semver_1.default.gte(targetVersion, existingLatestMajor);
+    const existingLatestMinor = existingVersions.find(v => !v.prerelease?.length && v.major === targetVersion.major && v.minor === targetVersion.minor) ?? new semver_1.default.SemVer('0.0.0');
+    const latestMinor = targetIsPrerelease ? false : semver_1.default.gte(targetVersion, existingLatestMinor);
     const out = {
         branch: branchMeta.branch,
         isSource: branchMeta.isReleaseSourceBranch,
@@ -15047,6 +15056,10 @@ function evaluateVersion(targetVersion, existingVersions, branch = '') {
         targetIsStable: (targetVersion.major ?? 0) >= 1,
         latestVersion: latestVersion.version,
         highestVersion: highestVersion.version,
+        highestMajor,
+        highestMinor,
+        latestMajor,
+        latestMinor,
         validBranchVersionMinimum,
         vaildBranchVersionMaximum,
         validIsHighestVersion,
@@ -15376,6 +15389,7 @@ var exports = __webpack_exports__;
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core_1 = __nccwpck_require__(5681);
+const rest_1 = __nccwpck_require__(5342);
 const inspectVersion_1 = __nccwpck_require__(3082);
 const ValidationErrorMessages = {
     validCanCreate: (data) => {
@@ -15405,7 +15419,9 @@ function applyFailed(validationProp, data) {
     const shouldFail = (0, core_1.getBooleanInput)(`failIn${validationProp}`);
     if (shouldFail && !data[validationProp]) {
         (0, core_1.setFailed)(ValidationErrorMessages[validationProp](data));
+        return 1;
     }
+    return 0;
 }
 (async () => {
     const out = await (0, inspectVersion_1.inspectVersion)();
@@ -15417,13 +15433,34 @@ function applyFailed(validationProp, data) {
         (0, core_1.setOutput)(key, value);
     });
     console.table(table);
-    applyFailed('validCanCreate', out);
-    applyFailed('validIsNewVersion', out);
-    applyFailed('validIsHighestVersionInBranch', out);
-    applyFailed('validBranchVersionMinimum', out);
-    applyFailed('vaildBranchVersionMaximum', out);
-    applyFailed('validIsHighestVersion', out);
+    let fails = 0;
+    fails += applyFailed('validCanCreate', out);
+    fails += applyFailed('validIsNewVersion', out);
+    fails += applyFailed('validIsHighestVersionInBranch', out);
+    fails += applyFailed('validBranchVersionMinimum', out);
+    fails += applyFailed('vaildBranchVersionMaximum', out);
+    fails += applyFailed('validIsHighestVersion', out);
+    if (!fails) {
+        await applyTags(out);
+    }
 })();
+async function applyTags(versionStatus) {
+    const createTags = (0, core_1.getInput)('createTags', { trimWhitespace: true });
+    const githubTokenInput = (0, core_1.getInput)('githubToken', { trimWhitespace: true });
+    const octokit = new rest_1.Octokit({ auth: githubTokenInput });
+    if (createTags === 'all' || createTags === 'named') {
+        if (versionStatus.highestVersion) {
+            await applyTag(octokit, 'next');
+        }
+        if (versionStatus.latestVersion) {
+            await applyTag(octokit, 'latest');
+        }
+    }
+    if (createTags === 'all' || createTags === 'components') {
+    }
+}
+async function applyTag(octokit, tag) {
+}
 
 })();
 

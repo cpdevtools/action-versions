@@ -1,4 +1,5 @@
-import { getBooleanInput, setFailed, setOutput } from '@actions/core';
+import { getBooleanInput, getInput, setFailed, setOutput } from '@actions/core';
+import { Octokit } from '@octokit/rest';
 import { VersionStatus } from 'VersionStatus';
 import { inspectVersion } from './inspectVersion';
 import { VersionEvaluation } from './VersionEvaluation';
@@ -40,7 +41,9 @@ function applyFailed(validationProp: ValidationProperties, data: VersionStatus) 
     const shouldFail = getBooleanInput(`failIn${validationProp}`);
     if (shouldFail && !data[validationProp]) {
         setFailed(ValidationErrorMessages[validationProp](data));
+        return 1;
     }
+    return 0;
 }
 
 (async () => {
@@ -55,12 +58,47 @@ function applyFailed(validationProp: ValidationProperties, data: VersionStatus) 
     });
     console.table(table);
 
-    applyFailed('validCanCreate', out);
-    applyFailed('validIsNewVersion', out);
-    applyFailed('validIsHighestVersionInBranch', out);
-    applyFailed('validBranchVersionMinimum', out);
-    applyFailed('vaildBranchVersionMaximum', out);
-    applyFailed('validIsHighestVersion', out);
+    let fails = 0;
+    fails += applyFailed('validCanCreate', out);
+    fails += applyFailed('validIsNewVersion', out);
+    fails += applyFailed('validIsHighestVersionInBranch', out);
+    fails += applyFailed('validBranchVersionMinimum', out);
+    fails += applyFailed('vaildBranchVersionMaximum', out);
+    fails += applyFailed('validIsHighestVersion', out);
+
+    if (!fails) {
+
+        await applyTags(out);
+    }
+
 })();
 
+type TagType = 'none' | 'named' | 'components' | 'all';
 
+async function applyTags(versionStatus: VersionStatus) {
+    const createTags = getInput('createTags', { trimWhitespace: true }) as TagType;
+    const githubTokenInput = getInput('githubToken', { trimWhitespace: true });
+    const octokit = new Octokit({ auth: githubTokenInput });
+
+    if (createTags === 'all' || createTags === 'named') {
+        if (versionStatus.highestVersion) {
+            await applyTag(octokit, 'next');
+        }
+        if (versionStatus.latestVersion) {
+            await applyTag(octokit, 'latest');
+        }
+    }
+
+    if (createTags === 'all' || createTags === 'components') {
+        if(versionStatus.latestMajor){
+            await applyTag(octokit, `v${versionStatus.targetMajor}`);
+        }
+        if(versionStatus.latestMinor){
+            await applyTag(octokit, `v${versionStatus.targetMajor}.${versionStatus.targetMinor}`);
+        }
+    }
+}
+
+async function applyTag(octokit: Octokit, tag: string) {
+
+}

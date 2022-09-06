@@ -84,6 +84,19 @@ export function evaluateVersion(targetVersion: semver.SemVer, existingVersions: 
         vaildBranchVersionMaximum &&
         (validIsHighestVersion || validIsHighestVersionInBranch);
 
+    const targetIsPrerelease = !!targetVersion.prerelease?.length;
+    
+    const existingHighestMajor = existingVersions.find(v => v.major === targetVersion.major) ?? new semver.SemVer('0.0.0');
+    const highestMajor = semver.gte(targetVersion, existingHighestMajor);
+
+    const existingHighestMinor = existingVersions.find(v => v.major === targetVersion.major && v.minor === targetVersion.minor) ?? new semver.SemVer('0.0.0');
+    const highestMinor = semver.gte(targetVersion, existingHighestMinor);
+
+    const existingLatestMajor = existingVersions.find(v => !v.prerelease?.length && v.major === targetVersion.major ) ?? new semver.SemVer('0.0.0');
+    const latestMajor = targetIsPrerelease ? false : semver.gte(targetVersion, existingLatestMajor);
+
+    const existingLatestMinor = existingVersions.find(v => !v.prerelease?.length && v.major === targetVersion.major && v.minor === targetVersion.minor) ?? new semver.SemVer('0.0.0');
+    const latestMinor = targetIsPrerelease ? false : semver.gte(targetVersion, existingLatestMinor);
 
     const out: VersionEvaluation = {
         branch: branchMeta.branch,
@@ -112,6 +125,11 @@ export function evaluateVersion(targetVersion: semver.SemVer, existingVersions: 
 
         latestVersion: latestVersion.version,
         highestVersion: highestVersion.version,
+
+        highestMajor,
+        highestMinor,
+        latestMajor,
+        latestMinor,
 
         validBranchVersionMinimum,
         vaildBranchVersionMaximum,
