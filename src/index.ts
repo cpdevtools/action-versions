@@ -88,6 +88,9 @@ async function applyTags(versionStatus: VersionStatus) {
         if (versionStatus.isLatestVersion) {
             await applyTag(octokit, 'latest');
         }
+        if(versionStatus.targetIsPrerelease){
+            await applyTag(octokit, versionStatus.targetPrerelease!);
+        }
     }
     if (createTags === 'all' || createTags === 'components') {
         if (versionStatus.isLatestMajor) {
