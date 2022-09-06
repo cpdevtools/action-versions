@@ -70,7 +70,7 @@ function evaluateVersion(targetVersion, existingVersions, branch = '') {
     const validIsHighestVersionInBranch = (0, compareVersions_1.compareVersions)(targetVersion, branchVersionHighest) >= 0;
     console.log('existingVersions::', existingVersions);
     console.log('targetVersion.version::', targetVersion.version);
-    const validIsNewVersion = existingVersions.find(v => v.version === targetVersion.version) === null;
+    const validIsNewVersion = existingVersions.find(v => v.version === targetVersion.version) === undefined;
     const validIsSourceOrTarget = branchMeta.isReleaseSourceBranch || branchMeta.isReleaseTargetBranch;
     const validCanCreate = validIsSourceOrTarget &&
         validIsNewVersion &&

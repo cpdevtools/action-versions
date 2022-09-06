@@ -80,7 +80,7 @@ export function evaluateVersion(targetVersion: semver.SemVer, existingVersions: 
     console.log('existingVersions::', existingVersions);
     console.log('targetVersion.version::', targetVersion.version);
 
-    const validIsNewVersion = existingVersions.find(v => v.version === targetVersion.version) === null;
+    const validIsNewVersion = existingVersions.find(v => v.version === targetVersion.version) === undefined;
 
     const validIsSourceOrTarget = branchMeta.isReleaseSourceBranch || branchMeta.isReleaseTargetBranch;
 
