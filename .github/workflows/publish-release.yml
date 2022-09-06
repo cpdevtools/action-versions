@@ -44,7 +44,7 @@ jobs:
           body: |
             Generated Release v${{ steps.version.outputs.targetVersion }}
           draft: false
-          prerelease: ${{ steps.pkgVersion.outputs.targetIsPrerelease == 'true'}}
+          prerelease: ${{ steps.pkgVersion.outputs.targetIsPrerelease == true}}
 
       - name: Apply latest/prerelease tag
         uses: actions/github-script@v3
