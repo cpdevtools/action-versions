@@ -5,8 +5,6 @@ export interface VersionEvaluation {
 
     sourceVersion: string;
     targetVersion: string;
-    versionUnchanged: boolean;
-    isNewValidVersion: boolean;
 
     sourceMajor: number;
     sourceMinor: number;
@@ -26,8 +24,12 @@ export interface VersionEvaluation {
     targetIsPrerelease?: boolean;
     targetIsStable?: boolean;
 
-    versionValidReleaseMinimum: boolean;
-    versionValidReleaseMaximum: boolean;
+    validCanCreate:boolean;
+    validBranchVersionMinimum: boolean;
+    vaildBranchVersionMaximum: boolean;
+    validIsNewVersion:boolean;
+    validIsHighestVersion:boolean;
+    validIsHighestVersionInBranch:boolean;
 }
 
 
