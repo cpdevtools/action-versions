@@ -31,9 +31,7 @@ jobs:
           draft: false
           prerelease: ${{ steps.version.outputs.targetIsPrerelease }}
 
-      - name: Apply latest/prerelease tag
-
-        #uses: actions/github-script@v3
-        uses: ./
+      - name: Create tags
+        uses: cpdevtools/action-versions@latest
         with:     
           createTags: all
