@@ -13,7 +13,7 @@ This action can be used to parse semversions either from input or from a specifi
             # Path to a json file that contains the target verion.
             #
             # Default: './package.json'
-            versionFile: './package.json'
+            versionFile: ''
 
             # The target version.
             # if `versionFile` is set this is used as a failover if
@@ -21,24 +21,20 @@ This action can be used to parse semversions either from input or from a specifi
             # instead of loading from the default file. 
             #
             # Default: undefined
-            version: '1.0.0'
+            version: ''
 
             # The branch name. 
             # Branch name is used to derive validation rules.
             #
             # Default: the current branch name, or the head branch
             # name on pull requests.
-            branch: 'v/1'
+            branch: ''
             
             # The released versions. One per line
             #
             # Default: All repository tags that are 
             # valid semver versions
-            existingVersions: |
-                v1.0.0
-                v1.1.0
-                v1.2.3
-                v1.3.0-beta.0
+            existingVersions: ''
 
             # GitHub token used to authenticate the GitHub api
             #
@@ -49,37 +45,37 @@ This action can be used to parse semversions either from input or from a specifi
             # then a failed state will be set on the action
             #
             # Default: false
-            failInvalidCanCreate: true
+            failInvalidCanCreate: false
 
             # If true and `validIsNewVersion` output is false
             # then a failed state will be set on the action
             #
             # Default: false
-            failInvalidIsNewVersion: true
+            failInvalidIsNewVersion: false
 
             # If true and `validIsHighestVersionInBranch` output 
             # is false then a failed state will be set on the action
             #
             # Default: false
-            failInvalidIsHighestVersionInBranch: true
+            failInvalidIsHighestVersionInBranch: false
 
             # If true and `validIsHighestVersion` output is false
             # then a failed state will be set on the action
             #
             # Default: false
-            failInvalidIsHighestVersion: true
+            failInvalidIsHighestVersion: false
 
             # If true and `validBranchVersionMinimum` output is false
             # then a failed state will be set on the action
             #
             # Default: false
-            failInvalidBranchVersionMinimum: true
+            failInvalidBranchVersionMinimum: false
 
             # If true and `vaildBranchVersionMaximum` output is false
             # then a failed state will be set on the action
             #
             # Default: false
-            failInvaildBranchVersionMaximum: true
+            failInvaildBranchVersionMaximum: false
 
 
             # if true, the `validCanCreate` output propety is true,
@@ -90,7 +86,7 @@ This action can be used to parse semversions either from input or from a specifi
             # Note: This should only be used from "source" branches
             #
             # Default: false 
-            autoCreatePullRequest: true
+            autoCreatePullRequest: false
 
 
             # What tags to create. if they exist they are removed
@@ -125,8 +121,28 @@ This action can be used to parse semversions either from input or from a specifi
             #     Apply both 'named' and 'components' tags
             #
             # Default: 'none'
-            createTags: all
+            createTags: none
 ```
 
-# Outputs
+# Output
+
+The outputs of this action are catagorized into the floowing scopes:
+
+## Source Branch
+The source branch is determind by the `branch` input property.
+By default the branch is the branch that triggered the workflow, or if the workflow trigger is a pull request, the `head` brach is used
+To be considered a vaild source branch the value must be in the form of `v/{major}[.{minor}]` or `v/latest`.  main and master are equivilant to `v/latest`
+
+`v/latest` does not validate a maximum range
+
+### Soure branch outputs:
+
+`branch`: string - the name of the current/head branch
+
+`isSource`: boolean - true if `branch` is a valid source branch
+
+`sourceVersion`: string - the current highest version tag within the source range
+
+
+
 
