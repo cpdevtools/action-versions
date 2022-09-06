@@ -8,23 +8,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-    
-      - uses: pnpm/action-setup@v2.2.2
-        with:
-          version: 7.6.0
-          run_install: false
-
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 16.17.x
-          cache: 'pnpm'
-          cache-dependency-path: pnpm-lock.yaml
-
-      - name: Install Dependencies
-        run: pnpm install --frozen-lockfile --ignore-scripts 
 
       - name: Check Version
-        uses: ./
+        uses: cpdevtools/action-versions@dev
         with:
           failInvalidCanCreate: true
 
