@@ -82,38 +82,38 @@ async function applyTags(versionStatus: VersionStatus) {
     const octokit = new Octokit({ auth: githubTokenInput });
 
     if (createTags === 'all' || createTags === 'named') {
-        if (versionStatus.highestVersion) {
+        if (versionStatus.isHighestVersion) {
             await applyTag(octokit, 'next');
         }
-        if (versionStatus.latestVersion) {
+        if (versionStatus.isLatestVersion) {
             await applyTag(octokit, 'latest');
         }
     }
     if (createTags === 'all' || createTags === 'components') {
-        if(versionStatus.latestMajor){
+        if (versionStatus.isLatestMajor) {
             await applyTag(octokit, `v${versionStatus.targetMajor}`);
         }
-        if(versionStatus.latestMinor){
+        if (versionStatus.isLatestMinor) {
             await applyTag(octokit, `v${versionStatus.targetMajor}.${versionStatus.targetMinor}`);
         }
     }
 }
 
 async function applyTag(github: Octokit, tag: string) {
-    try{
-      await github.git.deleteRef({
+    try {
+        await github.git.deleteRef({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            ref: "tags/" + tag
+        });
+        console.info(`removed tag '${tag}'`);
+    } catch { }
+
+    await github.git.createRef({
         owner: context.repo.owner,
         repo: context.repo.repo,
-        ref: "tags/" + tag
-      });
-      console.info(`removed tag '${tag}'`);
-    } catch{}
-
-     await github.git.createRef({
-      owner: context.repo.owner,
-      repo: context.repo.repo,
-      ref: "refs/tags/" + tag,
-      sha: context.sha
+        ref: "refs/tags/" + tag,
+        sha: context.sha
     });
     console.info(`added tag '${tag}' @ ${context.sha}`);
 }
