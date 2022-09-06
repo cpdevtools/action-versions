@@ -2,7 +2,8 @@ name: Check pull request
 
 on:
   pull_request:
-
+     branches:
+      - "release/*"
 jobs:
   check_version_valid_and_new:
     runs-on: ubuntu-latest
@@ -10,7 +11,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Check Version
-        uses: cpdevtools/action-versions@dev
+        uses: cpdevtools/action-versions@latest
         with:
           failInvalidCanCreate: true
 

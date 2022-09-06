@@ -14,7 +14,7 @@ jobs:
 
       - name: Check Version
         id: version
-        uses: cpdevtools/action-versions@dev
+        uses: cpdevtools/action-versions@latest
         with:
           failInvalidCanCreate: true
 
@@ -32,24 +32,9 @@ jobs:
           prerelease: ${{ steps.version.outputs.targetIsPrerelease }}
 
       - name: Apply latest/prerelease tag
-        uses: actions/github-script@v3
-        with:
-          github-token: ${{secrets.GITHUB_TOKEN}}          
-          script: |
-            var tag = ("${{ steps.version.outputs.targetIsPrerelease }}" === "true" ? "${{ steps.version.outputs.targetPrerelease }}" : "latest");
-            try{
-              await github.git.deleteRef({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                ref: "tags/" + tag
-              });
-              console.info(`removed tag '${tag}'`);
-            } catch{}
 
-             await github.git.createRef({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              ref: "refs/tags/" + tag,
-              sha: context.sha
-            });
-            console.info(`added tag '${tag}' @ ${context.sha}`);
+        #uses: actions/github-script@v3
+        uses: ./
+        with: 
+          failInvalidCanCreate: true     
+          createTags: all

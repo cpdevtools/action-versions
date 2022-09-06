@@ -56,6 +56,12 @@ inputs:
     default: "false"
     required: false
 
+  
+  createTags:
+    description: "'none' | 'named' | 'components' | 'all'"
+    default: "none"
+    required: false
+
 outputs:
   branch:
     description: The source branch
@@ -108,9 +114,17 @@ outputs:
     description: targetVersion does not have a prerelease component and is 1.0 or greater
 
   highestVersion: 
-    description: the highest version in the repository
+    description: targetVersion is the highest version in the repository
   latestVersion: 
-    description: the highest non-prerelease version in the repository
+    description: targetVersion is the highest non-prerelease version in the repository
+  highestMajor:   
+    description: targetVersion is the highest version with the same major component
+  highestMinor:   
+    description: targetVersion is the highest version with the same major & minor components
+  latestMajor:   
+    description: targetVersion is the highest release version with the same major component
+  latestMinor:   
+    description: targetVersion is the highest release version with the same major & minor components
 
   validCanCreate:
     description: targetVersion meets all validation and is ready to be created
