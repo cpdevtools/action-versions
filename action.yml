@@ -124,6 +124,8 @@ outputs:
     description: targetVersion will be the highest version in the release range
   validIsHighestVersion:
     description: targetVersion will be the highest version
+
 runs:
   using: "node16"
+  pre: "dist/install.js"
   main: "dist/index.js"
