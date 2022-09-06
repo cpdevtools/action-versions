@@ -41,7 +41,7 @@ jobs:
           echo "::set-output match=::true"
 
   create_pull_on_new_version:
-    if: ${{ steps.build.output.match === true }}
+    if: ${{ steps.build.outputs.match == 'true' }}
     name: Create a version pull request if nessisary
     needs: ['check_build_comitted']
     runs-on: ubuntu-latest
