@@ -15025,13 +15025,14 @@ function evaluateVersion(targetVersion, existingVersions, branch = '') {
         (validIsHighestVersion || validIsHighestVersionInBranch);
     const targetIsPrerelease = !!targetVersion.prerelease?.length;
     const existingHighestMajor = existingVersions.find(v => v.major === targetVersion.major) ?? new semver_1.default.SemVer('0.0.0');
-    const highestMajor = semver_1.default.gte(targetVersion, existingHighestMajor);
+    const highestMajor = (0, compareVersions_1.compareVersions)(targetVersion, existingHighestMajor) >= 0;
+    console.log('highestMajor', targetVersion.version, existingHighestMajor.version, highestMajor);
     const existingHighestMinor = existingVersions.find(v => v.major === targetVersion.major && v.minor === targetVersion.minor) ?? new semver_1.default.SemVer('0.0.0');
-    const highestMinor = semver_1.default.gte(targetVersion, existingHighestMinor);
+    const highestMinor = (0, compareVersions_1.compareVersions)(targetVersion, existingHighestMinor) >= 0;
     const existingLatestMajor = existingVersions.find(v => !v.prerelease?.length && v.major === targetVersion.major) ?? new semver_1.default.SemVer('0.0.0');
-    const latestMajor = targetIsPrerelease ? false : semver_1.default.gte(targetVersion, existingLatestMajor);
+    const latestMajor = targetIsPrerelease ? false : ((0, compareVersions_1.compareVersions)(targetVersion, existingLatestMajor) >= 0);
     const existingLatestMinor = existingVersions.find(v => !v.prerelease?.length && v.major === targetVersion.major && v.minor === targetVersion.minor) ?? new semver_1.default.SemVer('0.0.0');
-    const latestMinor = targetIsPrerelease ? false : semver_1.default.gte(targetVersion, existingLatestMinor);
+    const latestMinor = targetIsPrerelease ? false : ((0, compareVersions_1.compareVersions)(targetVersion, existingLatestMinor) >= 0);
     const out = {
         branch: branchMeta.branch,
         isSource: branchMeta.isReleaseSourceBranch,
@@ -15457,6 +15458,12 @@ async function applyTags(versionStatus) {
         }
     }
     if (createTags === 'all' || createTags === 'components') {
+        if (versionStatus.latestMajor) {
+            await applyTag(octokit, `v${versionStatus.targetMajor}`);
+        }
+        if (versionStatus.latestMinor) {
+            await applyTag(octokit, `v${versionStatus.targetMajor}.${versionStatus.targetMinor}`);
+        }
     }
 }
 async function applyTag(octokit, tag) {
