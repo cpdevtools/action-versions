@@ -16,7 +16,7 @@ inputs:
   existingVersions:
     description: Override the released versions. One per line
     required: false
-  
+
   githubToken:
     description: The GitHub token used to create an authenticated client
     default: ${{ github.token }}
@@ -24,19 +24,43 @@ inputs:
 
   autoCreatePullRequest:
     description: if set to true and isNewValidVersion is true ang there is not pullRequest yet, create it
-    default: 'false'
+    default: "false"
     required: false
 
-  failIfNotValidNew:
-    description: if set to true action will fail unless the targetVersion is new and in range
-    default: 'false'
+  failInvalidCanCreate:
+    description: if set to true the action will fail if validCanCreate is false
+    default: "false"
     required: false
-    
+
+  failInvalidIsNewVersion:
+    description: if set to true the action will fail if validIsNewVersion is false
+    default: "false"
+    required: false
+
+  failInvalidIsHighestVersionInBranch:
+    description: if set to true the action will fail if validIsHighestVersionInBranch is false
+    default: "false"
+    required: false
+  failInvalidIsHighestVersion:
+    description: if set to true the action will fail if validIsHighestVersion is false
+    default: "false"
+    required: false
+
+  failInvaildBranchVersionMaximum:
+    description: if set to true the action will fail if vaildBranchVersionMaximum is false
+    default: "false"
+    required: false
+
+  failInvalidBranchVersionMinimum:
+    description: if set to true the action will fail if validBranchVersionMinimum is false
+    default: "false"
+    required: false
+
 outputs:
   branch:
     description: The source branch
 
-  pullRequest: 
+  pullRequest:
     description: The id of the release pull request
 
   branchLatest:
@@ -65,7 +89,7 @@ outputs:
     description: sourceVersion has a prerelease component
   sourceIsStable:
     description: sourceVersion does not have a prerelease component and is 1.0 or greater
- 
+
   targetMajor:
     description: The major component of targetVersion
   targetMinor:
@@ -82,8 +106,12 @@ outputs:
     description: targetVersion has a prerelease component
   targetIsStable:
     description: targetVersion does not have a prerelease component and is 1.0 or greater
- 
- 
+
+  highestVersion: 
+    description: the highest version in the repository
+  latestVersion: 
+    description: the highest non-prerelease version in the repository
+
   validCanCreate:
     description: targetVersion meets all validation and is ready to be created
   validBranchVersionMinimum:
@@ -96,6 +124,6 @@ outputs:
     description: targetVersion will be the highest version in the release range
   validIsHighestVersion:
     description: targetVersion will be the highest version
-runs: 
-  using: 'node16'
-  main: 'dist/index.js'
+runs:
+  using: "node16"
+  main: "dist/index.js"
