@@ -77,8 +77,8 @@ export function evaluateVersion(targetVersion: semver.SemVer, existingVersions: 
     const validIsHighestVersion = compareVersions(targetVersion, existingVersions[0]) >= 0;
     const validIsHighestVersionInBranch = compareVersions(targetVersion, branchVersionHighest) >= 0;
 
-    console.log('existingVersions', existingVersions);
-    console.log('targetVersion.version', targetVersion.version);
+    console.log('existingVersions::', existingVersions);
+    console.log('targetVersion.version::', targetVersion.version);
 
     const validIsNewVersion = existingVersions.find(v => v.version === targetVersion.version) === null;
 
