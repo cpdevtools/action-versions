@@ -131,6 +131,7 @@ The outputs of this action are catagorized into the floowing scopes:
 ## Source Branch
 The source branch is determind by the `branch` input property.
 By default the branch is the branch that triggered the workflow, or if the workflow trigger is a pull request, the `head` brach is used
+
 To be considered a vaild source branch the value must be in the form of `v/{major}[.{minor}]` or `v/latest`.  main and master are equivilant to `v/latest`
 
 `v/latest` does not validate a maximum range
