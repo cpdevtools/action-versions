@@ -31,7 +31,7 @@ jobs:
         id: version
         uses: ./
         with:
-          failIfNotValidNew: true
+          failInvalidCanCreate: true
 
       - name: Create Release
         id: create_release
