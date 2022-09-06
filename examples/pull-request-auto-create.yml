@@ -1,0 +1,33 @@
+##########################################################################
+#
+#   Create a new pull request if the version number in 
+#   package.json is new, and it passes the validation
+#   (when the 'validCanCreate' output property is true)
+#
+#   Note: Permission Requirements
+#
+#   Requires 'Allow GitHub Actions to create and approve pull requests' 
+#   to be checked in Settings > Actions > General 
+#   in both the org and repo levels
+#
+##########################################################################
+
+name: Create pull request on version change
+
+on:
+  push:
+    branches:
+      - "main"
+      - "master"
+      - "v/*"
+
+jobs:
+  create_pull_on_new_version:
+    name: Create pull request
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Auto Create 
+        uses: cpdevtools/action-versions@latest
+        with:
+          autoCreatePullRequest: true

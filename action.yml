@@ -23,7 +23,7 @@ inputs:
     required: false
 
   autoCreatePullRequest:
-    description: if set to true and isNewValidVersion is true ang there is not pullRequest yet, create it
+    description: if set to true and validCanCreate is true ang there is no pullRequest yet, create it
     default: "false"
     required: false
 
