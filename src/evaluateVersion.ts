@@ -53,32 +53,35 @@ export function evaluateVersion(targetVersion: semver.SemVer, existingVersions: 
     const branchVersionHighest = branchVersions[0] ?? new semver.SemVer('0.0.0');
     const branchHighest = branchVersionHighest.version;
 
-
+    console.log('isLatestBranch:', isLatestBranch);
+    
     let validBranchVersionMinimum = compareVersions(targetVersion, brachVersionMin) >= 0;
-
     let vaildBranchVersionMaximum = isLatestBranch || !validBranchVersionMinimum;
+    console.log('max 1:', vaildBranchVersionMaximum);
     if (!vaildBranchVersionMaximum) {
         vaildBranchVersionMaximum = true;
+        console.log('max 2:', vaildBranchVersionMaximum);
         if (targetVersion.major > brachVersionMin.major) {
             vaildBranchVersionMaximum = false;
+            console.log('max 3:', vaildBranchVersionMaximum);
         }
         if (branchVersionMax >= 2 && targetVersion.major === brachVersionMin.major) {
             if (targetVersion.minor > brachVersionMin.minor) {
                 vaildBranchVersionMaximum = false;
+                console.log('max 4:', vaildBranchVersionMaximum);
             }
             if (branchVersionMax >= 1 && targetVersion.minor === brachVersionMin.minor) {
                 if (targetVersion.patch > brachVersionMin.patch) {
                     vaildBranchVersionMaximum = false;
+                    console.log('max 5:', vaildBranchVersionMaximum);
                 }
             }
         }
     }
+    console.log('max 6:', vaildBranchVersionMaximum);
 
     const validIsHighestVersion = compareVersions(targetVersion, existingVersions[0]) >= 0;
     const validIsHighestVersionInBranch = compareVersions(targetVersion, branchVersionHighest) >= 0;
-
-    console.log('existingVersions::', existingVersions);
-    console.log('targetVersion.version::', targetVersion.version);
 
     const validIsNewVersion = existingVersions.find(v => v.version === targetVersion.version) === undefined;
 
