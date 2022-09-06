@@ -38,9 +38,9 @@ jobs:
           if [ "$(git diff --ignore-space-at-eol dist/ | wc -l)" -gt "0" ]; then
             echo "Detected uncommitted changes after build.  See status below:"
             git diff
-            echo "::set-output match=::false"
+            echo "::set-output name=match::false"
           fi
-          echo "::set-output match=::true"
+          echo "::set-output name=match::true"
 
   create_pull_on_new_version:
     name: Create a version pull request if nessisary
