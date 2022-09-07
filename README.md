@@ -2,13 +2,13 @@
 
 [![Test](https://github.com/cpdevtools/action-versions/actions/workflows/test.yml/badge.svg)](https://github.com/cpdevtools/action-versions/actions/workflows/test.yml)
 
-This action can be used to parse semversions either from input or from a specified file. The version is then compared to other versions in the repository. The action makes these properties available and provides the ability to tigger action failures, create release pull requests and tag releases
+This action can be used to parse semver versions either from input or from a specified file. The version is then compared to other versions in the repository. The action makes these properties available and provides the ability to tigger action failures, create release pull requests and tag releases
 
 
 
 ## Source Branch
 The source branch is determind by the `branch` input property.
-By default the branch is the branch that triggered the workflow, or if the workflow trigger is a pull request, the `head` brach is used
+By default it is the branch that triggered the workflow, or if the workflow trigger is a pull request, the `head` branch is used
 
 To be considered a vaild source branch the value must be in the form of `v/{major}[.{minor}]` or `v/latest`.  `main` and `master` branches  are equivilant to `v/latest`
 
