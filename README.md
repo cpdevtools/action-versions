@@ -184,7 +184,7 @@ The outputs of this action are catagorized into the following scopes:
 
 | input | type | default | description |
 |-------| -----|---------|-------------|
-| [autoCreatePullRequest](#input_actions_autoCreatePullRequest) | boolean | false | if true, the `validCanCreate` output propety is true, and there is no open pull request open between the source and target branches, then creat a new pull request.|
+| [autoCreatePullRequest](#autocreatepullrequest) | boolean | false | if true, the `validCanCreate` output propety is true, and there is no open pull request open between the source and target branches, then creat a new pull request.|
 | createTags | string | 'none' | Applys tags to the current commit provided there is no failure state |
 
 ### Details
