@@ -166,6 +166,9 @@ The outputs of this action are catagorized into the following scopes:
 | existingVersions | Array<string> | All repository tags that are valid semver versions | The released versions. One per line |
 | githubToken | string | ${{ github.token }} | GitHub token used to authenticate the GitHub api |
 
+### Details
+
+<br/>
 
 ## Validation
 
@@ -178,18 +181,20 @@ The outputs of this action are catagorized into the following scopes:
 | failInvalidBranchVersionMinimum | boolean | false | If true and `validBranchVersionMinimum` is false the action will fail |
 | failInvaildBranchVersionMaximum | boolean | false | If true and `vaildBranchVersionMaximum` is false the action will fail |
 
+### Details
+
 <br/>
 
 ## Actions
 
 | input | type | default | description |
 |-------| -----|---------|-------------|
-| [autoCreatePullRequest](#autocreatepullrequest) | boolean | false | if true, the `validCanCreate` output propety is true, and there is no open pull request open between the source and target branches, then creat a new pull request.|
+| [autoCreatePullRequest](#autoCreatePullRequest) | boolean | false | if true, the `validCanCreate` output propety is true, and there is no open pull request open between the source and target branches, then creat a new pull request.|
 | createTags | string | 'none' | Applys tags to the current commit provided there is no failure state |
 
 ### Details
 
-#### <a name="input_actions_autoCreatePullRequest">autoCreatePullRequest</a>
+#### autoCreatePullRequest
 type: boolean
 
 Creates a new pull request between the source and target baranches.
