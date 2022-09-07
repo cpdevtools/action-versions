@@ -1,4 +1,4 @@
-import { getBooleanInput, getInput, setFailed, setOutput } from '@actions/core';
+import { getBooleanInput, getInput, getMultilineInput, setFailed, setOutput } from '@actions/core';
 import { context } from '@actions/github';
 import { Octokit } from '@octokit/rest';
 import { VersionStatus } from 'VersionStatus';
@@ -74,42 +74,86 @@ function applyFailed(validationProp: ValidationProperties, data: VersionStatus) 
 
 })();
 
-type TagType = 'none' | 'named' | 'components' | 'all';
+
+const Tags = [
+    'version',
+    'latest',
+    'next',
+    'pre-release',
+    'latest-major',
+    'latest-minor',
+] as const;
+
+const TagAliases = {
+    all: Tags,
+    named: ['latest', 'next', 'pre-release'],
+    versions: ['version', 'latest-major', 'latest-minor'],
+    'version-components': ['latest-major', 'latest-minor']
+} as const;
+
+
+type TagType = typeof Tags[number];
+type TagInput = TagType | keyof typeof TagAliases;
+
 
 async function applyTags(versionStatus: VersionStatus) {
-    const createTags = getInput('createTags', { trimWhitespace: true }) as TagType;
     const githubTokenInput = getInput('githubToken', { trimWhitespace: true });
     const octokit = new Octokit({ auth: githubTokenInput });
 
-    if (createTags === 'all' || createTags === 'named') {
-        if (versionStatus.isHighestVersion) {
-            await applyTag(octokit, 'next');
-        }
-        if (versionStatus.isLatestVersion) {
-            await applyTag(octokit, 'latest');
-        }
-        if(versionStatus.targetIsPrerelease){
-            await applyTag(octokit, versionStatus.targetPrerelease!);
-        }
+    const createTags = Array.from(new Set((getMultilineInput('createTags', { trimWhitespace: true }) as TagInput[])
+        .map(tag => TagAliases[tag as keyof typeof TagAliases] as any as TagType[] ?? tag)
+        .flat()
+        .filter(tag => Tags.includes(tag))));
+
+    if (createTags.includes('version')) {
+        await applyTag(octokit, `v${versionStatus.targetVersion}`, true);
     }
-    if (createTags === 'all' || createTags === 'components') {
-        if (versionStatus.isLatestMajor) {
-            await applyTag(octokit, `v${versionStatus.targetMajor}`);
-        }
-        if (versionStatus.isLatestMinor) {
-            await applyTag(octokit, `v${versionStatus.targetMajor}.${versionStatus.targetMinor}`);
-        }
+
+    if (createTags.includes('latest') && versionStatus.isLatestVersion) {
+        await applyTag(octokit, 'latest');
+    }
+
+    if (createTags.includes('next') && versionStatus.isHighestVersion) {
+        await applyTag(octokit, 'next');
+    }
+
+    if (createTags.includes('pre-release') && versionStatus.isHighestVersion) {
+        await applyTag(octokit, versionStatus.targetPrerelease!);
+    }
+
+    if (createTags.includes('latest-major') && versionStatus.isLatestMajor) {
+        await applyTag(octokit, `v${versionStatus.targetMajor}`);
+    }
+
+    if (createTags.includes('latest-minor') && versionStatus.isLatestMinor) {
+        await applyTag(octokit, `v${versionStatus.targetMajor}.${versionStatus.targetMinor}`);
     }
 }
 
-async function applyTag(github: Octokit, tag: string) {
+async function applyTag(github: Octokit, tag: string, throwIfExists?: boolean) {
+    if (throwIfExists) {
+        let exists = false;
+        try {
+            await github.git.getRef({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: "tags/" + tag
+            });
+            exists = true;
+        } catch { }
+
+        if (exists) {
+            throw new Error(`Tag '${tag}' already exists.`)
+        }
+    }
+    let removed = false;
     try {
         await github.git.deleteRef({
             owner: context.repo.owner,
             repo: context.repo.repo,
             ref: "tags/" + tag
         });
-        console.info(`removed tag '${tag}'`);
+        removed = true;
     } catch { }
 
     await github.git.createRef({
@@ -118,5 +162,10 @@ async function applyTag(github: Octokit, tag: string) {
         ref: "refs/tags/" + tag,
         sha: context.sha
     });
-    console.info(`added tag '${tag}' @ ${context.sha}`);
+
+    if (removed) {
+        console.info(`Moved tag '${tag}' to ${context.sha}`);
+    } else {
+        console.info(`Added tag '${tag}' at ${context.sha}`);
+    }
 }

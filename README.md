@@ -33,125 +33,6 @@ normaly a project can use only the `latest` pair, the version specific pairs are
 ## Other branches
 All other branches are neither source nor target branches. In this case the source/target relative validations will not be calculated.
 
-# Usage
-```yml
-    - uses: actions/checkout@v3
-    - name: Auto Create 
-        uses: cpdevtools/action-versions@latest
-        with:
-            # Path to a json file that contains the target verion.
-            #
-            # Default: './package.json'
-            versionFile: ''
-
-            # The target version.
-            # if `versionFile` is set this is used as a failover if
-            # the file is missing a version, Otherwide it ise used 
-            # instead of loading from the default file. 
-            #
-            # Default: undefined
-            version: ''
-
-            # The branch name. 
-            # Branch name is used to derive validation rules.
-            #
-            # Default: the current branch name, or the head branch
-            # name on pull requests.
-            branch: ''
-            
-            # The released versions. One per line
-            #
-            # Default: All repository tags that are 
-            # valid semver versions
-            existingVersions: ''
-
-            # GitHub token used to authenticate the GitHub api
-            #
-            # Default: ${{ github.token }}
-            githubToken: ${{ github.token }}
-
-            # If true and `validCanCreate` output is false
-            # then a failed state will be set on the action
-            #
-            # Default: false
-            failInvalidCanCreate: false
-
-            # If true and `validIsNewVersion` output is false
-            # then a failed state will be set on the action
-            #
-            # Default: false
-            failInvalidIsNewVersion: false
-
-            # If true and `validIsHighestVersionInBranch` output 
-            # is false then a failed state will be set on the action
-            #
-            # Default: false
-            failInvalidIsHighestVersionInBranch: false
-
-            # If true and `validIsHighestVersion` output is false
-            # then a failed state will be set on the action
-            #
-            # Default: false
-            failInvalidIsHighestVersion: false
-
-            # If true and `validBranchVersionMinimum` output is false
-            # then a failed state will be set on the action
-            #
-            # Default: false
-            failInvalidBranchVersionMinimum: false
-
-            # If true and `vaildBranchVersionMaximum` output is false
-            # then a failed state will be set on the action
-            #
-            # Default: false
-            failInvaildBranchVersionMaximum: false
-
-
-            # if true, the `validCanCreate` output propety is true,
-            # and there is no open pull request open between the
-            # source and target branches, then creat a new pull
-            # request.
-            #
-            # Note: This should only be used from "source" branches
-            #
-            # Default: false 
-            autoCreatePullRequest: false
-
-
-            # What tags to create. if they exist they are removed
-            # and re-added at the current commit
-            #
-            # Values:
-            #  'none'         - Don't create any tags
-            #
-            #  'named'
-            #    latest       - the current commit will be 
-            #                   tagged as 'latest' if it is the
-            #                   highest non preprelease version
-            #    next         - the current commit will be tagged 
-            #                   as 'next' if it is the highest 
-            #                   version
-            #    {prerelease} - the current commit will be tagged 
-            #                   as '{prerelease}'. 
-            #                   Where {prerelease} is the  
-            #                   prerelease component of the version.
-            #                   eg. the 'beta' in 'v1.0.0-beta.2'
-            #
-            #  'components'
-            #    If the version is a not a prerlease and it is the 
-            #    highest version with a matching major component it
-            #    will be tagged with `v{major}`
-            #
-            #    If the version is a not a prerlease and it is the 
-            #    highest version with matching major & minor
-            #    components it will be tagged with `v{major}.{minor}`
-            #
-            #  'all' 
-            #     Apply both 'named' and 'components' tags
-            #
-            # Default: 'none'
-            createTags: none
-```
 
 # Inputs
 The outputs of this action are catagorized into the following scopes:
@@ -160,13 +41,45 @@ The outputs of this action are catagorized into the following scopes:
 
 | input | type | default | description |
 |-------| -----|---------|-------------|
-| versionFile | string | './package.json' | Path to a json file that contains the target verion. |
-| version | string |  | The target version.<br/> if `versionFile` is set this is used as a failover if the file is missing a version, Otherwide it ise used instead of loading from the default file. |
-| branch | string | the current/head branch name | The branch name |
-| existingVersions | Array<string> | All repository tags that are valid semver versions | The released versions. One per line |
-| githubToken | string | ${{ github.token }} | GitHub token used to authenticate the GitHub api |
+| [versionFile](#versionFile) | string | './package.json' | Path to a json file that contains the target verion. |
+| [version](#version) | string |  | The target version.<br/> if `versionFile` is set this is used as a failover if the file is missing a version, Otherwide it ise used instead of loading from the default file. |
+| [branch](#branch) | string | the current/head branch name | The branch name |
+| [existingVersions](#existingVersions) | Array<string> | All repository tags that are valid semver versions | The released versions. One per line |
+| [githubToken](#githubToken) | string | ${{ github.token }} | GitHub token used to authenticate the GitHub api |
 
 ### Details
+
+#### versionFile
+type: string
+default: './package.json'
+
+Path to a json file that contains the target verion. If neither [versionFile](#versionFile) nor [version](#version) are set then the version is loaded from './package.json'
+If this argument is explicitly provided then [version](#version) functions as a fallback value
+
+#### version
+type: string
+
+The version to use as the target version. If [versionFile](#versionFile) is also provided this functions as a fallback value.
+
+#### branch
+type: string
+
+The branch name. Defaults to the current branch or source branch if the workflow was triggered by a pull request.
+
+The brach name use used to determine the validation constraints
+
+#### existingVersions
+type: Array<string>
+
+An array of released versions. One per line. By default this is a list of all the tag in the repository that are valid semver versions.
+
+This is used to determine the hightest, latest and existance to versions
+
+#### githubToken
+type: string
+default: ${{ github.token }}
+
+GitHub token used to authenticate the GitHub api
 
 <br/>
 
@@ -174,14 +87,51 @@ The outputs of this action are catagorized into the following scopes:
 
 | input | type | default | description |
 |-------| -----|---------|-------------|
-| failInvalidCanCreate | boolean | false | If true and `validCanCreate` is false the action will fail |
-| failInvalidIsNewVersion | boolean | false | If true and `validIsNewVersion` is false the action will fail |
-| failInvalidIsHighestVersionInBranch | boolean | false | If true and `validIsHighestVersionInBranch` is false the action will fail |
-| failInvalidIsHighestVersion | boolean | false | If true and `validIsHighestVersion` is false the action will fail |
-| failInvalidBranchVersionMinimum | boolean | false | If true and `validBranchVersionMinimum` is false the action will fail |
-| failInvaildBranchVersionMaximum | boolean | false | If true and `vaildBranchVersionMaximum` is false the action will fail |
+| [failInvalidCanCreate](#failInvalidCanCreate) | boolean | false | If true and `validCanCreate` is false the action will fail |
+| [failInvalidIsNewVersion](#failInvalidIsNewVersion) | boolean | false | If true and `validIsNewVersion` is false the action will fail |
+| [failInvalidIsHighestVersionInBranch](#failInvalidIsHighestVersionInBranch) | boolean | false | If true and `validIsHighestVersionInBranch` is false the action will fail |
+| [failInvalidIsHighestVersion](#failInvalidIsHighestVersion) | boolean | false | If true and `validIsHighestVersion` is false the action will fail |
+| [failInvalidBranchVersionMinimum](#failInvalidBranchVersionMinimum) | boolean | false | If true and `validBranchVersionMinimum` is false the action will fail |
+| [failInvaildBranchVersionMaximum](#failInvaildBranchVersionMaximum) | boolean | false | If true and `vaildBranchVersionMaximum` is false the action will fail |
 
 ### Details
+
+#### failInvalidCanCreate
+type: boolean
+default: false
+
+If true and `validCanCreate` is false the action will fail
+
+#### failInvalidIsNewVersion
+type: boolean
+default: false
+
+If true and `validIsNewVersion` is false the action will fail
+
+#### failInvalidIsHighestVersionInBranch
+type: boolean
+default: false
+
+If true and `validIsHighestVersionInBranch` is false the action will fail
+
+#### failInvalidIsHighestVersion
+type: boolean
+default: false
+
+If true and `validIsHighestVersion` is false the action will fail
+
+#### validBranchVersionMinimum
+type: boolean
+default: false
+
+If true and `validBranchVersionMinimum` is false the action will fail
+
+#### vaildBranchVersionMaximum
+type: boolean
+default: false
+
+If true and `vaildBranchVersionMaximum` is false the action will fail
+
 
 <br/>
 
@@ -201,20 +151,33 @@ Creates a new pull request between the source and target baranches.
 If there is already a pull request btween those branches or `validCanCreate` is false, then no pr is created.
 
 #### createTags
-type: 'none' | 'named' | 'compnents' | 'all'
+type: "version" | "latest" | "next" | "pre-release" | "latest-major" | "latest-minor" | "all" | "named" | "versions" | "version-components"
 
-What tags to create. If they exist they are removed and re-added at the current commit
+Create tags by category. Each tag has its own rules that determine weather it is applied to the current commit or not as outlined below. If a tag exists it is removed and re-added at the current commit.
 
-| value | tag applied | description |
-|-------|----------------|-------------|
-| none  | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Don't create any tags |
-| all | | Applies both 'named' and 'components' |
-| named | latest         | When `targetVersion` is the highest non preprelease version |
-|       | next           | When `targetVersion` is the highest version |
-|       | {prerelease} | When `targetVersion` has a prerelease compnent. eg. 'beta' or 'rc' |
-| components | v{major} | When `targetVersion` is a not a prerelease and it is the highest version with a matching major component. |
-|            | v{major}.{minor} | When `targetVersion` is a not a prerelease and it is the highest version with matching major & minor components |
 
+##### Aliases
+
+Aliases are shortcuts to include multiple tags
+
+| Alias | Tags |
+|-|-|
+| all | adds all tags |
+| named | 'latest', 'next', 'pre-release' |
+| versions | 'version', 'latest-major', 'latest-minor' |
+| version-components | 'latest-major', 'latest-minor' |
+
+##### Tags
+
+| Value | Example Tag(s) | Applied When |
+|-|-|-|
+| version | v1.0.0<br/>v1.2.0-beta.3 | Always. Will Error if `v{targetVersion}` exists as a tag |        
+| latest | latest | `targetVersion` is the highest non preprelease version in `existingVersions` |
+| next | next | `targetVersion` is the highest version in `existingVersions` |
+| pre-release | dev<br>alpha<br>beta<br>rc | `targetVersion` has a pre-release compnent and is the highest version in `existingVersions` |
+| latest-major | v2 | `targetVersion` is a not a pre-release and it is the highest version in `existingVersions` with a matching major component |
+| latest-minor | v1.2 | `targetVersion` is a not a pre-release and it is the highest version in `existingVersions` with matching major & minor components |
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;||
 
 # Outputs
 The outputs of this action are catagorized into the following scopes:
