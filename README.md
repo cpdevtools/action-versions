@@ -154,12 +154,10 @@ All other branches are neither source nor target branches. In this case the sour
 ```
 
 
-
-
 # Output
 The outputs of this action are catagorized into the following scopes:
 
-### General
+## General
 `branch`: string - the name of the current/head branch
 
 `isSource`: boolean - true if `branch` is a valid source branch
@@ -170,7 +168,7 @@ The outputs of this action are catagorized into the following scopes:
 
 `latestVersion`: string - the highest release version in  `existingVersions`
 
-### Soure branch
+## Soure branch
 `sourceVersion`: string - the current highest version tag within the source range
 
 `sourceMajor`: number - major component of `sourceVersion`
@@ -189,7 +187,7 @@ The outputs of this action are catagorized into the following scopes:
 
 `sourceIsStable`: boolean - the `sourceVersion` is a >= v1.0.0
 
-### Target branch
+## Target branch
 `targetVersion`: string - the version tag that is being targeted
 
 `targetMajor`: number - major component of `targetVersion`
@@ -220,7 +218,7 @@ The outputs of this action are catagorized into the following scopes:
 
 `isLatestMinor`: boolean - `targetVersion` is the highest release version with the same major & minor components
 
-### Validation
+## Validation
 
 `validCanCreate`: boolean - `targetVersion` meets all validation and is ready to be created. True if the current branch is a a source or target branch, the `targetVersion` does not yet exist, the `targetVersion` will be the highest version in the branch and `validBranchVersionMinimum` and `vaildBranchVersionMaximum` are true.
 
