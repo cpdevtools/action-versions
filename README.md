@@ -205,15 +205,15 @@ type: 'none' | 'named' | 'compnents' | 'all'
 
 What tags to create. If they exist they are removed and re-added at the current commit
 
-| value | tag(s) applied &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | description |
+| value | tag applied | description |
 |-------|----------------|-------------|
-| none  |                | Don't create any tags |
-| all | | Applies both 'named' and 'components' |        
+| none  | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Don't create any tags |
+| all | | Applies both 'named' and 'components' |
 | named | latest         | When `targetVersion` is the highest non preprelease version |
 |       | next           | When `targetVersion` is the highest version |
 |       | {prerelease} | When `targetVersion` has a prerelease compnent. eg. 'beta' or 'rc' |
 | components | v{major} | When `targetVersion` is a not a prerelease and it is the highest version with a matching major component. |
-|            | v{major}.{minor} | When `targetVersion` is a not a prerelease and it is the highest version with matching major & minor components
+|            | v{major}.{minor} | When `targetVersion` is a not a prerelease and it is the highest version with matching major & minor components |
 
 
 # Outputs
