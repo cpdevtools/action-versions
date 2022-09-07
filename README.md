@@ -153,6 +153,47 @@ All other branches are neither source nor target branches. In this case the sour
             createTags: none
 ```
 
+# Inputs
+The outputs of this action are catagorized into the following scopes:
+
+## Arguments
+
+| input | type | default | description |
+|-------| -----|---------|-------------|
+| versionFile | string | './package.json' | Path to a json file that contains the target verion. |
+| version | string |  | The target version.<br/> if `versionFile` is set this is used as a failover if the file is missing a version, Otherwide it ise used instead of loading from the default file. |
+| branch | string | the current/head branch name | The branch name |
+| existingVersions | Array<string> | All repository tags that are valid semver versions | The released versions. One per line |
+| githubToken | string | ${{ github.token }} | GitHub token used to authenticate the GitHub api |
+
+
+## Validation
+
+| input | type | default | description |
+|-------| -----|---------|-------------|
+| failInvalidCanCreate | boolean | false | If true and `validCanCreate` is false the action will fail |
+| failInvalidIsNewVersion | boolean | false | If true and `validIsNewVersion` is false the action will fail |
+| failInvalidIsHighestVersionInBranch | boolean | false | If true and `validIsHighestVersionInBranch` is false the action will fail |
+| failInvalidIsHighestVersion | boolean | false | If true and `validIsHighestVersion` is false the action will fail |
+| failInvalidBranchVersionMinimum | boolean | false | If true and `validBranchVersionMinimum` is false the action will fail |
+| failInvaildBranchVersionMaximum | boolean | false | If true and `vaildBranchVersionMaximum` is false the action will fail |
+
+
+## Actions
+
+| input | type | default | description |
+|-------| -----|---------|-------------|
+| autoCreatePullRequest | boolean | false | if true, the `validCanCreate` output propety is true, and there is no open pull request open between the source and target branches, then creat a new pull request.|
+| createTags | string | 'none' | Applys tags to the current commit provided there is no failure state |
+
+### Details
+
+#### <a name="input_autoCreatePullRequest">autoCreatePullRequest</a>
+type: boolean
+
+Creates a new pull request between the source and target baranches.
+If there is already a pull request btween those branches or `validCanCreate` is false, then no pr is created.
+
 
 # Outputs
 The outputs of this action are catagorized into the following scopes:
