@@ -4,6 +4,26 @@
 
 This action can be used to parse semversions either from input or from a specified file. The version is then compared to other versions in the repository. The action makes these properties available and provides the ability to tigger action failures, create release pull requests and tag releases
 
+
+# Definitions 
+
+## Source Branch
+The source branch is determind by the `branch` input property.
+By default the branch is the branch that triggered the workflow, or if the workflow trigger is a pull request, the `head` brach is used
+
+To be considered a vaild source branch the value must be in the form of `v/{major}[.{minor}]` or `v/latest`.  `main` and `master` branches  are equivilant to `v/latest`
+
+`v/latest` does not have a minimum or maximum range
+
+## Target Branch
+The Target branch is determind by the `branch` input property.
+The target branch is paied with the source branch. For example: 
+source branch `v/1.1` becomes target branch `release/1.1`. 
+source branch `main`(alias of `v/latest`) becomes target branch `release/latest`
+
+## Other branches
+All other branches are neither source nor target branches. In this case the source/target relative validations will not be calculated.
+
 # Usage
 ```yml
     - uses: actions/checkout@v3
@@ -124,26 +144,86 @@ This action can be used to parse semversions either from input or from a specifi
             createTags: none
 ```
 
+
+
+
 # Output
+The outputs of this action are catagorized into the following scopes:
 
-The outputs of this action are catagorized into the floowing scopes:
-
-## Source Branch
-The source branch is determind by the `branch` input property.
-By default the branch is the branch that triggered the workflow, or if the workflow trigger is a pull request, the `head` brach is used
-
-To be considered a vaild source branch the value must be in the form of `v/{major}[.{minor}]` or `v/latest`.  `main` and `master` branches  are equivilant to `v/latest`
-
-`v/latest` does not validate a maximum range
-
-### Soure branch outputs:
-
+### General
 `branch`: string - the name of the current/head branch
 
 `isSource`: boolean - true if `branch` is a valid source branch
 
+`isTarget`: boolean - true if `branch` is a valid target branch
+
+`highestVersion`: string - the highest version in `existingVersions`
+
+`latestVersion`: string - the highest release version in  `existingVersions`
+
+### Soure branch
 `sourceVersion`: string - the current highest version tag within the source range
 
+`sourceMajor`: number - major component of `sourceVersion`
+
+`sourceMinor`: number - mminor component of `sourceVersion`
+
+`sourcePatch`: number - patch component of `sourceVersion`
+
+`sourceBuild`: number[] - build components of `sourceVersion`
+
+`sourcePrerelease`: string - prerelease component of `sourceVersion`
+
+`sourcePrereleaseBuild`: number - prerelease build component of `sourceVersion`
+
+`sourceIsPrerelease`: boolean - the `sourceVersion` is a prerelease version 
+
+`sourceIsStable`: boolean - the `sourceVersion` is a >= v1.0.0
+
+### Target branch
+`targetVersion`: string - the version tag that is being targeted
+
+`targetMajor`: number - major component of `targetVersion`
+
+`targetMinor`: number - mminor component of `targetVersion`
+
+`targetPatch`: number - patch component of `targetVersion`
+
+`targetBuild`: number[] - build components of `targetVersion`
+
+`targetPrerelease`: string - prerelease component of `targetVersion`
+
+`targetPrereleaseBuild`: number - prerelease build component of `targetVersion`
+
+`targetIsPrerelease`: boolean - the `targetVersion` is a prerelease version 
+
+`targetIsStable`: boolean - the `targetVersion` is a >= v1.0.0
+
+`isHighestVersion`: boolean -  `targetVersion` is the highest version in the repository
+
+`isHighestMajor`: boolean -  `targetVersion` is the highest version with the same major component
+
+`isHighestMinor`: boolean - `targetVersion` is the highest version with the same major & minor components
+
+`isLatestVersion`: boolean - `targetVersion` is the highest release version in the repository
+
+`isLatestMajor`: boolean - `targetVersion` is the highest release version with the same major component
+
+`isLatestMinor`: boolean - `targetVersion` is the highest release version with the same major & minor components
+
+### Validation
+
+`validCanCreate`: boolean - `targetVersion` meets all validation and is ready to be created. True if the current branch is a a source or target branch, the `targetVersion` does not yet exist, the `targetVersion` will be the highest version in the branch and `validBranchVersionMinimum` and `vaildBranchVersionMaximum` are true.
+
+`validBranchVersionMinimum`: boolean - `targetVersion` meets the minimum for the release range. This is always true in 'latest' branches
+
+`vaildBranchVersionMaximum`: boolean - `targetVersion` meets the maximum for the release range. This is always true in 'latest' branches
+
+`validIsNewVersion`: boolean - `targetVersion` is a new version tag
+
+`validIsHighestVersionInBranch`: boolean - `targetVersion` will be the highest version in the release range
+
+`validIsHighestVersion`: boolean - `targetVersion` will be the highest version
 
 
-
+##  Examples
