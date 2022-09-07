@@ -5,7 +5,6 @@
 This action can be used to parse semversions either from input or from a specified file. The version is then compared to other versions in the repository. The action makes these properties available and provides the ability to tigger action failures, create release pull requests and tag releases
 
 
-# Definitions 
 
 ## Source Branch
 The source branch is determind by the `branch` input property.
@@ -20,6 +19,16 @@ The Target branch is determind by the `branch` input property.
 The target branch is paied with the source branch. For example: 
 source branch `v/1.1` becomes target branch `release/1.1`. 
 source branch `main`(alias of `v/latest`) becomes target branch `release/latest`
+
+## Example Source/Target Pairs 
+
+| source | target         | description                      |
+|--------|----------------|----------------------------------|
+| main   | release/latest | This is the main release flow.   |
+| v1     | release/1      | branch pair for v1.x.x releases. |
+| v2.1   | release/2.1    | branch pair for v2.1.x releases. |
+
+normaly a project can use only the `latest` pair, the version specific pairs are used to maintain legacy versions of the project (LTS versions for example).
 
 ## Other branches
 All other branches are neither source nor target branches. In this case the source/target relative validations will not be calculated.
