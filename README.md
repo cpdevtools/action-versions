@@ -158,22 +158,15 @@ All other branches are neither source nor target branches. In this case the sour
 The outputs of this action are catagorized into the following scopes:
 
 ## General
-
-### `branch` : string
-the name of the current/head branch
-
-### `isSource` : boolean
-`true` if `branch` is a valid source branch
-
-### `isTarget` : string
-`true` if `branch` is a valid target branch
-
-### `highestVersion` : boolean
-the highest version in `existingVersions`
-
-### `latestVersion` : string
-the highest release version in  `existingVersions`
  
+| output                  | type           | description                                             |
+|-------------------------|----------------|---------------------------------------------------------|
+| branch                  | string         | the name of the current/head branch                     |
+| isSource                | boolean        | `true` if `branch` is a valid source branch             |
+| isTarget                | boolean        | `true` if `branch` is a valid target branch             |
+| highestVersion          | string         | the highest version in `existingVersions`               |
+| latestVersion           | string         | the highest release version in  `existingVersions`      |
+
 
 ## Source
 
@@ -191,49 +184,35 @@ the highest release version in  `existingVersions`
 
 
 ## Target
-`targetVersion`: string - the version tag that is being targeted
 
-`targetMajor`: number - major component of `targetVersion`
-
-`targetMinor`: number - mminor component of `targetVersion`
-
-`targetPatch`: number - patch component of `targetVersion`
-
-`targetBuild`: number[] - build components of `targetVersion`
-
-`targetPrerelease`: string - prerelease component of `targetVersion`
-
-`targetPrereleaseBuild`: number - prerelease build component of `targetVersion`
-
-`targetIsPrerelease`: boolean - the `targetVersion` is a prerelease version 
-
-`targetIsStable`: boolean - the `targetVersion` is a >= v1.0.0
-
-`isHighestVersion`: boolean -  `targetVersion` is the highest version in the repository
-
-`isHighestMajor`: boolean -  `targetVersion` is the highest version with the same major component
-
-`isHighestMinor`: boolean - `targetVersion` is the highest version with the same major & minor components
-
-`isLatestVersion`: boolean - `targetVersion` is the highest release version in the repository
-
-`isLatestMajor`: boolean - `targetVersion` is the highest release version with the same major component
-
-`isLatestMinor`: boolean - `targetVersion` is the highest release version with the same major & minor components
+| output                  | type           | description                                                                           |
+|-------------------------|----------------|---------------------------------------------------------------------------------------|
+| targetVersion           | string         | the version tag that is being targeted                                                |
+| targetMajor             | number         | major component of `targetVersion`                                                    |
+| targetMinor             | number         | minor component of `targetVersion`                                                    |
+| targetPatch             | number         | patch component of `targetVersion`                                                    |
+| targetBuild             | Array<number>  | build components of `targetVersion`                                                   |
+| targetPrerelease        | string         | prerelease component of `targetVersion`                                               |
+| targetPrereleaseBuild   | number         | prerelease build component of `targetVersion`                                         |
+| targetIsPrerelease      | boolean        | the `targetVersion` is a prerelease version                                           |
+| targetIsStable          | boolean        | the `targetVersion` is a >= v1.0.0                                                    |
+| isHighestVersion        | boolean        | `targetVersion` is the highest version in the repository                              |
+| isHighestMajor          | boolean        | `targetVersion` is the highest version with the same major component                  |
+| isHighestMinor          | boolean        | `targetVersion` is the highest version with the same major & minor components         |
+| isLatestVersion         | boolean        | `targetVersion` is the highest release version in the repository                      |
+| isLatestMajor           | boolean        | `targetVersion` is the highest release version with the same major component          |
+| isLatestMinor           | boolean        | `targetVersion` is the highest release version with the same major & minor components |
 
 ## Validation
 
-`validCanCreate`: boolean - `targetVersion` meets all validation and is ready to be created. True if the current branch is a a source or target branch, the `targetVersion` does not yet exist, the `targetVersion` will be the highest version in the branch and `validBranchVersionMinimum` and `vaildBranchVersionMaximum` are true.
-
-`validBranchVersionMinimum`: boolean - `targetVersion` meets the minimum for the release range. This is always true in 'latest' branches
-
-`vaildBranchVersionMaximum`: boolean - `targetVersion` meets the maximum for the release range. This is always true in 'latest' branches
-
-`validIsNewVersion`: boolean - `targetVersion` is a new version tag
-
-`validIsHighestVersionInBranch`: boolean - `targetVersion` will be the highest version in the release range
-
-`validIsHighestVersion`: boolean - `targetVersion` will be the highest version
+| output                  | type           | description                                                                           |
+|-------------------------|----------------|---------------------------------------------------------------------------------------|
+| validCanCreate | boolean | `targetVersion` meets all validation and is ready to be created. True if the current branch is a a source or target branch, the `targetVersion` does not yet exist, the `targetVersion` will be the highest version in the branch and `validBranchVersionMinimum` and `vaildBranchVersionMaximum` are true. |
+| validBranchVersionMinimum | boolean | `targetVersion` meets the minimum for the release range. This is always true in 'latest' branches |
+| vaildBranchVersionMaximum | boolean | `targetVersion` meets the maximum for the release range. This is always true in 'latest' branches |
+| validIsNewVersion | boolean | `targetVersion` is a new version tag |
+| validIsHighestVersionInBranch | boolean | `targetVersion` will be the highest version in the release range |
+| validIsHighestVersion | boolean | `targetVersion` will be the highest version |
 
 
 #  Examples
