@@ -154,40 +154,43 @@ All other branches are neither source nor target branches. In this case the sour
 ```
 
 
-# Output
+# Outputs
 The outputs of this action are catagorized into the following scopes:
 
 ## General
-`branch`: string - the name of the current/head branch
 
-`isSource`: boolean - true if `branch` is a valid source branch
+### `branch` : string
+the name of the current/head branch
 
-`isTarget`: boolean - true if `branch` is a valid target branch
+### `isSource` : boolean
+`true` if `branch` is a valid source branch
 
-`highestVersion`: string - the highest version in `existingVersions`
+### `isTarget` : string
+`true` if `branch` is a valid target branch
 
-`latestVersion`: string - the highest release version in  `existingVersions`
+### `highestVersion` : boolean
+the highest version in `existingVersions`
 
-## Soure branch
-`sourceVersion`: string - the current highest version tag within the source range
+### `latestVersion` : string
+the highest release version in  `existingVersions`
+ 
 
-`sourceMajor`: number - major component of `sourceVersion`
+## Source
 
-`sourceMinor`: number - mminor component of `sourceVersion`
+| output                  | type           | description                                             |
+|-------------------------|----------------|---------------------------------------------------------|
+| sourceVersion           | string         | the current highest version tag within the source range |
+| sourceMajor             | number         | major component of `sourceVersion`                      |
+| sourceMinor             | number         | number - mminor component of `sourceVersion`            |
+| sourcePatch             | number         | patch component of `sourceVersion`                      |
+| sourceBuild             | Array<number>  | build components of `sourceVersion`                     |
+| sourcePrerelease        | string         | prerelease component of `sourceVersion`                 |
+| sourcePrereleaseBuild   | Array<number>  | prerelease build component of `sourceVersion`           |
+| sourceIsPrerelease      | boolean        | the `sourceVersion` is a prerelease version             |
+| sourceIsStable          | boolean        | the `sourceVersion` is a >= v1.0.0                      |
 
-`sourcePatch`: number - patch component of `sourceVersion`
 
-`sourceBuild`: number[] - build components of `sourceVersion`
-
-`sourcePrerelease`: string - prerelease component of `sourceVersion`
-
-`sourcePrereleaseBuild`: number - prerelease build component of `sourceVersion`
-
-`sourceIsPrerelease`: boolean - the `sourceVersion` is a prerelease version 
-
-`sourceIsStable`: boolean - the `sourceVersion` is a >= v1.0.0
-
-## Target branch
+## Target
 `targetVersion`: string - the version tag that is being targeted
 
 `targetMajor`: number - major component of `targetVersion`
