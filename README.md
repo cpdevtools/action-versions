@@ -190,7 +190,7 @@ The outputs of this action are catagorized into the following scopes:
 | input | type | default | description |
 |-------| -----|---------|-------------|
 | [autoCreatePullRequest](#autoCreatePullRequest) | boolean | false | if true, the `validCanCreate` output propety is true, and there is no open pull request open between the source and target branches, then creat a new pull request.|
-| createTags | string | 'none' | Applys tags to the current commit provided there is no failure state |
+| [createTags](#createTags) | 'none' \| 'named' \| 'compnents' \| 'all' | 'none' | Applys tags to the current commit provided there is no failure state |
 
 ### Details
 
@@ -199,6 +199,21 @@ type: boolean
 
 Creates a new pull request between the source and target baranches.
 If there is already a pull request btween those branches or `validCanCreate` is false, then no pr is created.
+
+#### createTags
+type: 'none' | 'named' | 'compnents' | 'all'
+
+What tags to create. If they exist they are removed and re-added at the current commit
+
+| value | tag(s) applied | description |
+|-------|----------------|-------------|
+| none  |                | Don't create any tags |
+| all | | Applies both 'named' and 'components' |        
+| named | latest         | the current commit will be tagged as 'latest' if it is the highest non preprelease version |
+|       | next           | the current commit will be tagged as 'next' if it is the highest version |
+|       | {prerelease} | the current commit will be tagged as '{prerelease}'. eg. 'beta' or 'rc' |
+| components | v{major} | When the version is a not a prerlease and it is the highest version with a matching major component. |
+|            | v{major}.{minor} | When the version is a not a prerlease and it is the highest version with matching major & minor components
 
 
 # Outputs
