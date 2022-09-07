@@ -178,7 +178,7 @@ The outputs of this action are catagorized into the following scopes:
 | failInvalidBranchVersionMinimum | boolean | false | If true and `validBranchVersionMinimum` is false the action will fail |
 | failInvaildBranchVersionMaximum | boolean | false | If true and `vaildBranchVersionMaximum` is false the action will fail |
 
-
+<br/>
 ## Actions
 
 | input | type | default | description |
