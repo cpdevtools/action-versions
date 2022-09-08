@@ -53,82 +53,82 @@ All other branches are neither source nor target branches. In this case the sour
 | [createTags](#createTags) | 'none' \| 'named' \| 'compnents' \| 'all' | 'none' | Applys tags to the current commit provided there is no failure state |
 
 
-## `versionFile`
-type: string
+## versionFile
+type: string<br>
 default: './package.json'
 
 Path to a json file that contains the target verion. If neither [versionFile](#versionFile) nor [version](#version) are set then the version is loaded from './package.json'
 If this argument is explicitly provided then [version](#version) functions as a fallback value
 
-## `version`
+## version
 type: string
 
 The version to use as the target version. If [versionFile](#versionFile) is also provided this functions as a fallback value.
 
-## `branch`
+## branch
 type: string
 
 The branch name. Defaults to the current branch or source branch if the workflow was triggered by a pull request.
 
 The brach name use used to determine the validation constraints
 
-## `existingVersions`
+## existingVersions
 type: Array<string>
 
 An array of released versions. One per line. By default this is a list of all the tag in the repository that are valid semver versions.
 
 This is used to determine the hightest, latest and existance to versions
 
-## `githubToken`
+## githubToken
 type: string
 default: ${{ github.token }}
 
 GitHub token used to authenticate the GitHub api
 
 
-## `failInvalidCanCreate`
+## failInvalidCanCreate
 type: boolean
 default: false
 
 If true and [validCanCreate](#validCanCreate) is false the action will fail
 
-## `failInvalidIsNewVersion`
+## failInvalidIsNewVersion
 type: boolean
 default: false
 
 If true and [validIsNewVersion](#validIsNewVersion) is false the action will fail
 
-## `failInvalidIsHighestVersionInBranch`
+## failInvalidIsHighestVersionInBranch
 type: boolean
 default: false
 
 If true and [validIsHighestVersionInBranch](#validIsHighestVersionInBranch) is false the action will fail
 
-## `failInvalidIsHighestVersion`
+## failInvalidIsHighestVersion
 type: boolean
 default: false
 
 If true and [validIsHighestVersion](#validIsHighestVersion) is false the action will fail
 
-## `validBranchVersionMinimum`
+## validBranchVersionMinimum
 type: boolean
 default: false
 
 If true and [validBranchVersionMinimum](#validBranchVersionMinimum) is false the action will fail
 
-## `vaildBranchVersionMaximum`
+## vaildBranchVersionMaximum
 type: boolean
 default: false
 
 If true and [vaildBranchVersionMaximum](#vaildBranchVersionMaximum) is false the action will fail
 
-## `autoCreatePullRequest`
+## autoCreatePullRequest
 type: boolean
 
 Creates a new pull request between the source and target baranches.
 If there is already a pull request btween those branches or [validCanCreate](#validCanCreate) is false, then no pr is created.
 
-## `createTags`
+## createTags
 type: "version" | "latest" | "next" | "pre-release" | "latest-major" | "latest-minor" | "all" | "named" | "versions" | "version-components"
 
 Create tags by category. Each tag has its own rules that determine weather it is applied to the current commit or not as outlined below. If a tag exists it is removed and re-added at the current commit.
