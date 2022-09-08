@@ -49,33 +49,33 @@ The outputs of this action are catagorized into the following scopes:
 
 ### Details
 
-#### versionFile
+#### `versionFile`
 type: string
 default: './package.json'
 
 Path to a json file that contains the target verion. If neither [versionFile](#versionFile) nor [version](#version) are set then the version is loaded from './package.json'
 If this argument is explicitly provided then [version](#version) functions as a fallback value
 
-#### version
+#### `version`
 type: string
 
 The version to use as the target version. If [versionFile](#versionFile) is also provided this functions as a fallback value.
 
-#### branch
+#### `branch`
 type: string
 
 The branch name. Defaults to the current branch or source branch if the workflow was triggered by a pull request.
 
 The brach name use used to determine the validation constraints
 
-#### existingVersions
+#### `existingVersions`
 type: Array<string>
 
 An array of released versions. One per line. By default this is a list of all the tag in the repository that are valid semver versions.
 
 This is used to determine the hightest, latest and existance to versions
 
-#### githubToken
+#### `githubToken`
 type: string
 default: ${{ github.token }}
 
@@ -96,37 +96,37 @@ GitHub token used to authenticate the GitHub api
 
 ### Details
 
-#### failInvalidCanCreate
+#### `failInvalidCanCreate`
 type: boolean
 default: false
 
 If true and [validCanCreate](#validCanCreate) is false the action will fail
 
-#### failInvalidIsNewVersion
+#### `failInvalidIsNewVersion`
 type: boolean
 default: false
 
 If true and [validIsNewVersion](#validIsNewVersion) is false the action will fail
 
-#### failInvalidIsHighestVersionInBranch
+#### `failInvalidIsHighestVersionInBranch`
 type: boolean
 default: false
 
 If true and [validIsHighestVersionInBranch](#validIsHighestVersionInBranch) is false the action will fail
 
-#### failInvalidIsHighestVersion
+#### `failInvalidIsHighestVersion`
 type: boolean
 default: false
 
 If true and [validIsHighestVersion](#validIsHighestVersion) is false the action will fail
 
-#### validBranchVersionMinimum
+#### `validBranchVersionMinimum`
 type: boolean
 default: false
 
 If true and [validBranchVersionMinimum](#validBranchVersionMinimum) is false the action will fail
 
-#### vaildBranchVersionMaximum
+#### `vaildBranchVersionMaximum`
 type: boolean
 default: false
 
@@ -144,19 +144,19 @@ If true and [vaildBranchVersionMaximum](#vaildBranchVersionMaximum) is false the
 
 ### Details
 
-#### autoCreatePullRequest
+#### `autoCreatePullRequest`
 type: boolean
 
 Creates a new pull request between the source and target baranches.
 If there is already a pull request btween those branches or [validCanCreate](#validCanCreate) is false, then no pr is created.
 
-#### createTags
+#### `createTags`
 type: "version" | "latest" | "next" | "pre-release" | "latest-major" | "latest-minor" | "all" | "named" | "versions" | "version-components"
 
 Create tags by category. Each tag has its own rules that determine weather it is applied to the current commit or not as outlined below. If a tag exists it is removed and re-added at the current commit.
 
 
-##### Aliases
+##### `Aliases`
 
 Aliases are shortcuts to include multiple tags
 
@@ -167,7 +167,7 @@ Aliases are shortcuts to include multiple tags
 | versions | 'version', 'latest-major', 'latest-minor' |
 | version-components | 'latest-major', 'latest-minor' |
 
-##### Tags
+##### `Tags`
 
 | Value | Example Tag(s) | Applied When |
 |-|-|-|
@@ -215,7 +215,7 @@ type: string
 the highest version in [existingVersions](#existingVersions)
 
 
-#### latestVersion
+#### `latestVersion`
 type: string
 
 the highest release version in [existingVersions](#existingVersions)
@@ -236,31 +236,31 @@ the highest release version in [existingVersions](#existingVersions)
 
 ### Details
 
-#### sourceVersion
+#### `sourceVersion`
 type: string
 
-#### sourceMajor
+#### `sourceMajor`
 type: number
 
-#### sourceMinor
+#### `sourceMinor`
 type: number
 
-#### sourcePatch
+#### `sourcePatch`
 type: number
 
-#### sourceBuild
+#### `sourceBuild`
 type: Array<number>
 
-#### sourcePrerelease
+#### `sourcePrerelease`
 type: string
 
-#### sourcePrereleaseBuild
+#### `sourcePrereleaseBuild`
 type: number
 
-#### sourceIsPrerelease
+#### `sourceIsPrerelease`
 type: boolean
 
-#### sourceIsStable
+#### `sourceIsStable`
 type: boolean
 
 
@@ -287,49 +287,49 @@ type: boolean
 
 ### Details
 
-#### targetVersion
+#### `targetVersion`
 type: string
 
-#### targetMajor
+#### `targetMajor`
 type: number
 
-#### targetMinor
+#### `targetMinor`
 type: number
 
-#### targetPatch
+#### `targetPatch`
 type: number
 
-#### targetBuild
+#### `targetBuild`
 type: Array<number>
 
-#### targetPrerelease
+#### `targetPrerelease`
 type: string
 
-#### targetPrereleaseBuild
+#### `targetPrereleaseBuild`
 type: number
 
-#### targetIsPrerelease
+#### `targetIsPrerelease`
 type: boolean
 
-#### targetIsStable
+#### `targetIsStable`
 type: boolean
 
-#### isHighestVersion
+#### `isHighestVersion`
 type: boolean
 
-#### isHighestMajor
+#### `isHighestMajor`
 type: boolean
 
-#### isHighestMinor
+#### `isHighestMinor`
 type: boolean
 
-#### isLatestVersion
+#### `isLatestVersion`
 type: boolean
 
-#### isLatestMajor
+#### `isLatestMajor`
 type: boolean
 
-#### isLatestMinor
+#### `isLatestMinor`
 type: boolean
 
 
@@ -346,22 +346,22 @@ type: boolean
 
 ### Details
 
-#### validCanCreate
+#### `validCanCreate`
 type: boolean
 
-#### validBranchVersionMinimum
+#### `validBranchVersionMinimum`
 type: boolean
 
-#### vaildBranchVersionMaximum
+#### `vaildBranchVersionMaximum`
 type: boolean
 
-#### validIsNewVersion
+#### `validIsNewVersion`
 type: boolean
 
-#### validIsHighestVersionInBranch
+#### `validIsHighestVersionInBranch`
 type: boolean
 
-#### validIsHighestVersion
+#### `validIsHighestVersion`
 type: boolean
 
 
