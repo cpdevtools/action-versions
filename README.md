@@ -68,9 +68,7 @@ The version to use as the target version. If [versionFile](#versionFile) is also
 ## branch
 type: string
 
-The branch name. Defaults to the current branch or source branch if the workflow was triggered by a pull request.
-
-The brach name use used to determine the validation constraints
+The branch name. Defaults to the current branch or source branch if the workflow was triggered by a pull request. The branch name is used to determine the validation constraints.
 
 ## existingVersions
 type: Array<string>
