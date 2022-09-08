@@ -80,44 +80,44 @@ An array of released versions. One per line. By default this is a list of all th
 This is used to determine the hightest, latest and existance to versions
 
 ## githubToken
-type: string
+type: string<br>
 default: ${{ github.token }}
 
 GitHub token used to authenticate the GitHub api
 
 
 ## failInvalidCanCreate
-type: boolean
+type: boolean<br>
 default: false
 
 If true and [validCanCreate](#validCanCreate) is false the action will fail
 
 ## failInvalidIsNewVersion
-type: boolean
+type: boolean<br>
 default: false
 
 If true and [validIsNewVersion](#validIsNewVersion) is false the action will fail
 
 ## failInvalidIsHighestVersionInBranch
-type: boolean
+type: boolean<br>
 default: false
 
 If true and [validIsHighestVersionInBranch](#validIsHighestVersionInBranch) is false the action will fail
 
 ## failInvalidIsHighestVersion
-type: boolean
+type: boolean<br>
 default: false
 
 If true and [validIsHighestVersion](#validIsHighestVersion) is false the action will fail
 
 ## validBranchVersionMinimum
-type: boolean
+type: boolean<br>
 default: false
 
 If true and [validBranchVersionMinimum](#validBranchVersionMinimum) is false the action will fail
 
 ## vaildBranchVersionMaximum
-type: boolean
+type: boolean<br>
 default: false
 
 If true and [vaildBranchVersionMaximum](#vaildBranchVersionMaximum) is false the action will fail
