@@ -187,27 +187,38 @@ The outputs of this action are catagorized into the following scopes:
 | output                  | type           | description  |
 |-------------------------|----------------|-----------------|
 | [branch](#output_branch)| string  | the name of the current/head branch |
-| [isSource](#isSource) | boolean | `true` if `branch` is a valid source branch |
-| [isTarget](#isTarget) | boolean | `true` if `branch` is a valid target branch |
+| [isSource](#isSource) | boolean | `true` if `branch` is a valid [source branch](#source-branch) |
+| [isTarget](#isTarget) | boolean | `true` if `branch` is a valid [target branch](#target-branch) |
 | [highestVersion](#highestVersion) | string | the highest version in [existingVersions](#existingVersions) |
 | [latestVersion](#latestVersion) | string | the highest release version in  [existingVersions](#existingVersions) |
 
 ### Details
 
-#### <a name="output_branch">branch</a>
+#### <a name="output_branch">`branch`</a>
 type: string
 
-#### isSource
+the name of the branch. This is the resolved value of the [branch](#output_branch) input
+
+#### `isSource`
 type: boolean
 
-#### isTarget
-type: boolean
-#### highestVersion
+whether or not the [branch](#output_branch) is a [source branch](#source-branch)
 
+#### `isTarget`
+type: boolean
+
+whether or not the [branch](#output_branch) is a [target branch](#target-branch)
+
+#### `highestVersion`
 type: string
+
+the highest version in [existingVersions](#existingVersions)
+
+
 #### latestVersion
 type: string
 
+the highest release version in [existingVersions](#existingVersions)
 
 ## Source
 
