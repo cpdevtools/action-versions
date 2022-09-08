@@ -156,7 +156,7 @@ type: "version" | "latest" | "next" | "pre-release" | "latest-major" | "latest-m
 Create tags by category. Each tag has its own rules that determine weather it is applied to the current commit or not as outlined below. If a tag exists it is removed and re-added at the current commit.
 
 
-##### `Aliases`
+##### Aliases
 
 Aliases are shortcuts to include multiple tags
 
@@ -167,7 +167,7 @@ Aliases are shortcuts to include multiple tags
 | versions | 'version', 'latest-major', 'latest-minor' |
 | version-components | 'latest-major', 'latest-minor' |
 
-##### `Tags`
+##### Tags
 
 | Value | Example Tag(s) | Applied When |
 |-|-|-|
