@@ -1,0 +1,25 @@
+##########################################################################
+#
+#   Checks that the version in package.json is new, 
+#    and it passes the validation
+#
+#   The workflow fails when the 'validCanCreate' output property is false 
+#
+##########################################################################
+
+name: Check pull request
+
+on:
+  pull_request:
+     branches:
+      - "release/*"
+
+jobs:
+  check_version_valid_and_new:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Check Version
+        uses: cpdevtools/action-versions@latest
+        with:
+          failInvalidCanCreate: true

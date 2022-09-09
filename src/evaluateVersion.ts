@@ -51,7 +51,7 @@ export function evaluateVersion(targetVersion: semver.SemVer, existingVersions: 
     const branchVersionHighest = branchVersions[0] ?? new semver.SemVer('0.0.0');
     const branchHighest = branchVersionHighest.version;
 
-    let validBranchVersionMinimum = compareVersions(targetVersion, brachVersionMin) >= 0;
+    let validBranchVersionMinimum = isLatestBranch || compareVersions(targetVersion, brachVersionMin) >= 0;
     let vaildBranchVersionMaximum = isLatestBranch || !validBranchVersionMinimum;
     if (!vaildBranchVersionMaximum) {
         vaildBranchVersionMaximum = true;

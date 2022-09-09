@@ -23,7 +23,7 @@ inputs:
     required: false
 
   autoCreatePullRequest:
-    description: if set to true and isNewValidVersion is true ang there is not pullRequest yet, create it
+    description: if set to true and validCanCreate is true ang there is no pullRequest yet, create it
     default: "false"
     required: false
 
@@ -56,10 +56,8 @@ inputs:
     default: "false"
     required: false
 
-  
   createTags:
-    description: "'none' | 'named' | 'components' | 'all'"
-    default: "none"
+    description: '"version" | "latest" | "next" | "pre-release" | "latest-major" | "latest-minor" | "all" | "named" | "versions" | "version-components"'
     required: false
 
 outputs:
