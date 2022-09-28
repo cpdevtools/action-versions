@@ -5,6 +5,7 @@
   "main": "dist/index.js",
   "repository": "git+https://github.com/cpdevtools/action-versions",
   "scripts": {
+    "prepare": "git tag | xargs git tag -d",
     "build": "ncc build src/index.ts"
   },
   "keywords": [],
