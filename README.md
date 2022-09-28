@@ -49,6 +49,7 @@ All other branches are neither source nor target branches. In this case the sour
 | [failInvalidBranchVersionMinimum](#failInvalidBranchVersionMinimum) | boolean | false | If true and [validBranchVersionMinimum](#validBranchVersionMinimum) is false the action will fail |
 | [failInvaildBranchVersionMaximum](#failInvaildBranchVersionMaximum) | boolean | false | If true and [vaildBranchVersionMaximum](#vaildBranchVersionMaximum) is false the action will fail |
 | [autoCreatePullRequest](#autoCreatePullRequest) | boolean | false | if true, the [validCanCreate](#validCanCreate) output propety is true, and there is no open pull request open between the source and target branches, then creat a new pull request.|
+| [draftPullRequest](#draftPullRequest) | boolean | false | if set to true pull requests will be  created as draft (no available in free private repos)|
 | [createTags](#createTags) | 'none' \| 'named' \| 'compnents' \| 'all' | 'none' | Applys tags to the current commit provided there is no failure state |
 |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;||
 
@@ -124,6 +125,11 @@ type: boolean
 
 Creates a new pull request between the source and target baranches.
 If there is already a pull request btween those branches or [validCanCreate](#validCanCreate) is false, then no pr is created.
+
+## draftPullRequest
+type: boolean
+
+if set to true pull requests will be  created as draft (no available in free private repos)
 
 ## createTags
 type: "version" | "latest" | "next" | "pre-release" | "latest-major" | "latest-minor" | "all" | "named" | "versions" | "version-components"

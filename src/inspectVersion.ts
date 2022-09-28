@@ -14,6 +14,7 @@ export async function inspectVersion() {
     const existingVersionsInput = getMultilineInput('existingVersions', { trimWhitespace: true });
     const githubTokenInput = getInput('githubToken', { trimWhitespace: true });
     const autoCreatePullRequestInput = getBooleanInput('autoCreatePullRequest');
+    const draftPullRequestInput = getBooleanInput('draftPullRequest');
 
 //    const git = simpleGit('.');
     const pr = context.payload.pull_request as any;
@@ -38,9 +39,9 @@ export async function inspectVersion() {
 
     const octokit = new Octokit({ auth: githubTokenInput });
 
-    let existingVerStrings = existingVersionsInput.length 
-        ? existingVersionsInput 
-        : (await octokit.repos.listTags({   
+    let existingVerStrings = existingVersionsInput.length
+        ? existingVersionsInput
+        : (await octokit.repos.listTags({
             owner: context.repo.owner,
             repo: context.repo.repo
         })).data.map(t => t.name);
@@ -49,7 +50,7 @@ export async function inspectVersion() {
         .map(i => semver.parse(i))
         .filter(i => !!i) as semver.SemVer[];
 
-    
+
 
     const data = evaluateVersion(ver!, existingVersions, branch);
     let pullRequest: number | undefined;
@@ -76,7 +77,7 @@ export async function inspectVersion() {
                 repo: context.repo.repo,
                 base: `release/${baseTag}`,
                 head: data.branch,
-                draft: true,
+                draft: draftPullRequestInput,
                 title: `v${ver?.version}`,
                 body: `Generated New Version. ${data.sourceVersion} -> ${data.targetVersion}`,
             });
