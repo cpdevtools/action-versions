@@ -15127,6 +15127,7 @@ async function inspectVersion() {
     const existingVersionsInput = (0, core_1.getMultilineInput)('existingVersions', { trimWhitespace: true });
     const githubTokenInput = (0, core_1.getInput)('githubToken', { trimWhitespace: true });
     const autoCreatePullRequestInput = (0, core_1.getBooleanInput)('autoCreatePullRequest');
+    const draftPullRequestInput = (0, core_1.getBooleanInput)('draftPullRequest');
     //    const git = simpleGit('.');
     const pr = github_1.context.payload.pull_request;
     const sourceRef = github_1.context.eventName === 'pull_request' ? pr.head.ref : github_1.context.ref;
@@ -15179,7 +15180,7 @@ async function inspectVersion() {
                 repo: github_1.context.repo.repo,
                 base: `release/${baseTag}`,
                 head: data.branch,
-                draft: true,
+                draft: draftPullRequestInput,
                 title: `v${ver?.version}`,
                 body: `Generated New Version. ${data.sourceVersion} -> ${data.targetVersion}`,
             });
@@ -15451,38 +15452,70 @@ function applyFailed(validationProp, data) {
         await applyTags(out);
     }
 })();
+const Tags = [
+    'version',
+    'latest',
+    'next',
+    'pre-release',
+    'latest-major',
+    'latest-minor',
+];
+const TagAliases = {
+    all: Tags,
+    named: ['latest', 'next', 'pre-release'],
+    versions: ['version', 'latest-major', 'latest-minor'],
+    'version-components': ['latest-major', 'latest-minor']
+};
 async function applyTags(versionStatus) {
-    const createTags = (0, core_1.getInput)('createTags', { trimWhitespace: true });
     const githubTokenInput = (0, core_1.getInput)('githubToken', { trimWhitespace: true });
     const octokit = new rest_1.Octokit({ auth: githubTokenInput });
-    if (createTags === 'all' || createTags === 'named') {
-        if (versionStatus.isHighestVersion) {
-            await applyTag(octokit, 'next');
-        }
-        if (versionStatus.isLatestVersion) {
-            await applyTag(octokit, 'latest');
-        }
-        if (versionStatus.targetIsPrerelease) {
-            await applyTag(octokit, versionStatus.targetPrerelease);
-        }
+    const createTags = Array.from(new Set((0, core_1.getMultilineInput)('createTags', { trimWhitespace: true })
+        .map(tag => TagAliases[tag] ?? tag)
+        .flat()
+        .filter(tag => Tags.includes(tag))));
+    if (createTags.includes('version')) {
+        await applyTag(octokit, `v${versionStatus.targetVersion}`, true);
     }
-    if (createTags === 'all' || createTags === 'components') {
-        if (versionStatus.isLatestMajor) {
-            await applyTag(octokit, `v${versionStatus.targetMajor}`);
-        }
-        if (versionStatus.isLatestMinor) {
-            await applyTag(octokit, `v${versionStatus.targetMajor}.${versionStatus.targetMinor}`);
-        }
+    if (createTags.includes('latest') && versionStatus.isLatestVersion) {
+        await applyTag(octokit, 'latest');
+    }
+    if (createTags.includes('next') && versionStatus.isHighestVersion) {
+        await applyTag(octokit, 'next');
+    }
+    if (createTags.includes('pre-release') && versionStatus.isHighestVersion) {
+        await applyTag(octokit, versionStatus.targetPrerelease);
+    }
+    if (createTags.includes('latest-major') && versionStatus.isLatestMajor) {
+        await applyTag(octokit, `v${versionStatus.targetMajor}`);
+    }
+    if (createTags.includes('latest-minor') && versionStatus.isLatestMinor) {
+        await applyTag(octokit, `v${versionStatus.targetMajor}.${versionStatus.targetMinor}`);
     }
 }
-async function applyTag(github, tag) {
+async function applyTag(github, tag, throwIfExists) {
+    if (throwIfExists) {
+        let exists = false;
+        try {
+            await github.git.getRef({
+                owner: github_1.context.repo.owner,
+                repo: github_1.context.repo.repo,
+                ref: "tags/" + tag
+            });
+            exists = true;
+        }
+        catch { }
+        if (exists) {
+            throw new Error(`Tag '${tag}' already exists.`);
+        }
+    }
+    let removed = false;
     try {
         await github.git.deleteRef({
             owner: github_1.context.repo.owner,
             repo: github_1.context.repo.repo,
             ref: "tags/" + tag
         });
-        console.info(`removed tag '${tag}'`);
+        removed = true;
     }
     catch { }
     await github.git.createRef({
@@ -15491,7 +15524,12 @@ async function applyTag(github, tag) {
         ref: "refs/tags/" + tag,
         sha: github_1.context.sha
     });
-    console.info(`added tag '${tag}' @ ${github_1.context.sha}`);
+    if (removed) {
+        console.info(`Moved tag '${tag}' to ${github_1.context.sha}`);
+    }
+    else {
+        console.info(`Added tag '${tag}' at ${github_1.context.sha}`);
+    }
 }
 
 })();
