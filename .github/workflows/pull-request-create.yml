@@ -14,7 +14,7 @@ jobs:
       buildMatches: ${{ steps.build.outputs.match }}
     steps:
       - uses: actions/checkout@v3
-    
+
       - uses: pnpm/action-setup@v2.2.2
         with:
           version: 7.6.0
@@ -27,9 +27,9 @@ jobs:
           cache-dependency-path: pnpm-lock.yaml
 
       - name: Install Dependencies
-        run: pnpm install --frozen-lockfile --ignore-scripts 
+        run: pnpm install --frozen-lockfile --ignore-scripts
 
-      - name: Build 
+      - name: Build
         run: pnpm run build
 
       - name: Compare the expected and actual dist directories
@@ -49,8 +49,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-  
-      - name: Auto Create 
+
+      - name: Auto Create
         uses: cpdevtools/action-versions@latest
         with:
           autoCreatePullRequest: true
