@@ -5,6 +5,7 @@ inputs:
   versionFile:
     description: Path to a json file that contains the target verion
     required: false
+
   version:
     description: The target version
     required: false
@@ -24,6 +25,11 @@ inputs:
 
   autoCreatePullRequest:
     description: if set to true and validCanCreate is true ang there is no pullRequest yet, create it
+    default: "false"
+    required: false
+
+  draftPullRequest:
+    description: if set to true pull requests will be  created as draft (no available in free private repos)
     default: "false"
     required: false
 
@@ -111,23 +117,23 @@ outputs:
   targetIsStable:
     description: targetVersion does not have a prerelease component and is 1.0 or greater
 
-  highestVersion: 
+  highestVersion:
     description: the highest version in the repository
-  latestVersion: 
+  latestVersion:
     description: the highest release version in the repository
 
-  isHighestVersion: 
+  isHighestVersion:
     description: targetVersion is the highest version in the repository
-  isLatestVersion: 
+  isLatestVersion:
     description: targetVersion is the highest release version in the repository
- 
-  isHighestMajor:   
+
+  isHighestMajor:
     description: targetVersion is the highest version with the same major component
-  isHighestMinor:   
+  isHighestMinor:
     description: targetVersion is the highest version with the same major & minor components
-  isLatestMajor:   
+  isLatestMajor:
     description: targetVersion is the highest release version with the same major component
-  isLatestMinor:   
+  isLatestMinor:
     description: targetVersion is the highest release version with the same major & minor components
 
   validCanCreate:
