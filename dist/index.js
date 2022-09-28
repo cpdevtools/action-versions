@@ -15474,7 +15474,7 @@ async function applyTags(versionStatus) {
         .flat()
         .filter(tag => Tags.includes(tag))));
     if (createTags.includes('version')) {
-        await applyTag(octokit, `v${versionStatus.targetVersion}`, true);
+        await applyTag(octokit, `v${versionStatus.targetVersion}`);
     }
     if (createTags.includes('latest') && versionStatus.isLatestVersion) {
         await applyTag(octokit, 'latest');
