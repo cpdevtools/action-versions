@@ -1,7 +1,7 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 1346:
+/***/ 410:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -28,7 +28,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.issue = exports.issueCommand = void 0;
 const os = __importStar(__nccwpck_require__(2037));
-const utils_1 = __nccwpck_require__(9754);
+const utils_1 = __nccwpck_require__(8900);
 /**
  * Commands
  *
@@ -100,7 +100,7 @@ function escapeProperty(s) {
 
 /***/ }),
 
-/***/ 5681:
+/***/ 7954:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -135,13 +135,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getIDToken = exports.getState = exports.saveState = exports.group = exports.endGroup = exports.startGroup = exports.info = exports.notice = exports.warning = exports.error = exports.debug = exports.isDebug = exports.setFailed = exports.setCommandEcho = exports.setOutput = exports.getBooleanInput = exports.getMultilineInput = exports.getInput = exports.addPath = exports.setSecret = exports.exportVariable = exports.ExitCode = void 0;
-const command_1 = __nccwpck_require__(1346);
-const file_command_1 = __nccwpck_require__(1753);
-const utils_1 = __nccwpck_require__(9754);
+const command_1 = __nccwpck_require__(410);
+const file_command_1 = __nccwpck_require__(980);
+const utils_1 = __nccwpck_require__(8900);
 const os = __importStar(__nccwpck_require__(2037));
 const path = __importStar(__nccwpck_require__(1017));
-const uuid_1 = __nccwpck_require__(7066);
-const oidc_utils_1 = __nccwpck_require__(4892);
+const oidc_utils_1 = __nccwpck_require__(8776);
 /**
  * The code to exit an action
  */
@@ -170,20 +169,9 @@ function exportVariable(name, val) {
     process.env[name] = convertedVal;
     const filePath = process.env['GITHUB_ENV'] || '';
     if (filePath) {
-        const delimiter = `ghadelimiter_${uuid_1.v4()}`;
-        // These should realistically never happen, but just in case someone finds a way to exploit uuid generation let's not allow keys or values that contain the delimiter.
-        if (name.includes(delimiter)) {
-            throw new Error(`Unexpected input: name should not contain the delimiter "${delimiter}"`);
-        }
-        if (convertedVal.includes(delimiter)) {
-            throw new Error(`Unexpected input: value should not contain the delimiter "${delimiter}"`);
-        }
-        const commandValue = `${name}<<${delimiter}${os.EOL}${convertedVal}${os.EOL}${delimiter}`;
-        file_command_1.issueCommand('ENV', commandValue);
+        return file_command_1.issueFileCommand('ENV', file_command_1.prepareKeyValueMessage(name, val));
     }
-    else {
-        command_1.issueCommand('set-env', { name }, convertedVal);
-    }
+    command_1.issueCommand('set-env', { name }, convertedVal);
 }
 exports.exportVariable = exportVariable;
 /**
@@ -201,7 +189,7 @@ exports.setSecret = setSecret;
 function addPath(inputPath) {
     const filePath = process.env['GITHUB_PATH'] || '';
     if (filePath) {
-        file_command_1.issueCommand('PATH', inputPath);
+        file_command_1.issueFileCommand('PATH', inputPath);
     }
     else {
         command_1.issueCommand('add-path', {}, inputPath);
@@ -241,7 +229,10 @@ function getMultilineInput(name, options) {
     const inputs = getInput(name, options)
         .split('\n')
         .filter(x => x !== '');
-    return inputs;
+    if (options && options.trimWhitespace === false) {
+        return inputs;
+    }
+    return inputs.map(input => input.trim());
 }
 exports.getMultilineInput = getMultilineInput;
 /**
@@ -274,8 +265,12 @@ exports.getBooleanInput = getBooleanInput;
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function setOutput(name, value) {
+    const filePath = process.env['GITHUB_OUTPUT'] || '';
+    if (filePath) {
+        return file_command_1.issueFileCommand('OUTPUT', file_command_1.prepareKeyValueMessage(name, value));
+    }
     process.stdout.write(os.EOL);
-    command_1.issueCommand('set-output', { name }, value);
+    command_1.issueCommand('set-output', { name }, utils_1.toCommandValue(value));
 }
 exports.setOutput = setOutput;
 /**
@@ -404,7 +399,11 @@ exports.group = group;
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function saveState(name, value) {
-    command_1.issueCommand('save-state', { name }, value);
+    const filePath = process.env['GITHUB_STATE'] || '';
+    if (filePath) {
+        return file_command_1.issueFileCommand('STATE', file_command_1.prepareKeyValueMessage(name, value));
+    }
+    command_1.issueCommand('save-state', { name }, utils_1.toCommandValue(value));
 }
 exports.saveState = saveState;
 /**
@@ -426,17 +425,17 @@ exports.getIDToken = getIDToken;
 /**
  * Summary exports
  */
-var summary_1 = __nccwpck_require__(5957);
+var summary_1 = __nccwpck_require__(8265);
 Object.defineProperty(exports, "summary", ({ enumerable: true, get: function () { return summary_1.summary; } }));
 /**
  * @deprecated use core.summary
  */
-var summary_2 = __nccwpck_require__(5957);
+var summary_2 = __nccwpck_require__(8265);
 Object.defineProperty(exports, "markdownSummary", ({ enumerable: true, get: function () { return summary_2.markdownSummary; } }));
 /**
  * Path exports
  */
-var path_utils_1 = __nccwpck_require__(891);
+var path_utils_1 = __nccwpck_require__(6370);
 Object.defineProperty(exports, "toPosixPath", ({ enumerable: true, get: function () { return path_utils_1.toPosixPath; } }));
 Object.defineProperty(exports, "toWin32Path", ({ enumerable: true, get: function () { return path_utils_1.toWin32Path; } }));
 Object.defineProperty(exports, "toPlatformPath", ({ enumerable: true, get: function () { return path_utils_1.toPlatformPath; } }));
@@ -444,7 +443,7 @@ Object.defineProperty(exports, "toPlatformPath", ({ enumerable: true, get: funct
 
 /***/ }),
 
-/***/ 1753:
+/***/ 980:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -470,13 +469,14 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.issueCommand = void 0;
+exports.prepareKeyValueMessage = exports.issueFileCommand = void 0;
 // We use any as a valid input type
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const fs = __importStar(__nccwpck_require__(7147));
 const os = __importStar(__nccwpck_require__(2037));
-const utils_1 = __nccwpck_require__(9754);
-function issueCommand(command, message) {
+const uuid_1 = __nccwpck_require__(7066);
+const utils_1 = __nccwpck_require__(8900);
+function issueFileCommand(command, message) {
     const filePath = process.env[`GITHUB_${command}`];
     if (!filePath) {
         throw new Error(`Unable to find environment variable for file command ${command}`);
@@ -488,12 +488,27 @@ function issueCommand(command, message) {
         encoding: 'utf8'
     });
 }
-exports.issueCommand = issueCommand;
+exports.issueFileCommand = issueFileCommand;
+function prepareKeyValueMessage(key, value) {
+    const delimiter = `ghadelimiter_${uuid_1.v4()}`;
+    const convertedValue = utils_1.toCommandValue(value);
+    // These should realistically never happen, but just in case someone finds a
+    // way to exploit uuid generation let's not allow keys or values that contain
+    // the delimiter.
+    if (key.includes(delimiter)) {
+        throw new Error(`Unexpected input: name should not contain the delimiter "${delimiter}"`);
+    }
+    if (convertedValue.includes(delimiter)) {
+        throw new Error(`Unexpected input: value should not contain the delimiter "${delimiter}"`);
+    }
+    return `${key}<<${delimiter}${os.EOL}${convertedValue}${os.EOL}${delimiter}`;
+}
+exports.prepareKeyValueMessage = prepareKeyValueMessage;
 //# sourceMappingURL=file-command.js.map
 
 /***/ }),
 
-/***/ 4892:
+/***/ 8776:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -511,7 +526,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.OidcClient = void 0;
 const http_client_1 = __nccwpck_require__(9706);
 const auth_1 = __nccwpck_require__(8336);
-const core_1 = __nccwpck_require__(5681);
+const core_1 = __nccwpck_require__(7954);
 class OidcClient {
     static createHttpClient(allowRetry = true, maxRetry = 10) {
         const requestOptions = {
@@ -577,7 +592,7 @@ exports.OidcClient = OidcClient;
 
 /***/ }),
 
-/***/ 891:
+/***/ 6370:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -642,7 +657,7 @@ exports.toPlatformPath = toPlatformPath;
 
 /***/ }),
 
-/***/ 5957:
+/***/ 8265:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -932,7 +947,7 @@ exports.summary = _summary;
 
 /***/ }),
 
-/***/ 9754:
+/***/ 8900:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -979,7 +994,7 @@ exports.toCommandProperties = toCommandProperties;
 
 /***/ }),
 
-/***/ 5908:
+/***/ 9194:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
@@ -1040,7 +1055,7 @@ exports.Context = Context;
 
 /***/ }),
 
-/***/ 1340:
+/***/ 9939:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -1066,8 +1081,8 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getOctokit = exports.context = void 0;
-const Context = __importStar(__nccwpck_require__(5908));
-const utils_1 = __nccwpck_require__(4778);
+const Context = __importStar(__nccwpck_require__(9194));
+const utils_1 = __nccwpck_require__(9635);
 exports.context = new Context.Context();
 /**
  * Returns a hydrated octokit ready to use for GitHub Actions
@@ -1075,15 +1090,16 @@ exports.context = new Context.Context();
  * @param     token    the repo PAT or GITHUB_TOKEN
  * @param     options  other options to set
  */
-function getOctokit(token, options) {
-    return new utils_1.GitHub(utils_1.getOctokitOptions(token, options));
+function getOctokit(token, options, ...additionalPlugins) {
+    const GitHubWithPlugins = utils_1.GitHub.plugin(...additionalPlugins);
+    return new GitHubWithPlugins(utils_1.getOctokitOptions(token, options));
 }
 exports.getOctokit = getOctokit;
 //# sourceMappingURL=github.js.map
 
 /***/ }),
 
-/***/ 4716:
+/***/ 5442:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -1133,7 +1149,7 @@ exports.getApiBaseUrl = getApiBaseUrl;
 
 /***/ }),
 
-/***/ 4778:
+/***/ 9635:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -1158,22 +1174,22 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getOctokitOptions = exports.GitHub = exports.context = void 0;
-const Context = __importStar(__nccwpck_require__(5908));
-const Utils = __importStar(__nccwpck_require__(4716));
+exports.getOctokitOptions = exports.GitHub = exports.defaults = exports.context = void 0;
+const Context = __importStar(__nccwpck_require__(9194));
+const Utils = __importStar(__nccwpck_require__(5442));
 // octokit + plugins
 const core_1 = __nccwpck_require__(3520);
 const plugin_rest_endpoint_methods_1 = __nccwpck_require__(5628);
 const plugin_paginate_rest_1 = __nccwpck_require__(8810);
 exports.context = new Context.Context();
 const baseUrl = Utils.getApiBaseUrl();
-const defaults = {
+exports.defaults = {
     baseUrl,
     request: {
         agent: Utils.getProxyAgent(baseUrl)
     }
 };
-exports.GitHub = core_1.Octokit.plugin(plugin_rest_endpoint_methods_1.restEndpointMethods, plugin_paginate_rest_1.paginateRest).defaults(defaults);
+exports.GitHub = core_1.Octokit.plugin(plugin_rest_endpoint_methods_1.restEndpointMethods, plugin_paginate_rest_1.paginateRest).defaults(exports.defaults);
 /**
  * Convience function to correctly format Octokit Options to pass into the constructor.
  *
@@ -2025,7 +2041,7 @@ exports.createTokenAuth = createTokenAuth;
 
 /***/ }),
 
-/***/ 6618:
+/***/ 5731:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -2272,7 +2288,7 @@ exports.Octokit = Octokit;
 
 /***/ }),
 
-/***/ 2747:
+/***/ 5333:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
@@ -2284,9 +2300,9 @@ var universalUserAgent = __nccwpck_require__(7571);
 var beforeAfterHook = __nccwpck_require__(9081);
 var request = __nccwpck_require__(9396);
 var graphql = __nccwpck_require__(7957);
-var authToken = __nccwpck_require__(6618);
+var authToken = __nccwpck_require__(5731);
 
-const VERSION = "4.0.5";
+const VERSION = "4.1.0";
 
 class Octokit {
   constructor(options = {}) {
@@ -3679,7 +3695,7 @@ exports.paginatingEndpoints = paginatingEndpoints;
 
 /***/ }),
 
-/***/ 8355:
+/***/ 3771:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -3687,7 +3703,7 @@ exports.paginatingEndpoints = paginatingEndpoints;
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 
-const VERSION = "4.2.0";
+const VERSION = "5.0.1";
 
 /**
  * Some “list” response that can be paginated have a different response structure
@@ -3708,15 +3724,15 @@ const VERSION = "4.2.0";
 function normalizePaginatedListResponse(response) {
   // endpoints can respond with 204 if repository is empty
   if (!response.data) {
-    return { ...response,
+    return {
+      ...response,
       data: []
     };
   }
-
   const responseNeedsNormalization = "total_count" in response.data && !("url" in response.data);
-  if (!responseNeedsNormalization) return response; // keep the additional properties intact as there is currently no other way
+  if (!responseNeedsNormalization) return response;
+  // keep the additional properties intact as there is currently no other way
   // to retrieve the same information.
-
   const incompleteResults = response.data.incomplete_results;
   const repositorySelection = response.data.repository_selection;
   const totalCount = response.data.total_count;
@@ -3726,15 +3742,12 @@ function normalizePaginatedListResponse(response) {
   const namespaceKey = Object.keys(response.data)[0];
   const data = response.data[namespaceKey];
   response.data = data;
-
   if (typeof incompleteResults !== "undefined") {
     response.data.incomplete_results = incompleteResults;
   }
-
   if (typeof repositorySelection !== "undefined") {
     response.data.repository_selection = repositorySelection;
   }
-
   response.data.total_count = totalCount;
   return response;
 }
@@ -3751,17 +3764,16 @@ function iterator(octokit, route, parameters) {
         if (!url) return {
           done: true
         };
-
         try {
           const response = await requestMethod({
             method,
             url,
             headers
           });
-          const normalizedResponse = normalizePaginatedListResponse(response); // `response.headers.link` format:
+          const normalizedResponse = normalizePaginatedListResponse(response);
+          // `response.headers.link` format:
           // '<https://api.github.com/users/aseemk/followers?page=2>; rel="next", <https://api.github.com/users/aseemk/followers?page=2>; rel="last"'
           // sets `url` to undefined if "next" URL is not present or `link` header is not set
-
           url = ((normalizedResponse.headers.link || "").match(/<([^>]+)>;\s*rel="next"/) || [])[1];
           return {
             value: normalizedResponse
@@ -3778,7 +3790,6 @@ function iterator(octokit, route, parameters) {
           };
         }
       }
-
     })
   };
 }
@@ -3788,28 +3799,21 @@ function paginate(octokit, route, parameters, mapFn) {
     mapFn = parameters;
     parameters = undefined;
   }
-
   return gather(octokit, [], iterator(octokit, route, parameters)[Symbol.asyncIterator](), mapFn);
 }
-
 function gather(octokit, results, iterator, mapFn) {
   return iterator.next().then(result => {
     if (result.done) {
       return results;
     }
-
     let earlyExit = false;
-
     function done() {
       earlyExit = true;
     }
-
     results = results.concat(mapFn ? mapFn(result.value, done) : result.value.data);
-
     if (earlyExit) {
       return results;
     }
-
     return gather(octokit, results, iterator, mapFn);
   });
 }
@@ -3818,7 +3822,7 @@ const composePaginateRest = Object.assign(paginate, {
   iterator
 });
 
-const paginatingEndpoints = ["GET /app/hook/deliveries", "GET /app/installations", "GET /enterprises/{enterprise}/actions/permissions/organizations", "GET /enterprises/{enterprise}/actions/runner-groups", "GET /enterprises/{enterprise}/actions/runner-groups/{runner_group_id}/organizations", "GET /enterprises/{enterprise}/actions/runner-groups/{runner_group_id}/runners", "GET /enterprises/{enterprise}/actions/runners", "GET /enterprises/{enterprise}/audit-log", "GET /enterprises/{enterprise}/code-scanning/alerts", "GET /enterprises/{enterprise}/secret-scanning/alerts", "GET /enterprises/{enterprise}/settings/billing/advanced-security", "GET /events", "GET /gists", "GET /gists/public", "GET /gists/starred", "GET /gists/{gist_id}/comments", "GET /gists/{gist_id}/commits", "GET /gists/{gist_id}/forks", "GET /installation/repositories", "GET /issues", "GET /licenses", "GET /marketplace_listing/plans", "GET /marketplace_listing/plans/{plan_id}/accounts", "GET /marketplace_listing/stubbed/plans", "GET /marketplace_listing/stubbed/plans/{plan_id}/accounts", "GET /networks/{owner}/{repo}/events", "GET /notifications", "GET /organizations", "GET /orgs/{org}/actions/cache/usage-by-repository", "GET /orgs/{org}/actions/permissions/repositories", "GET /orgs/{org}/actions/runner-groups", "GET /orgs/{org}/actions/runner-groups/{runner_group_id}/repositories", "GET /orgs/{org}/actions/runner-groups/{runner_group_id}/runners", "GET /orgs/{org}/actions/runners", "GET /orgs/{org}/actions/secrets", "GET /orgs/{org}/actions/secrets/{secret_name}/repositories", "GET /orgs/{org}/audit-log", "GET /orgs/{org}/blocks", "GET /orgs/{org}/code-scanning/alerts", "GET /orgs/{org}/codespaces", "GET /orgs/{org}/credential-authorizations", "GET /orgs/{org}/dependabot/secrets", "GET /orgs/{org}/dependabot/secrets/{secret_name}/repositories", "GET /orgs/{org}/events", "GET /orgs/{org}/external-groups", "GET /orgs/{org}/failed_invitations", "GET /orgs/{org}/hooks", "GET /orgs/{org}/hooks/{hook_id}/deliveries", "GET /orgs/{org}/installations", "GET /orgs/{org}/invitations", "GET /orgs/{org}/invitations/{invitation_id}/teams", "GET /orgs/{org}/issues", "GET /orgs/{org}/members", "GET /orgs/{org}/migrations", "GET /orgs/{org}/migrations/{migration_id}/repositories", "GET /orgs/{org}/outside_collaborators", "GET /orgs/{org}/packages", "GET /orgs/{org}/packages/{package_type}/{package_name}/versions", "GET /orgs/{org}/projects", "GET /orgs/{org}/public_members", "GET /orgs/{org}/repos", "GET /orgs/{org}/secret-scanning/alerts", "GET /orgs/{org}/settings/billing/advanced-security", "GET /orgs/{org}/team-sync/groups", "GET /orgs/{org}/teams", "GET /orgs/{org}/teams/{team_slug}/discussions", "GET /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/comments", "GET /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/comments/{comment_number}/reactions", "GET /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/reactions", "GET /orgs/{org}/teams/{team_slug}/invitations", "GET /orgs/{org}/teams/{team_slug}/members", "GET /orgs/{org}/teams/{team_slug}/projects", "GET /orgs/{org}/teams/{team_slug}/repos", "GET /orgs/{org}/teams/{team_slug}/teams", "GET /projects/columns/{column_id}/cards", "GET /projects/{project_id}/collaborators", "GET /projects/{project_id}/columns", "GET /repos/{owner}/{repo}/actions/artifacts", "GET /repos/{owner}/{repo}/actions/caches", "GET /repos/{owner}/{repo}/actions/runners", "GET /repos/{owner}/{repo}/actions/runs", "GET /repos/{owner}/{repo}/actions/runs/{run_id}/artifacts", "GET /repos/{owner}/{repo}/actions/runs/{run_id}/attempts/{attempt_number}/jobs", "GET /repos/{owner}/{repo}/actions/runs/{run_id}/jobs", "GET /repos/{owner}/{repo}/actions/secrets", "GET /repos/{owner}/{repo}/actions/workflows", "GET /repos/{owner}/{repo}/actions/workflows/{workflow_id}/runs", "GET /repos/{owner}/{repo}/assignees", "GET /repos/{owner}/{repo}/branches", "GET /repos/{owner}/{repo}/check-runs/{check_run_id}/annotations", "GET /repos/{owner}/{repo}/check-suites/{check_suite_id}/check-runs", "GET /repos/{owner}/{repo}/code-scanning/alerts", "GET /repos/{owner}/{repo}/code-scanning/alerts/{alert_number}/instances", "GET /repos/{owner}/{repo}/code-scanning/analyses", "GET /repos/{owner}/{repo}/codespaces", "GET /repos/{owner}/{repo}/codespaces/devcontainers", "GET /repos/{owner}/{repo}/codespaces/secrets", "GET /repos/{owner}/{repo}/collaborators", "GET /repos/{owner}/{repo}/comments", "GET /repos/{owner}/{repo}/comments/{comment_id}/reactions", "GET /repos/{owner}/{repo}/commits", "GET /repos/{owner}/{repo}/commits/{commit_sha}/comments", "GET /repos/{owner}/{repo}/commits/{commit_sha}/pulls", "GET /repos/{owner}/{repo}/commits/{ref}/check-runs", "GET /repos/{owner}/{repo}/commits/{ref}/check-suites", "GET /repos/{owner}/{repo}/commits/{ref}/status", "GET /repos/{owner}/{repo}/commits/{ref}/statuses", "GET /repos/{owner}/{repo}/contributors", "GET /repos/{owner}/{repo}/dependabot/secrets", "GET /repos/{owner}/{repo}/deployments", "GET /repos/{owner}/{repo}/deployments/{deployment_id}/statuses", "GET /repos/{owner}/{repo}/environments", "GET /repos/{owner}/{repo}/environments/{environment_name}/deployment-branch-policies", "GET /repos/{owner}/{repo}/events", "GET /repos/{owner}/{repo}/forks", "GET /repos/{owner}/{repo}/hooks", "GET /repos/{owner}/{repo}/hooks/{hook_id}/deliveries", "GET /repos/{owner}/{repo}/invitations", "GET /repos/{owner}/{repo}/issues", "GET /repos/{owner}/{repo}/issues/comments", "GET /repos/{owner}/{repo}/issues/comments/{comment_id}/reactions", "GET /repos/{owner}/{repo}/issues/events", "GET /repos/{owner}/{repo}/issues/{issue_number}/comments", "GET /repos/{owner}/{repo}/issues/{issue_number}/events", "GET /repos/{owner}/{repo}/issues/{issue_number}/labels", "GET /repos/{owner}/{repo}/issues/{issue_number}/reactions", "GET /repos/{owner}/{repo}/issues/{issue_number}/timeline", "GET /repos/{owner}/{repo}/keys", "GET /repos/{owner}/{repo}/labels", "GET /repos/{owner}/{repo}/milestones", "GET /repos/{owner}/{repo}/milestones/{milestone_number}/labels", "GET /repos/{owner}/{repo}/notifications", "GET /repos/{owner}/{repo}/pages/builds", "GET /repos/{owner}/{repo}/projects", "GET /repos/{owner}/{repo}/pulls", "GET /repos/{owner}/{repo}/pulls/comments", "GET /repos/{owner}/{repo}/pulls/comments/{comment_id}/reactions", "GET /repos/{owner}/{repo}/pulls/{pull_number}/comments", "GET /repos/{owner}/{repo}/pulls/{pull_number}/commits", "GET /repos/{owner}/{repo}/pulls/{pull_number}/files", "GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews", "GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}/comments", "GET /repos/{owner}/{repo}/releases", "GET /repos/{owner}/{repo}/releases/{release_id}/assets", "GET /repos/{owner}/{repo}/releases/{release_id}/reactions", "GET /repos/{owner}/{repo}/secret-scanning/alerts", "GET /repos/{owner}/{repo}/secret-scanning/alerts/{alert_number}/locations", "GET /repos/{owner}/{repo}/stargazers", "GET /repos/{owner}/{repo}/subscribers", "GET /repos/{owner}/{repo}/tags", "GET /repos/{owner}/{repo}/teams", "GET /repos/{owner}/{repo}/topics", "GET /repositories", "GET /repositories/{repository_id}/environments/{environment_name}/secrets", "GET /search/code", "GET /search/commits", "GET /search/issues", "GET /search/labels", "GET /search/repositories", "GET /search/topics", "GET /search/users", "GET /teams/{team_id}/discussions", "GET /teams/{team_id}/discussions/{discussion_number}/comments", "GET /teams/{team_id}/discussions/{discussion_number}/comments/{comment_number}/reactions", "GET /teams/{team_id}/discussions/{discussion_number}/reactions", "GET /teams/{team_id}/invitations", "GET /teams/{team_id}/members", "GET /teams/{team_id}/projects", "GET /teams/{team_id}/repos", "GET /teams/{team_id}/teams", "GET /user/blocks", "GET /user/codespaces", "GET /user/codespaces/secrets", "GET /user/emails", "GET /user/followers", "GET /user/following", "GET /user/gpg_keys", "GET /user/installations", "GET /user/installations/{installation_id}/repositories", "GET /user/issues", "GET /user/keys", "GET /user/marketplace_purchases", "GET /user/marketplace_purchases/stubbed", "GET /user/memberships/orgs", "GET /user/migrations", "GET /user/migrations/{migration_id}/repositories", "GET /user/orgs", "GET /user/packages", "GET /user/packages/{package_type}/{package_name}/versions", "GET /user/public_emails", "GET /user/repos", "GET /user/repository_invitations", "GET /user/ssh_signing_keys", "GET /user/starred", "GET /user/subscriptions", "GET /user/teams", "GET /users", "GET /users/{username}/events", "GET /users/{username}/events/orgs/{org}", "GET /users/{username}/events/public", "GET /users/{username}/followers", "GET /users/{username}/following", "GET /users/{username}/gists", "GET /users/{username}/gpg_keys", "GET /users/{username}/keys", "GET /users/{username}/orgs", "GET /users/{username}/packages", "GET /users/{username}/projects", "GET /users/{username}/received_events", "GET /users/{username}/received_events/public", "GET /users/{username}/repos", "GET /users/{username}/ssh_signing_keys", "GET /users/{username}/starred", "GET /users/{username}/subscriptions"];
+const paginatingEndpoints = ["GET /app/hook/deliveries", "GET /app/installations", "GET /enterprises/{enterprise}/actions/permissions/organizations", "GET /enterprises/{enterprise}/actions/runner-groups", "GET /enterprises/{enterprise}/actions/runner-groups/{runner_group_id}/organizations", "GET /enterprises/{enterprise}/actions/runner-groups/{runner_group_id}/runners", "GET /enterprises/{enterprise}/actions/runners", "GET /enterprises/{enterprise}/code-scanning/alerts", "GET /enterprises/{enterprise}/secret-scanning/alerts", "GET /enterprises/{enterprise}/settings/billing/advanced-security", "GET /events", "GET /gists", "GET /gists/public", "GET /gists/starred", "GET /gists/{gist_id}/comments", "GET /gists/{gist_id}/commits", "GET /gists/{gist_id}/forks", "GET /installation/repositories", "GET /issues", "GET /licenses", "GET /marketplace_listing/plans", "GET /marketplace_listing/plans/{plan_id}/accounts", "GET /marketplace_listing/stubbed/plans", "GET /marketplace_listing/stubbed/plans/{plan_id}/accounts", "GET /networks/{owner}/{repo}/events", "GET /notifications", "GET /organizations", "GET /organizations/{org}/codespaces/secrets", "GET /organizations/{org}/codespaces/secrets/{secret_name}/repositories", "GET /orgs/{org}/actions/cache/usage-by-repository", "GET /orgs/{org}/actions/permissions/repositories", "GET /orgs/{org}/actions/runner-groups", "GET /orgs/{org}/actions/runner-groups/{runner_group_id}/repositories", "GET /orgs/{org}/actions/runner-groups/{runner_group_id}/runners", "GET /orgs/{org}/actions/runners", "GET /orgs/{org}/actions/secrets", "GET /orgs/{org}/actions/secrets/{secret_name}/repositories", "GET /orgs/{org}/blocks", "GET /orgs/{org}/code-scanning/alerts", "GET /orgs/{org}/codespaces", "GET /orgs/{org}/dependabot/secrets", "GET /orgs/{org}/dependabot/secrets/{secret_name}/repositories", "GET /orgs/{org}/events", "GET /orgs/{org}/failed_invitations", "GET /orgs/{org}/hooks", "GET /orgs/{org}/hooks/{hook_id}/deliveries", "GET /orgs/{org}/installations", "GET /orgs/{org}/invitations", "GET /orgs/{org}/invitations/{invitation_id}/teams", "GET /orgs/{org}/issues", "GET /orgs/{org}/members", "GET /orgs/{org}/migrations", "GET /orgs/{org}/migrations/{migration_id}/repositories", "GET /orgs/{org}/outside_collaborators", "GET /orgs/{org}/packages", "GET /orgs/{org}/packages/{package_type}/{package_name}/versions", "GET /orgs/{org}/projects", "GET /orgs/{org}/public_members", "GET /orgs/{org}/repos", "GET /orgs/{org}/secret-scanning/alerts", "GET /orgs/{org}/settings/billing/advanced-security", "GET /orgs/{org}/teams", "GET /orgs/{org}/teams/{team_slug}/discussions", "GET /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/comments", "GET /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/comments/{comment_number}/reactions", "GET /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/reactions", "GET /orgs/{org}/teams/{team_slug}/invitations", "GET /orgs/{org}/teams/{team_slug}/members", "GET /orgs/{org}/teams/{team_slug}/projects", "GET /orgs/{org}/teams/{team_slug}/repos", "GET /orgs/{org}/teams/{team_slug}/teams", "GET /projects/columns/{column_id}/cards", "GET /projects/{project_id}/collaborators", "GET /projects/{project_id}/columns", "GET /repos/{owner}/{repo}/actions/artifacts", "GET /repos/{owner}/{repo}/actions/caches", "GET /repos/{owner}/{repo}/actions/runners", "GET /repos/{owner}/{repo}/actions/runs", "GET /repos/{owner}/{repo}/actions/runs/{run_id}/artifacts", "GET /repos/{owner}/{repo}/actions/runs/{run_id}/attempts/{attempt_number}/jobs", "GET /repos/{owner}/{repo}/actions/runs/{run_id}/jobs", "GET /repos/{owner}/{repo}/actions/secrets", "GET /repos/{owner}/{repo}/actions/workflows", "GET /repos/{owner}/{repo}/actions/workflows/{workflow_id}/runs", "GET /repos/{owner}/{repo}/assignees", "GET /repos/{owner}/{repo}/branches", "GET /repos/{owner}/{repo}/check-runs/{check_run_id}/annotations", "GET /repos/{owner}/{repo}/check-suites/{check_suite_id}/check-runs", "GET /repos/{owner}/{repo}/code-scanning/alerts", "GET /repos/{owner}/{repo}/code-scanning/alerts/{alert_number}/instances", "GET /repos/{owner}/{repo}/code-scanning/analyses", "GET /repos/{owner}/{repo}/codespaces", "GET /repos/{owner}/{repo}/codespaces/devcontainers", "GET /repos/{owner}/{repo}/codespaces/secrets", "GET /repos/{owner}/{repo}/collaborators", "GET /repos/{owner}/{repo}/comments", "GET /repos/{owner}/{repo}/comments/{comment_id}/reactions", "GET /repos/{owner}/{repo}/commits", "GET /repos/{owner}/{repo}/commits/{commit_sha}/comments", "GET /repos/{owner}/{repo}/commits/{commit_sha}/pulls", "GET /repos/{owner}/{repo}/commits/{ref}/check-runs", "GET /repos/{owner}/{repo}/commits/{ref}/check-suites", "GET /repos/{owner}/{repo}/commits/{ref}/status", "GET /repos/{owner}/{repo}/commits/{ref}/statuses", "GET /repos/{owner}/{repo}/contributors", "GET /repos/{owner}/{repo}/dependabot/alerts", "GET /repos/{owner}/{repo}/dependabot/secrets", "GET /repos/{owner}/{repo}/deployments", "GET /repos/{owner}/{repo}/deployments/{deployment_id}/statuses", "GET /repos/{owner}/{repo}/environments", "GET /repos/{owner}/{repo}/environments/{environment_name}/deployment-branch-policies", "GET /repos/{owner}/{repo}/events", "GET /repos/{owner}/{repo}/forks", "GET /repos/{owner}/{repo}/hooks", "GET /repos/{owner}/{repo}/hooks/{hook_id}/deliveries", "GET /repos/{owner}/{repo}/invitations", "GET /repos/{owner}/{repo}/issues", "GET /repos/{owner}/{repo}/issues/comments", "GET /repos/{owner}/{repo}/issues/comments/{comment_id}/reactions", "GET /repos/{owner}/{repo}/issues/events", "GET /repos/{owner}/{repo}/issues/{issue_number}/comments", "GET /repos/{owner}/{repo}/issues/{issue_number}/events", "GET /repos/{owner}/{repo}/issues/{issue_number}/labels", "GET /repos/{owner}/{repo}/issues/{issue_number}/reactions", "GET /repos/{owner}/{repo}/issues/{issue_number}/timeline", "GET /repos/{owner}/{repo}/keys", "GET /repos/{owner}/{repo}/labels", "GET /repos/{owner}/{repo}/milestones", "GET /repos/{owner}/{repo}/milestones/{milestone_number}/labels", "GET /repos/{owner}/{repo}/notifications", "GET /repos/{owner}/{repo}/pages/builds", "GET /repos/{owner}/{repo}/projects", "GET /repos/{owner}/{repo}/pulls", "GET /repos/{owner}/{repo}/pulls/comments", "GET /repos/{owner}/{repo}/pulls/comments/{comment_id}/reactions", "GET /repos/{owner}/{repo}/pulls/{pull_number}/comments", "GET /repos/{owner}/{repo}/pulls/{pull_number}/commits", "GET /repos/{owner}/{repo}/pulls/{pull_number}/files", "GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews", "GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}/comments", "GET /repos/{owner}/{repo}/releases", "GET /repos/{owner}/{repo}/releases/{release_id}/assets", "GET /repos/{owner}/{repo}/releases/{release_id}/reactions", "GET /repos/{owner}/{repo}/secret-scanning/alerts", "GET /repos/{owner}/{repo}/secret-scanning/alerts/{alert_number}/locations", "GET /repos/{owner}/{repo}/stargazers", "GET /repos/{owner}/{repo}/subscribers", "GET /repos/{owner}/{repo}/tags", "GET /repos/{owner}/{repo}/teams", "GET /repos/{owner}/{repo}/topics", "GET /repositories", "GET /repositories/{repository_id}/environments/{environment_name}/secrets", "GET /search/code", "GET /search/commits", "GET /search/issues", "GET /search/labels", "GET /search/repositories", "GET /search/topics", "GET /search/users", "GET /teams/{team_id}/discussions", "GET /teams/{team_id}/discussions/{discussion_number}/comments", "GET /teams/{team_id}/discussions/{discussion_number}/comments/{comment_number}/reactions", "GET /teams/{team_id}/discussions/{discussion_number}/reactions", "GET /teams/{team_id}/invitations", "GET /teams/{team_id}/members", "GET /teams/{team_id}/projects", "GET /teams/{team_id}/repos", "GET /teams/{team_id}/teams", "GET /user/blocks", "GET /user/codespaces", "GET /user/codespaces/secrets", "GET /user/emails", "GET /user/followers", "GET /user/following", "GET /user/gpg_keys", "GET /user/installations", "GET /user/installations/{installation_id}/repositories", "GET /user/issues", "GET /user/keys", "GET /user/marketplace_purchases", "GET /user/marketplace_purchases/stubbed", "GET /user/memberships/orgs", "GET /user/migrations", "GET /user/migrations/{migration_id}/repositories", "GET /user/orgs", "GET /user/packages", "GET /user/packages/{package_type}/{package_name}/versions", "GET /user/public_emails", "GET /user/repos", "GET /user/repository_invitations", "GET /user/ssh_signing_keys", "GET /user/starred", "GET /user/subscriptions", "GET /user/teams", "GET /users", "GET /users/{username}/events", "GET /users/{username}/events/orgs/{org}", "GET /users/{username}/events/public", "GET /users/{username}/followers", "GET /users/{username}/following", "GET /users/{username}/gists", "GET /users/{username}/gpg_keys", "GET /users/{username}/keys", "GET /users/{username}/orgs", "GET /users/{username}/packages", "GET /users/{username}/projects", "GET /users/{username}/received_events", "GET /users/{username}/received_events/public", "GET /users/{username}/repos", "GET /users/{username}/ssh_signing_keys", "GET /users/{username}/starred", "GET /users/{username}/subscriptions"];
 
 function isPaginatingEndpoint(arg) {
   if (typeof arg === "string") {
@@ -3832,7 +3836,6 @@ function isPaginatingEndpoint(arg) {
  * @param octokit Octokit instance
  * @param options Options passed to Octokit constructor
  */
-
 function paginateRest(octokit) {
   return {
     paginate: Object.assign(paginate.bind(null, octokit), {
@@ -3851,7 +3854,7 @@ exports.paginatingEndpoints = paginatingEndpoints;
 
 /***/ }),
 
-/***/ 1907:
+/***/ 7505:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -5004,7 +5007,7 @@ exports.restEndpointMethods = restEndpointMethods;
 
 /***/ }),
 
-/***/ 8776:
+/***/ 4244:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -5227,6 +5230,7 @@ const Endpoints = {
       }
     }],
     getAnalysis: ["GET /repos/{owner}/{repo}/code-scanning/analyses/{analysis_id}"],
+    getCodeqlDatabase: ["GET /repos/{owner}/{repo}/code-scanning/codeql/databases/{language}"],
     getSarif: ["GET /repos/{owner}/{repo}/code-scanning/sarifs/{sarif_id}"],
     listAlertInstances: ["GET /repos/{owner}/{repo}/code-scanning/alerts/{alert_number}/instances"],
     listAlertsForEnterprise: ["GET /enterprises/{enterprise}/code-scanning/alerts"],
@@ -5235,6 +5239,7 @@ const Endpoints = {
     listAlertsInstances: ["GET /repos/{owner}/{repo}/code-scanning/alerts/{alert_number}/instances", {}, {
       renamed: ["codeScanning", "listAlertInstances"]
     }],
+    listCodeqlDatabases: ["GET /repos/{owner}/{repo}/code-scanning/codeql/databases"],
     listRecentAnalyses: ["GET /repos/{owner}/{repo}/code-scanning/analyses"],
     updateAlert: ["PATCH /repos/{owner}/{repo}/code-scanning/alerts/{alert_number}"],
     uploadSarif: ["POST /repos/{owner}/{repo}/code-scanning/sarifs"]
@@ -5245,19 +5250,24 @@ const Endpoints = {
   },
   codespaces: {
     addRepositoryForSecretForAuthenticatedUser: ["PUT /user/codespaces/secrets/{secret_name}/repositories/{repository_id}"],
+    addSelectedRepoToOrgSecret: ["PUT /organizations/{org}/codespaces/secrets/{secret_name}/repositories/{repository_id}"],
     codespaceMachinesForAuthenticatedUser: ["GET /user/codespaces/{codespace_name}/machines"],
     createForAuthenticatedUser: ["POST /user/codespaces"],
+    createOrUpdateOrgSecret: ["PUT /organizations/{org}/codespaces/secrets/{secret_name}"],
     createOrUpdateRepoSecret: ["PUT /repos/{owner}/{repo}/codespaces/secrets/{secret_name}"],
     createOrUpdateSecretForAuthenticatedUser: ["PUT /user/codespaces/secrets/{secret_name}"],
     createWithPrForAuthenticatedUser: ["POST /repos/{owner}/{repo}/pulls/{pull_number}/codespaces"],
     createWithRepoForAuthenticatedUser: ["POST /repos/{owner}/{repo}/codespaces"],
     deleteForAuthenticatedUser: ["DELETE /user/codespaces/{codespace_name}"],
     deleteFromOrganization: ["DELETE /orgs/{org}/members/{username}/codespaces/{codespace_name}"],
+    deleteOrgSecret: ["DELETE /organizations/{org}/codespaces/secrets/{secret_name}"],
     deleteRepoSecret: ["DELETE /repos/{owner}/{repo}/codespaces/secrets/{secret_name}"],
     deleteSecretForAuthenticatedUser: ["DELETE /user/codespaces/secrets/{secret_name}"],
     exportForAuthenticatedUser: ["POST /user/codespaces/{codespace_name}/exports"],
     getExportDetailsForAuthenticatedUser: ["GET /user/codespaces/{codespace_name}/exports/{export_id}"],
     getForAuthenticatedUser: ["GET /user/codespaces/{codespace_name}"],
+    getOrgPublicKey: ["GET /organizations/{org}/codespaces/secrets/public-key"],
+    getOrgSecret: ["GET /organizations/{org}/codespaces/secrets/{secret_name}"],
     getPublicKeyForAuthenticatedUser: ["GET /user/codespaces/secrets/public-key"],
     getRepoPublicKey: ["GET /repos/{owner}/{repo}/codespaces/secrets/public-key"],
     getRepoSecret: ["GET /repos/{owner}/{repo}/codespaces/secrets/{secret_name}"],
@@ -5270,13 +5280,17 @@ const Endpoints = {
       }
     }],
     listInRepositoryForAuthenticatedUser: ["GET /repos/{owner}/{repo}/codespaces"],
+    listOrgSecrets: ["GET /organizations/{org}/codespaces/secrets"],
     listRepoSecrets: ["GET /repos/{owner}/{repo}/codespaces/secrets"],
     listRepositoriesForSecretForAuthenticatedUser: ["GET /user/codespaces/secrets/{secret_name}/repositories"],
     listSecretsForAuthenticatedUser: ["GET /user/codespaces/secrets"],
+    listSelectedReposForOrgSecret: ["GET /organizations/{org}/codespaces/secrets/{secret_name}/repositories"],
     preFlightWithRepoForAuthenticatedUser: ["GET /repos/{owner}/{repo}/codespaces/new"],
     removeRepositoryForSecretForAuthenticatedUser: ["DELETE /user/codespaces/secrets/{secret_name}/repositories/{repository_id}"],
+    removeSelectedRepoFromOrgSecret: ["DELETE /organizations/{org}/codespaces/secrets/{secret_name}/repositories/{repository_id}"],
     repoMachinesForAuthenticatedUser: ["GET /repos/{owner}/{repo}/codespaces/machines"],
     setRepositoriesForSecretForAuthenticatedUser: ["PUT /user/codespaces/secrets/{secret_name}/repositories"],
+    setSelectedReposForOrgSecret: ["PUT /organizations/{org}/codespaces/secrets/{secret_name}/repositories"],
     startForAuthenticatedUser: ["POST /user/codespaces/{codespace_name}/start"],
     stopForAuthenticatedUser: ["POST /user/codespaces/{codespace_name}/stop"],
     stopInOrganization: ["POST /orgs/{org}/members/{username}/codespaces/{codespace_name}/stop"],
@@ -5288,15 +5302,18 @@ const Endpoints = {
     createOrUpdateRepoSecret: ["PUT /repos/{owner}/{repo}/dependabot/secrets/{secret_name}"],
     deleteOrgSecret: ["DELETE /orgs/{org}/dependabot/secrets/{secret_name}"],
     deleteRepoSecret: ["DELETE /repos/{owner}/{repo}/dependabot/secrets/{secret_name}"],
+    getAlert: ["GET /repos/{owner}/{repo}/dependabot/alerts/{alert_number}"],
     getOrgPublicKey: ["GET /orgs/{org}/dependabot/secrets/public-key"],
     getOrgSecret: ["GET /orgs/{org}/dependabot/secrets/{secret_name}"],
     getRepoPublicKey: ["GET /repos/{owner}/{repo}/dependabot/secrets/public-key"],
     getRepoSecret: ["GET /repos/{owner}/{repo}/dependabot/secrets/{secret_name}"],
+    listAlertsForRepo: ["GET /repos/{owner}/{repo}/dependabot/alerts"],
     listOrgSecrets: ["GET /orgs/{org}/dependabot/secrets"],
     listRepoSecrets: ["GET /repos/{owner}/{repo}/dependabot/secrets"],
     listSelectedReposForOrgSecret: ["GET /orgs/{org}/dependabot/secrets/{secret_name}/repositories"],
     removeSelectedRepoFromOrgSecret: ["DELETE /orgs/{org}/dependabot/secrets/{secret_name}/repositories/{repository_id}"],
-    setSelectedReposForOrgSecret: ["PUT /orgs/{org}/dependabot/secrets/{secret_name}/repositories"]
+    setSelectedReposForOrgSecret: ["PUT /orgs/{org}/dependabot/secrets/{secret_name}/repositories"],
+    updateAlert: ["PATCH /repos/{owner}/{repo}/dependabot/alerts/{alert_number}"]
   },
   dependencyGraph: {
     createRepositorySnapshot: ["POST /repos/{owner}/{repo}/dependency-graph/snapshots"],
@@ -5477,8 +5494,10 @@ const Endpoints = {
     checkMembershipForUser: ["GET /orgs/{org}/members/{username}"],
     checkPublicMembershipForUser: ["GET /orgs/{org}/public_members/{username}"],
     convertMemberToOutsideCollaborator: ["PUT /orgs/{org}/outside_collaborators/{username}"],
+    createCustomRole: ["POST /orgs/{org}/custom_roles"],
     createInvitation: ["POST /orgs/{org}/invitations"],
     createWebhook: ["POST /orgs/{org}/hooks"],
+    deleteCustomRole: ["DELETE /orgs/{org}/custom_roles/{role_id}"],
     deleteWebhook: ["DELETE /orgs/{org}/hooks/{hook_id}"],
     enableOrDisableSecurityProductOnAllOrgRepos: ["POST /orgs/{org}/{security_product}/{enablement}"],
     get: ["GET /orgs/{org}"],
@@ -5492,6 +5511,7 @@ const Endpoints = {
     listBlockedUsers: ["GET /orgs/{org}/blocks"],
     listCustomRoles: ["GET /organizations/{organization_id}/custom_roles"],
     listFailedInvitations: ["GET /orgs/{org}/failed_invitations"],
+    listFineGrainedPermissions: ["GET /orgs/{org}/fine_grained_permissions"],
     listForAuthenticatedUser: ["GET /user/orgs"],
     listForUser: ["GET /users/{username}/orgs"],
     listInvitationTeams: ["GET /orgs/{org}/invitations/{invitation_id}/teams"],
@@ -5514,6 +5534,7 @@ const Endpoints = {
     setPublicMembershipForAuthenticatedUser: ["PUT /orgs/{org}/public_members/{username}"],
     unblockUser: ["DELETE /orgs/{org}/blocks/{username}"],
     update: ["PATCH /orgs/{org}"],
+    updateCustomRole: ["PATCH /orgs/{org}/custom_roles/{role_id}"],
     updateMembershipForAuthenticatedUser: ["PATCH /user/memberships/orgs/{org}"],
     updateWebhook: ["PATCH /orgs/{org}/hooks/{hook_id}"],
     updateWebhookConfigForOrg: ["PATCH /orgs/{org}/hooks/{hook_id}/config"]
@@ -5978,11 +5999,10 @@ const Endpoints = {
   }
 };
 
-const VERSION = "6.4.1";
+const VERSION = "6.7.0";
 
 function endpointsToMethods(octokit, endpointsMap) {
   const newMethods = {};
-
   for (const [scope, endpoints] of Object.entries(endpointsMap)) {
     for (const [methodName, endpoint] of Object.entries(endpoints)) {
       const [route, defaults, decorations] = endpoint;
@@ -5991,33 +6011,26 @@ function endpointsToMethods(octokit, endpointsMap) {
         method,
         url
       }, defaults);
-
       if (!newMethods[scope]) {
         newMethods[scope] = {};
       }
-
       const scopeMethods = newMethods[scope];
-
       if (decorations) {
         scopeMethods[methodName] = decorate(octokit, scope, methodName, endpointDefaults, decorations);
         continue;
       }
-
       scopeMethods[methodName] = octokit.request.defaults(endpointDefaults);
     }
   }
-
   return newMethods;
 }
-
 function decorate(octokit, scope, methodName, defaults, decorations) {
   const requestWithDefaults = octokit.request.defaults(defaults);
   /* istanbul ignore next */
-
   function withDecorations(...args) {
     // @ts-ignore https://github.com/microsoft/TypeScript/issues/25488
-    let options = requestWithDefaults.endpoint.merge(...args); // There are currently no other decorations than `.mapToData`
-
+    let options = requestWithDefaults.endpoint.merge(...args);
+    // There are currently no other decorations than `.mapToData`
     if (decorations.mapToData) {
       options = Object.assign({}, options, {
         data: options[decorations.mapToData],
@@ -6025,39 +6038,30 @@ function decorate(octokit, scope, methodName, defaults, decorations) {
       });
       return requestWithDefaults(options);
     }
-
     if (decorations.renamed) {
       const [newScope, newMethodName] = decorations.renamed;
       octokit.log.warn(`octokit.${scope}.${methodName}() has been renamed to octokit.${newScope}.${newMethodName}()`);
     }
-
     if (decorations.deprecated) {
       octokit.log.warn(decorations.deprecated);
     }
-
     if (decorations.renamedParameters) {
       // @ts-ignore https://github.com/microsoft/TypeScript/issues/25488
       const options = requestWithDefaults.endpoint.merge(...args);
-
       for (const [name, alias] of Object.entries(decorations.renamedParameters)) {
         if (name in options) {
           octokit.log.warn(`"${name}" parameter is deprecated for "octokit.${scope}.${methodName}()". Use "${alias}" instead`);
-
           if (!(alias in options)) {
             options[alias] = options[name];
           }
-
           delete options[name];
         }
       }
-
       return requestWithDefaults(options);
-    } // @ts-ignore https://github.com/microsoft/TypeScript/issues/25488
-
-
+    }
+    // @ts-ignore https://github.com/microsoft/TypeScript/issues/25488
     return requestWithDefaults(...args);
   }
-
   return Object.assign(withDecorations, requestWithDefaults);
 }
 
@@ -6070,7 +6074,8 @@ function restEndpointMethods(octokit) {
 restEndpointMethods.VERSION = VERSION;
 function legacyRestEndpointMethods(octokit) {
   const api = endpointsToMethods(octokit, Endpoints);
-  return { ...api,
+  return {
+    ...api,
     rest: api
   };
 }
@@ -6619,7 +6624,7 @@ exports.request = request;
 
 /***/ }),
 
-/***/ 5342:
+/***/ 3127:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
@@ -6627,12 +6632,12 @@ exports.request = request;
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 
-var core = __nccwpck_require__(2747);
-var pluginRequestLog = __nccwpck_require__(1907);
-var pluginPaginateRest = __nccwpck_require__(8355);
-var pluginRestEndpointMethods = __nccwpck_require__(8776);
+var core = __nccwpck_require__(5333);
+var pluginRequestLog = __nccwpck_require__(7505);
+var pluginPaginateRest = __nccwpck_require__(3771);
+var pluginRestEndpointMethods = __nccwpck_require__(4244);
 
-const VERSION = "19.0.4";
+const VERSION = "19.0.5";
 
 const Octokit = core.Octokit.plugin(pluginRequestLog.requestLog, pluginRestEndpointMethods.legacyRestEndpointMethods, pluginPaginateRest.paginateRest).defaults({
   userAgent: `octokit-rest.js/${VERSION}`
@@ -8991,7 +8996,7 @@ function onceStrict (fn) {
 
 /***/ }),
 
-/***/ 8337:
+/***/ 2723:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 const ANY = Symbol('SemVer ANY')
@@ -9124,17 +9129,17 @@ class Comparator {
 
 module.exports = Comparator
 
-const parseOptions = __nccwpck_require__(2177)
-const { re, t } = __nccwpck_require__(1547)
-const cmp = __nccwpck_require__(6184)
-const debug = __nccwpck_require__(4959)
-const SemVer = __nccwpck_require__(8650)
-const Range = __nccwpck_require__(4043)
+const parseOptions = __nccwpck_require__(9748)
+const { re, t } = __nccwpck_require__(9182)
+const cmp = __nccwpck_require__(484)
+const debug = __nccwpck_require__(4729)
+const SemVer = __nccwpck_require__(2094)
+const Range = __nccwpck_require__(1986)
 
 
 /***/ }),
 
-/***/ 4043:
+/***/ 1986:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 // hoisted class for cyclic dependency
@@ -9334,17 +9339,17 @@ module.exports = Range
 const LRU = __nccwpck_require__(4467)
 const cache = new LRU({ max: 1000 })
 
-const parseOptions = __nccwpck_require__(2177)
-const Comparator = __nccwpck_require__(8337)
-const debug = __nccwpck_require__(4959)
-const SemVer = __nccwpck_require__(8650)
+const parseOptions = __nccwpck_require__(9748)
+const Comparator = __nccwpck_require__(2723)
+const debug = __nccwpck_require__(4729)
+const SemVer = __nccwpck_require__(2094)
 const {
   re,
   t,
   comparatorTrimReplace,
   tildeTrimReplace,
   caretTrimReplace,
-} = __nccwpck_require__(1547)
+} = __nccwpck_require__(9182)
 
 const isNullSet = c => c.value === '<0.0.0-0'
 const isAny = c => c.value === ''
@@ -9391,6 +9396,7 @@ const isX = id => !id || id.toLowerCase() === 'x' || id === '*'
 // ~1.2, ~1.2.x, ~>1.2, ~>1.2.x --> >=1.2.0 <1.3.0-0
 // ~1.2.3, ~>1.2.3 --> >=1.2.3 <1.3.0-0
 // ~1.2.0, ~>1.2.0 --> >=1.2.0 <1.3.0-0
+// ~0.0.1 --> >=0.0.1 <0.1.0-0
 const replaceTildes = (comp, options) =>
   comp.trim().split(/\s+/).map((c) => {
     return replaceTilde(c, options)
@@ -9430,6 +9436,8 @@ const replaceTilde = (comp, options) => {
 // ^1.2, ^1.2.x --> >=1.2.0 <2.0.0-0
 // ^1.2.3 --> >=1.2.3 <2.0.0-0
 // ^1.2.0 --> >=1.2.0 <2.0.0-0
+// ^0.0.1 --> >=0.0.1 <0.0.2-0
+// ^0.1.0 --> >=0.1.0 <0.2.0-0
 const replaceCarets = (comp, options) =>
   comp.trim().split(/\s+/).map((c) => {
     return replaceCaret(c, options)
@@ -9660,15 +9668,15 @@ const testSet = (set, version, options) => {
 
 /***/ }),
 
-/***/ 8650:
+/***/ 2094:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const debug = __nccwpck_require__(4959)
-const { MAX_LENGTH, MAX_SAFE_INTEGER } = __nccwpck_require__(6387)
-const { re, t } = __nccwpck_require__(1547)
+const debug = __nccwpck_require__(4729)
+const { MAX_LENGTH, MAX_SAFE_INTEGER } = __nccwpck_require__(2078)
+const { re, t } = __nccwpck_require__(9182)
 
-const parseOptions = __nccwpck_require__(2177)
-const { compareIdentifiers } = __nccwpck_require__(8152)
+const parseOptions = __nccwpck_require__(9748)
+const { compareIdentifiers } = __nccwpck_require__(2977)
 class SemVer {
   constructor (version, options) {
     options = parseOptions(options)
@@ -9954,10 +9962,10 @@ module.exports = SemVer
 
 /***/ }),
 
-/***/ 8958:
+/***/ 993:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const parse = __nccwpck_require__(6022)
+const parse = __nccwpck_require__(4227)
 const clean = (version, options) => {
   const s = parse(version.trim().replace(/^[=v]+/, ''), options)
   return s ? s.version : null
@@ -9967,15 +9975,15 @@ module.exports = clean
 
 /***/ }),
 
-/***/ 6184:
+/***/ 484:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const eq = __nccwpck_require__(9362)
-const neq = __nccwpck_require__(4261)
-const gt = __nccwpck_require__(9658)
-const gte = __nccwpck_require__(5054)
-const lt = __nccwpck_require__(5106)
-const lte = __nccwpck_require__(649)
+const eq = __nccwpck_require__(6954)
+const neq = __nccwpck_require__(1351)
+const gt = __nccwpck_require__(2631)
+const gte = __nccwpck_require__(5996)
+const lt = __nccwpck_require__(1382)
+const lte = __nccwpck_require__(9040)
 
 const cmp = (a, op, b, loose) => {
   switch (op) {
@@ -10026,12 +10034,12 @@ module.exports = cmp
 
 /***/ }),
 
-/***/ 830:
+/***/ 8817:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const SemVer = __nccwpck_require__(8650)
-const parse = __nccwpck_require__(6022)
-const { re, t } = __nccwpck_require__(1547)
+const SemVer = __nccwpck_require__(2094)
+const parse = __nccwpck_require__(4227)
+const { re, t } = __nccwpck_require__(9182)
 
 const coerce = (version, options) => {
   if (version instanceof SemVer) {
@@ -10085,10 +10093,10 @@ module.exports = coerce
 
 /***/ }),
 
-/***/ 1559:
+/***/ 3715:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const SemVer = __nccwpck_require__(8650)
+const SemVer = __nccwpck_require__(2094)
 const compareBuild = (a, b, loose) => {
   const versionA = new SemVer(a, loose)
   const versionB = new SemVer(b, loose)
@@ -10099,20 +10107,20 @@ module.exports = compareBuild
 
 /***/ }),
 
-/***/ 4304:
+/***/ 9324:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const compare = __nccwpck_require__(1935)
+const compare = __nccwpck_require__(702)
 const compareLoose = (a, b) => compare(a, b, true)
 module.exports = compareLoose
 
 
 /***/ }),
 
-/***/ 1935:
+/***/ 702:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const SemVer = __nccwpck_require__(8650)
+const SemVer = __nccwpck_require__(2094)
 const compare = (a, b, loose) =>
   new SemVer(a, loose).compare(new SemVer(b, loose))
 
@@ -10121,11 +10129,11 @@ module.exports = compare
 
 /***/ }),
 
-/***/ 4942:
+/***/ 315:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const parse = __nccwpck_require__(6022)
-const eq = __nccwpck_require__(9362)
+const parse = __nccwpck_require__(4227)
+const eq = __nccwpck_require__(6954)
 
 const diff = (version1, version2) => {
   if (eq(version1, version2)) {
@@ -10151,40 +10159,40 @@ module.exports = diff
 
 /***/ }),
 
-/***/ 9362:
+/***/ 6954:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const compare = __nccwpck_require__(1935)
+const compare = __nccwpck_require__(702)
 const eq = (a, b, loose) => compare(a, b, loose) === 0
 module.exports = eq
 
 
 /***/ }),
 
-/***/ 9658:
+/***/ 2631:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const compare = __nccwpck_require__(1935)
+const compare = __nccwpck_require__(702)
 const gt = (a, b, loose) => compare(a, b, loose) > 0
 module.exports = gt
 
 
 /***/ }),
 
-/***/ 5054:
+/***/ 5996:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const compare = __nccwpck_require__(1935)
+const compare = __nccwpck_require__(702)
 const gte = (a, b, loose) => compare(a, b, loose) >= 0
 module.exports = gte
 
 
 /***/ }),
 
-/***/ 8062:
+/***/ 3800:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const SemVer = __nccwpck_require__(8650)
+const SemVer = __nccwpck_require__(2094)
 
 const inc = (version, release, options, identifier) => {
   if (typeof (options) === 'string') {
@@ -10206,64 +10214,64 @@ module.exports = inc
 
 /***/ }),
 
-/***/ 5106:
+/***/ 1382:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const compare = __nccwpck_require__(1935)
+const compare = __nccwpck_require__(702)
 const lt = (a, b, loose) => compare(a, b, loose) < 0
 module.exports = lt
 
 
 /***/ }),
 
-/***/ 649:
+/***/ 9040:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const compare = __nccwpck_require__(1935)
+const compare = __nccwpck_require__(702)
 const lte = (a, b, loose) => compare(a, b, loose) <= 0
 module.exports = lte
 
 
 /***/ }),
 
-/***/ 6477:
+/***/ 6440:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const SemVer = __nccwpck_require__(8650)
+const SemVer = __nccwpck_require__(2094)
 const major = (a, loose) => new SemVer(a, loose).major
 module.exports = major
 
 
 /***/ }),
 
-/***/ 7973:
+/***/ 9754:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const SemVer = __nccwpck_require__(8650)
+const SemVer = __nccwpck_require__(2094)
 const minor = (a, loose) => new SemVer(a, loose).minor
 module.exports = minor
 
 
 /***/ }),
 
-/***/ 4261:
+/***/ 1351:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const compare = __nccwpck_require__(1935)
+const compare = __nccwpck_require__(702)
 const neq = (a, b, loose) => compare(a, b, loose) !== 0
 module.exports = neq
 
 
 /***/ }),
 
-/***/ 6022:
+/***/ 4227:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const { MAX_LENGTH } = __nccwpck_require__(6387)
-const { re, t } = __nccwpck_require__(1547)
-const SemVer = __nccwpck_require__(8650)
+const { MAX_LENGTH } = __nccwpck_require__(2078)
+const { re, t } = __nccwpck_require__(9182)
+const SemVer = __nccwpck_require__(2094)
 
-const parseOptions = __nccwpck_require__(2177)
+const parseOptions = __nccwpck_require__(9748)
 const parse = (version, options) => {
   options = parseOptions(options)
 
@@ -10296,20 +10304,20 @@ module.exports = parse
 
 /***/ }),
 
-/***/ 1092:
+/***/ 7390:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const SemVer = __nccwpck_require__(8650)
+const SemVer = __nccwpck_require__(2094)
 const patch = (a, loose) => new SemVer(a, loose).patch
 module.exports = patch
 
 
 /***/ }),
 
-/***/ 654:
+/***/ 9318:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const parse = __nccwpck_require__(6022)
+const parse = __nccwpck_require__(4227)
 const prerelease = (version, options) => {
   const parsed = parse(version, options)
   return (parsed && parsed.prerelease.length) ? parsed.prerelease : null
@@ -10319,30 +10327,30 @@ module.exports = prerelease
 
 /***/ }),
 
-/***/ 2653:
+/***/ 3915:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const compare = __nccwpck_require__(1935)
+const compare = __nccwpck_require__(702)
 const rcompare = (a, b, loose) => compare(b, a, loose)
 module.exports = rcompare
 
 
 /***/ }),
 
-/***/ 4366:
+/***/ 6400:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const compareBuild = __nccwpck_require__(1559)
+const compareBuild = __nccwpck_require__(3715)
 const rsort = (list, loose) => list.sort((a, b) => compareBuild(b, a, loose))
 module.exports = rsort
 
 
 /***/ }),
 
-/***/ 4250:
+/***/ 7510:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const Range = __nccwpck_require__(4043)
+const Range = __nccwpck_require__(1986)
 const satisfies = (version, range, options) => {
   try {
     range = new Range(range, options)
@@ -10356,20 +10364,20 @@ module.exports = satisfies
 
 /***/ }),
 
-/***/ 8430:
+/***/ 3195:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const compareBuild = __nccwpck_require__(1559)
+const compareBuild = __nccwpck_require__(3715)
 const sort = (list, loose) => list.sort((a, b) => compareBuild(a, b, loose))
 module.exports = sort
 
 
 /***/ }),
 
-/***/ 4210:
+/***/ 6825:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const parse = __nccwpck_require__(6022)
+const parse = __nccwpck_require__(4227)
 const valid = (version, options) => {
   const v = parse(version, options)
   return v ? v.version : null
@@ -10379,62 +10387,102 @@ module.exports = valid
 
 /***/ }),
 
-/***/ 1256:
+/***/ 7870:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 // just pre-load all the stuff that index.js lazily exports
-const internalRe = __nccwpck_require__(1547)
+const internalRe = __nccwpck_require__(9182)
+const constants = __nccwpck_require__(2078)
+const SemVer = __nccwpck_require__(2094)
+const identifiers = __nccwpck_require__(2977)
+const parse = __nccwpck_require__(4227)
+const valid = __nccwpck_require__(6825)
+const clean = __nccwpck_require__(993)
+const inc = __nccwpck_require__(3800)
+const diff = __nccwpck_require__(315)
+const major = __nccwpck_require__(6440)
+const minor = __nccwpck_require__(9754)
+const patch = __nccwpck_require__(7390)
+const prerelease = __nccwpck_require__(9318)
+const compare = __nccwpck_require__(702)
+const rcompare = __nccwpck_require__(3915)
+const compareLoose = __nccwpck_require__(9324)
+const compareBuild = __nccwpck_require__(3715)
+const sort = __nccwpck_require__(3195)
+const rsort = __nccwpck_require__(6400)
+const gt = __nccwpck_require__(2631)
+const lt = __nccwpck_require__(1382)
+const eq = __nccwpck_require__(6954)
+const neq = __nccwpck_require__(1351)
+const gte = __nccwpck_require__(5996)
+const lte = __nccwpck_require__(9040)
+const cmp = __nccwpck_require__(484)
+const coerce = __nccwpck_require__(8817)
+const Comparator = __nccwpck_require__(2723)
+const Range = __nccwpck_require__(1986)
+const satisfies = __nccwpck_require__(7510)
+const toComparators = __nccwpck_require__(8593)
+const maxSatisfying = __nccwpck_require__(6392)
+const minSatisfying = __nccwpck_require__(7648)
+const minVersion = __nccwpck_require__(8356)
+const validRange = __nccwpck_require__(8209)
+const outside = __nccwpck_require__(8875)
+const gtr = __nccwpck_require__(2559)
+const ltr = __nccwpck_require__(7292)
+const intersects = __nccwpck_require__(5488)
+const simplifyRange = __nccwpck_require__(9709)
+const subset = __nccwpck_require__(3402)
 module.exports = {
+  parse,
+  valid,
+  clean,
+  inc,
+  diff,
+  major,
+  minor,
+  patch,
+  prerelease,
+  compare,
+  rcompare,
+  compareLoose,
+  compareBuild,
+  sort,
+  rsort,
+  gt,
+  lt,
+  eq,
+  neq,
+  gte,
+  lte,
+  cmp,
+  coerce,
+  Comparator,
+  Range,
+  satisfies,
+  toComparators,
+  maxSatisfying,
+  minSatisfying,
+  minVersion,
+  validRange,
+  outside,
+  gtr,
+  ltr,
+  intersects,
+  simplifyRange,
+  subset,
+  SemVer,
   re: internalRe.re,
   src: internalRe.src,
   tokens: internalRe.t,
-  SEMVER_SPEC_VERSION: (__nccwpck_require__(6387).SEMVER_SPEC_VERSION),
-  SemVer: __nccwpck_require__(8650),
-  compareIdentifiers: (__nccwpck_require__(8152).compareIdentifiers),
-  rcompareIdentifiers: (__nccwpck_require__(8152).rcompareIdentifiers),
-  parse: __nccwpck_require__(6022),
-  valid: __nccwpck_require__(4210),
-  clean: __nccwpck_require__(8958),
-  inc: __nccwpck_require__(8062),
-  diff: __nccwpck_require__(4942),
-  major: __nccwpck_require__(6477),
-  minor: __nccwpck_require__(7973),
-  patch: __nccwpck_require__(1092),
-  prerelease: __nccwpck_require__(654),
-  compare: __nccwpck_require__(1935),
-  rcompare: __nccwpck_require__(2653),
-  compareLoose: __nccwpck_require__(4304),
-  compareBuild: __nccwpck_require__(1559),
-  sort: __nccwpck_require__(8430),
-  rsort: __nccwpck_require__(4366),
-  gt: __nccwpck_require__(9658),
-  lt: __nccwpck_require__(5106),
-  eq: __nccwpck_require__(9362),
-  neq: __nccwpck_require__(4261),
-  gte: __nccwpck_require__(5054),
-  lte: __nccwpck_require__(649),
-  cmp: __nccwpck_require__(6184),
-  coerce: __nccwpck_require__(830),
-  Comparator: __nccwpck_require__(8337),
-  Range: __nccwpck_require__(4043),
-  satisfies: __nccwpck_require__(4250),
-  toComparators: __nccwpck_require__(3782),
-  maxSatisfying: __nccwpck_require__(455),
-  minSatisfying: __nccwpck_require__(9831),
-  minVersion: __nccwpck_require__(273),
-  validRange: __nccwpck_require__(4838),
-  outside: __nccwpck_require__(3362),
-  gtr: __nccwpck_require__(9914),
-  ltr: __nccwpck_require__(6903),
-  intersects: __nccwpck_require__(7658),
-  simplifyRange: __nccwpck_require__(936),
-  subset: __nccwpck_require__(473),
+  SEMVER_SPEC_VERSION: constants.SEMVER_SPEC_VERSION,
+  compareIdentifiers: identifiers.compareIdentifiers,
+  rcompareIdentifiers: identifiers.rcompareIdentifiers,
 }
 
 
 /***/ }),
 
-/***/ 6387:
+/***/ 2078:
 /***/ ((module) => {
 
 // Note: this is the semver.org version of the spec that it implements
@@ -10458,7 +10506,7 @@ module.exports = {
 
 /***/ }),
 
-/***/ 4959:
+/***/ 4729:
 /***/ ((module) => {
 
 const debug = (
@@ -10474,7 +10522,7 @@ module.exports = debug
 
 /***/ }),
 
-/***/ 8152:
+/***/ 2977:
 /***/ ((module) => {
 
 const numeric = /^[0-9]+$/
@@ -10504,7 +10552,7 @@ module.exports = {
 
 /***/ }),
 
-/***/ 2177:
+/***/ 9748:
 /***/ ((module) => {
 
 // parse out just the options we care about so we always get a consistent
@@ -10522,11 +10570,11 @@ module.exports = parseOptions
 
 /***/ }),
 
-/***/ 1547:
+/***/ 9182:
 /***/ ((module, exports, __nccwpck_require__) => {
 
-const { MAX_SAFE_COMPONENT_LENGTH } = __nccwpck_require__(6387)
-const debug = __nccwpck_require__(4959)
+const { MAX_SAFE_COMPONENT_LENGTH } = __nccwpck_require__(2078)
+const debug = __nccwpck_require__(4729)
 exports = module.exports = {}
 
 // The actual regexps go on exports.re
@@ -10711,21 +10759,21 @@ createToken('GTE0PRE', '^\\s*>=\\s*0\\.0\\.0-0\\s*$')
 
 /***/ }),
 
-/***/ 9914:
+/***/ 2559:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 // Determine if version is greater than all the versions possible in the range.
-const outside = __nccwpck_require__(3362)
+const outside = __nccwpck_require__(8875)
 const gtr = (version, range, options) => outside(version, range, '>', options)
 module.exports = gtr
 
 
 /***/ }),
 
-/***/ 7658:
+/***/ 5488:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const Range = __nccwpck_require__(4043)
+const Range = __nccwpck_require__(1986)
 const intersects = (r1, r2, options) => {
   r1 = new Range(r1, options)
   r2 = new Range(r2, options)
@@ -10736,10 +10784,10 @@ module.exports = intersects
 
 /***/ }),
 
-/***/ 6903:
+/***/ 7292:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const outside = __nccwpck_require__(3362)
+const outside = __nccwpck_require__(8875)
 // Determine if version is less than all the versions possible in the range
 const ltr = (version, range, options) => outside(version, range, '<', options)
 module.exports = ltr
@@ -10747,11 +10795,11 @@ module.exports = ltr
 
 /***/ }),
 
-/***/ 455:
+/***/ 6392:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const SemVer = __nccwpck_require__(8650)
-const Range = __nccwpck_require__(4043)
+const SemVer = __nccwpck_require__(2094)
+const Range = __nccwpck_require__(1986)
 
 const maxSatisfying = (versions, range, options) => {
   let max = null
@@ -10779,11 +10827,11 @@ module.exports = maxSatisfying
 
 /***/ }),
 
-/***/ 9831:
+/***/ 7648:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const SemVer = __nccwpck_require__(8650)
-const Range = __nccwpck_require__(4043)
+const SemVer = __nccwpck_require__(2094)
+const Range = __nccwpck_require__(1986)
 const minSatisfying = (versions, range, options) => {
   let min = null
   let minSV = null
@@ -10810,12 +10858,12 @@ module.exports = minSatisfying
 
 /***/ }),
 
-/***/ 273:
+/***/ 8356:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const SemVer = __nccwpck_require__(8650)
-const Range = __nccwpck_require__(4043)
-const gt = __nccwpck_require__(9658)
+const SemVer = __nccwpck_require__(2094)
+const Range = __nccwpck_require__(1986)
+const gt = __nccwpck_require__(2631)
 
 const minVersion = (range, loose) => {
   range = new Range(range, loose)
@@ -10878,18 +10926,18 @@ module.exports = minVersion
 
 /***/ }),
 
-/***/ 3362:
+/***/ 8875:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const SemVer = __nccwpck_require__(8650)
-const Comparator = __nccwpck_require__(8337)
+const SemVer = __nccwpck_require__(2094)
+const Comparator = __nccwpck_require__(2723)
 const { ANY } = Comparator
-const Range = __nccwpck_require__(4043)
-const satisfies = __nccwpck_require__(4250)
-const gt = __nccwpck_require__(9658)
-const lt = __nccwpck_require__(5106)
-const lte = __nccwpck_require__(649)
-const gte = __nccwpck_require__(5054)
+const Range = __nccwpck_require__(1986)
+const satisfies = __nccwpck_require__(7510)
+const gt = __nccwpck_require__(2631)
+const lt = __nccwpck_require__(1382)
+const lte = __nccwpck_require__(9040)
+const gte = __nccwpck_require__(5996)
 
 const outside = (version, range, hilo, options) => {
   version = new SemVer(version, options)
@@ -10965,14 +11013,14 @@ module.exports = outside
 
 /***/ }),
 
-/***/ 936:
+/***/ 9709:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 // given a set of versions and a range, create a "simplified" range
 // that includes the same versions that the original range does
 // If the original range is shorter than the simplified one, return that.
-const satisfies = __nccwpck_require__(4250)
-const compare = __nccwpck_require__(1935)
+const satisfies = __nccwpck_require__(7510)
+const compare = __nccwpck_require__(702)
 module.exports = (versions, range, options) => {
   const set = []
   let first = null
@@ -11019,14 +11067,14 @@ module.exports = (versions, range, options) => {
 
 /***/ }),
 
-/***/ 473:
+/***/ 3402:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const Range = __nccwpck_require__(4043)
-const Comparator = __nccwpck_require__(8337)
+const Range = __nccwpck_require__(1986)
+const Comparator = __nccwpck_require__(2723)
 const { ANY } = Comparator
-const satisfies = __nccwpck_require__(4250)
-const compare = __nccwpck_require__(1935)
+const satisfies = __nccwpck_require__(7510)
+const compare = __nccwpck_require__(702)
 
 // Complex range `r1 || r2 || ...` is a subset of `R1 || R2 || ...` iff:
 // - Every simple range `r1, r2, ...` is a null set, OR
@@ -11270,10 +11318,10 @@ module.exports = subset
 
 /***/ }),
 
-/***/ 3782:
+/***/ 8593:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const Range = __nccwpck_require__(4043)
+const Range = __nccwpck_require__(1986)
 
 // Mostly just for testing and legacy API reasons
 const toComparators = (range, options) =>
@@ -11285,10 +11333,10 @@ module.exports = toComparators
 
 /***/ }),
 
-/***/ 4838:
+/***/ 8209:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const Range = __nccwpck_require__(4043)
+const Range = __nccwpck_require__(1986)
 const validRange = (range, options) => {
   try {
     // Return '*' instead of '' so that truthiness works.
@@ -14917,7 +14965,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.compareVersions = void 0;
-const semver_1 = __importDefault(__nccwpck_require__(1256));
+const semver_1 = __importDefault(__nccwpck_require__(7870));
 const prereleaseComapreValues_1 = __nccwpck_require__(5543);
 function compareVersions(a, b) {
     a ??= new semver_1.default.SemVer('0.0.0');
@@ -14950,7 +14998,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.evaluateVersion = void 0;
-const semver_1 = __importDefault(__nccwpck_require__(1256));
+const semver_1 = __importDefault(__nccwpck_require__(7870));
 const compareVersions_1 = __nccwpck_require__(5830);
 const getBranchMeta_1 = __nccwpck_require__(6591);
 function evaluateVersion(targetVersion, existingVersions, branch = '') {
@@ -15114,12 +15162,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.inspectVersion = void 0;
-const core_1 = __nccwpck_require__(5681);
-const github_1 = __nccwpck_require__(1340);
+const core_1 = __nccwpck_require__(7954);
+const github_1 = __nccwpck_require__(9939);
 const fs_1 = __nccwpck_require__(7147);
-const semver_1 = __importDefault(__nccwpck_require__(1256));
+const semver_1 = __importDefault(__nccwpck_require__(7870));
 const evaluateVersion_1 = __nccwpck_require__(5689);
-const rest_1 = __nccwpck_require__(5342);
+const rest_1 = __nccwpck_require__(3127);
 async function inspectVersion() {
     const branchInput = (0, core_1.getInput)('branch', { trimWhitespace: true }) || undefined;
     const versionFileInput = (0, core_1.getInput)('versionFile', { trimWhitespace: true }) || undefined;
@@ -15395,9 +15443,9 @@ var __webpack_exports__ = {};
 var exports = __webpack_exports__;
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const core_1 = __nccwpck_require__(5681);
-const github_1 = __nccwpck_require__(1340);
-const rest_1 = __nccwpck_require__(5342);
+const core_1 = __nccwpck_require__(7954);
+const github_1 = __nccwpck_require__(9939);
+const rest_1 = __nccwpck_require__(3127);
 const inspectVersion_1 = __nccwpck_require__(3082);
 const ValidationErrorMessages = {
     validCanCreate: (data) => {
