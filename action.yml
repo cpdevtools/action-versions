@@ -3,7 +3,7 @@ description: Version Stuff
 
 inputs:
   versionFile:
-    description: Path to a json file that contains the target verion
+    description: Path to a json file that contains the target version
     required: false
 
   version:
