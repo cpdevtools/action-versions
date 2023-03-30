@@ -11,3 +11,5 @@ on:
 jobs:
   build:
     uses: cpdevtools/common-github-workflows/.github/workflows/pnpm-run-build.yml@main
+    with:
+      ver: ${{ github.job_workflow_sha }}
