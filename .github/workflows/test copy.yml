@@ -10,8 +10,4 @@ on:
 
 jobs:
   build:
-    name: Build and run the action
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: cpdevtools/common-github-workflows/.github/workflows/pnpm-run-build.yml@main
+    uses: cpdevtools/common-github-workflows/.github/workflows/pnpm-run-build.yml@main
