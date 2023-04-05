@@ -7,7 +7,6 @@ on:
       - "*"
       - "v/*"
 
-
 jobs:
   build:
     uses: cpdevtools/common-github-workflows/.github/workflows/pnpm-run-build.yml@v0.0.14
