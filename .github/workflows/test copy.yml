@@ -1,6 +1,5 @@
 name: Test
 
-
 on:
   push:
     branches:
@@ -9,4 +8,4 @@ on:
 
 jobs:
   build:
-    uses: cpdevtools/common-github-workflows/.github/workflows/pnpm-run-build.yml@v0.0.14
+    uses: cpdevtools/common-github-workflows/.github/workflows/create-release-pull-request.yml@main
