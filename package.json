@@ -6,7 +6,9 @@
   "repository": "git+https://github.com/cpdevtools/action-versions",
   "scripts": {
     "prepare": "git tag | xargs git tag -d",
-    "build": "ncc build src/index.ts"
+    "build": "ncc build src/index.ts",
+    "actions-build": "pnpm run build",
+    "actions-test": "echo test"
   },
   "keywords": [],
   "author": "",
