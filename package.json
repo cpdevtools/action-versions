@@ -7,8 +7,9 @@
   "scripts": {
     "prepare": "git tag | xargs git tag -d",
     "build": "ncc build src/index.ts",
+    "test": ".scripts/check-build-committed.sh",
     "actions-build": "pnpm run build",
-    "actions-test": "echo test"
+    "actions-test": "pnpm run test"
   },
   "keywords": [],
   "author": "",
