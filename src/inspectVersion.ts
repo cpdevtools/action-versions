@@ -199,8 +199,6 @@ export async function inspectPRVrsion() {
         validIsNewVersion
     };
 
-
-    console.log(versionEvaluation);
     return {
         ...versionEvaluation,
         pullRequest: context.payload.pull_request?.id
@@ -223,16 +221,13 @@ export async function inspectVersion() {
     const versionFileInput = getInput('versionFile', { trimWhitespace: true }) || undefined;
     const versionInput = getInput('version', { trimWhitespace: true }) || undefined;
     const existingVersionsInput = getMultilineInput('existingVersions', { trimWhitespace: true });
-    const githubTokenInput = getInput('githubToken', { trimWhitespace: true });
     const autoCreatePullRequestInput = getBooleanInput('autoCreatePullRequest');
     const draftPullRequestInput = getBooleanInput('draftPullRequest');
 
     if (context.eventName === 'pull_request') {
-        //await inspectPRVrsion();
         return await inspectPRVrsion();
     }
 
-    //    const git = simpleGit('.');
     const pr = context.payload.pull_request as any;
     const sourceRef = context.eventName === 'pull_request' ? pr.head.ref : context.ref;
     const branch = branchInput ?? sourceRef.startsWith("refs/heads/") ? sourceRef.slice(11) : sourceRef;
