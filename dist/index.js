@@ -15161,7 +15161,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.inspectVersion = exports.extractVersionFromRef = exports.inspectPRVrsion = exports.getRepoVersions = void 0;
+exports.inspectVersion = exports.inspectPRVrsion = exports.getRepoVersions = void 0;
 const core_1 = __nccwpck_require__(7954);
 const github_1 = __nccwpck_require__(9939);
 const rest_1 = __nccwpck_require__(3127);
@@ -15327,16 +15327,6 @@ async function inspectPRVrsion() {
     };
 }
 exports.inspectPRVrsion = inspectPRVrsion;
-function extractVersionFromRef(ref) {
-    const verStr = ref.split('/').pop();
-    if (verStr?.startsWith('v')) {
-        if (semver_1.default.coerce(verStr)) {
-            return verStr;
-        }
-    }
-    return null;
-}
-exports.extractVersionFromRef = extractVersionFromRef;
 async function inspectVersion() {
     const branchInput = (0, core_1.getInput)('branch', { trimWhitespace: true }) || undefined;
     const versionFileInput = (0, core_1.getInput)('versionFile', { trimWhitespace: true }) || undefined;

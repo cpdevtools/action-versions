@@ -206,15 +206,6 @@ export async function inspectPRVrsion() {
 
 }
 
-export function extractVersionFromRef(ref: string) {
-    const verStr = ref.split('/').pop();
-    if (verStr?.startsWith('v')) {
-        if (semver.coerce(verStr)) {
-            return verStr;
-        }
-    }
-    return null;
-}
 
 export async function inspectVersion() {
     const branchInput = getInput('branch', { trimWhitespace: true }) || undefined;
