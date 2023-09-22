@@ -10,7 +10,8 @@ import { VersionStatus } from './VersionStatus';
 
 
 export type PullRequest = Endpoints["GET /repos/{owner}/{repo}/pulls/{pull_number}"]["response"]["data"];
-export type FileContent = Endpoints["GET /repos/{owner}/{repo}/contents/{path}"]["response"];
+export type FileContentResponse = Endpoints["GET /repos/{owner}/{repo}/contents/{path}"]["response"];
+export type FileContent = Endpoints["GET /repos/{owner}/{repo}/contents/{path}"]["response"]['data'];
 
 export async function inspectPRVrsion() {
     const githubTokenInput = getInput('githubToken', { trimWhitespace: true });
@@ -28,16 +29,21 @@ export async function inspectPRVrsion() {
         repo: context.repo.repo,
         path: 'package.json',
         ref: targetRef
-    }) as FileContent;
+    }) as FileContentResponse;
     const sourcePackageFileInfo = await octokit.repos.getContent({
         owner: context.repo.owner,
         repo: context.repo.repo,
         path: 'package.json',
         ref: sourceRef
-    }) as FileContent;
+    }) as FileContentResponse;
 
-    console.log(targetPackageFileInfo.data);
-    console.log(sourcePackageFileInfo.data);
+
+    const targetPackageFile = Buffer.from((targetPackageFileInfo.data as any).content, 'base64').toString('utf-8');
+    const sourcePackageFile = Buffer.from((sourcePackageFileInfo.data as any).content, 'base64').toString('utf-8');
+
+
+    console.log(targetPackageFile);
+    console.log(sourcePackageFile);
    //const sourceRef = pr.head.ref;
     //const sourceBranch = sourceRef.startsWith("refs/heads/") ? sourceRef.slice(11) : sourceRef;
 }

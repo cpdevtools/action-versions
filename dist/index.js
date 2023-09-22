@@ -15188,8 +15188,10 @@ async function inspectPRVrsion() {
         path: 'package.json',
         ref: sourceRef
     });
-    console.log(targetPackageFileInfo.data);
-    console.log(sourcePackageFileInfo.data);
+    const targetPackageFile = Buffer.from(targetPackageFileInfo.data.content, 'base64').toString('utf-8');
+    const sourcePackageFile = Buffer.from(sourcePackageFileInfo.data.content, 'base64').toString('utf-8');
+    console.log(targetPackageFile);
+    console.log(sourcePackageFile);
     //const sourceRef = pr.head.ref;
     //const sourceBranch = sourceRef.startsWith("refs/heads/") ? sourceRef.slice(11) : sourceRef;
 }
