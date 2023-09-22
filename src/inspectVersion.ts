@@ -135,6 +135,9 @@ export async function inspectPRVrsion() {
     const isLatestMinor = targetIsPrerelease ? false : (compareVersions(targetVersion, existingLatestMinor) >= 0);
 
 
+    console.log('branchVersionMin', branchVersionMin);
+    console.log('branchVersionMax', branchVersionMax);
+
     let validBranchVersionMinimum = compareVersions(targetVersion, branchVersionMin) >= 0;
     let vaildBranchVersionMaximum = !validBranchVersionMinimum;
     if (!vaildBranchVersionMaximum) {
@@ -155,7 +158,6 @@ export async function inspectPRVrsion() {
     }
 
     const validIsNewVersion = versions.find(v => v.version === targetVersion.version) === undefined;
-
     const validIsSourceOrTarget = targetBranchMeta.isReleaseSourceBranch || targetBranchMeta.isReleaseTargetBranch;
 
     const validCanCreate =
