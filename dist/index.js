@@ -15176,6 +15176,7 @@ async function inspectVersion() {
     const githubTokenInput = (0, core_1.getInput)('githubToken', { trimWhitespace: true });
     const autoCreatePullRequestInput = (0, core_1.getBooleanInput)('autoCreatePullRequest');
     const draftPullRequestInput = (0, core_1.getBooleanInput)('draftPullRequest');
+    console.log(`context:`, github_1.context);
     //    const git = simpleGit('.');
     const pr = github_1.context.payload.pull_request;
     const sourceRef = github_1.context.eventName === 'pull_request' ? pr.head.ref : github_1.context.ref;

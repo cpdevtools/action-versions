@@ -16,6 +16,8 @@ export async function inspectVersion() {
     const autoCreatePullRequestInput = getBooleanInput('autoCreatePullRequest');
     const draftPullRequestInput = getBooleanInput('draftPullRequest');
 
+    console.log(`context:`, context);
+
 //    const git = simpleGit('.');
     const pr = context.payload.pull_request as any;
     const sourceRef = context.eventName === 'pull_request' ? pr.head.ref : context.ref;
