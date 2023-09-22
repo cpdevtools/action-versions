@@ -15161,21 +15161,37 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.inspectVersion = exports.extractVersionFromRef = exports.inspectPRVrsion = void 0;
+exports.inspectVersion = exports.extractVersionFromRef = exports.inspectPRVrsion = exports.getRepoVersions = void 0;
 const core_1 = __nccwpck_require__(7954);
 const github_1 = __nccwpck_require__(9939);
 const fs_1 = __nccwpck_require__(7147);
 const semver_1 = __importDefault(__nccwpck_require__(7870));
 const evaluateVersion_1 = __nccwpck_require__(5689);
 const rest_1 = __nccwpck_require__(3127);
+const githubTokenInput = (0, core_1.getInput)('githubToken', { trimWhitespace: true });
+const octokit = new rest_1.Octokit({ auth: githubTokenInput });
+async function getRepoVersions() {
+    const versions = (await octokit.repos.listTags({
+        owner: github_1.context.repo.owner,
+        repo: github_1.context.repo.repo
+    })).data
+        .map(t => t.name)
+        .filter(i => i.startsWith('v'))
+        .map(i => semver_1.default.parse(i))
+        .filter(i => !!i);
+    versions.sort((a, b) => semver_1.default.rcompare(a, b));
+    return versions;
+}
+exports.getRepoVersions = getRepoVersions;
 async function inspectPRVrsion() {
-    const githubTokenInput = (0, core_1.getInput)('githubToken', { trimWhitespace: true });
+    const versions = await getRepoVersions();
+    const highestVersion = versions[0];
+    const latestVersion = versions.find(i => i.prerelease.length === 0);
     const pr = github_1.context.payload.pull_request;
     const targetRef = pr.base.ref;
     const targetBranch = targetRef.startsWith("refs/heads/") ? targetRef.slice(11) : targetRef;
     let sourceRef = pr.head.ref;
     const sourceBranch = sourceRef.startsWith("refs/heads/") ? sourceRef.slice(11) : sourceRef;
-    const octokit = new rest_1.Octokit({ auth: githubTokenInput });
     const targetPackageFileInfo = await octokit.repos.getContent({
         owner: github_1.context.repo.owner,
         repo: github_1.context.repo.repo,
@@ -15194,11 +15210,12 @@ async function inspectPRVrsion() {
     const sourceVersion = semver_1.default.parse(sourcePackageFile.version);
     const targetBranchVersionData = extractVersionFromRef(targetRef);
     const sourceBranchVersionData = extractVersionFromRef(sourceRef);
-    console.log(targetBranchVersionData);
-    console.log(sourceBranchVersionData);
+    console.log(versions);
+    console.log(highestVersion);
+    console.log(latestVersion);
 }
 exports.inspectPRVrsion = inspectPRVrsion;
-async function extractVersionFromRef(ref) {
+function extractVersionFromRef(ref) {
     const verStr = ref.split('/').pop();
     const version = semver_1.default.coerce(verStr ?? '');
     if (!version) {
@@ -15242,7 +15259,6 @@ async function inspectVersion() {
         }
     }
     ver ??= semver_1.default.parse('0.0.0');
-    const octokit = new rest_1.Octokit({ auth: githubTokenInput });
     let existingVerStrings = existingVersionsInput.length
         ? existingVersionsInput
         : (await octokit.repos.listTags({

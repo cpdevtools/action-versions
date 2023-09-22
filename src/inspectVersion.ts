@@ -12,17 +12,37 @@ import { VersionStatus } from './VersionStatus';
 export type PullRequest = Endpoints["GET /repos/{owner}/{repo}/pulls/{pull_number}"]["response"]["data"];
 export type FileContentResponse = Endpoints["GET /repos/{owner}/{repo}/contents/{path}"]["response"];
 export type FileContent = Endpoints["GET /repos/{owner}/{repo}/contents/{path}"]["response"]['data'];
+export type TagResponse = Endpoints["GET /repos/{owner}/{repo}/tags"]["response"]['data'];
+
+
+const githubTokenInput = getInput('githubToken', { trimWhitespace: true });
+const octokit = new Octokit({ auth: githubTokenInput });
+
+export async function getRepoVersions() {
+    const versions =  (await octokit.repos.listTags({
+        owner: context.repo.owner,
+        repo: context.repo.repo
+    })).data
+        .map(t => t.name)
+        .filter(i => i.startsWith('v'))
+        .map(i => semver.parse(i))
+        .filter(i => !!i) as semver.SemVer[];
+
+        versions.sort((a, b) => semver.rcompare(a, b));
+        return versions;
+}
 
 export async function inspectPRVrsion() {
-    const githubTokenInput = getInput('githubToken', { trimWhitespace: true });
+ 
+    const versions = await getRepoVersions();
+    const highestVersion = versions[0];
+    const latestVersion = versions.find(i => i.prerelease.length === 0);
 
     const pr = context.payload.pull_request as PullRequest;
     const targetRef = pr.base.ref;
     const targetBranch = targetRef.startsWith("refs/heads/") ? targetRef.slice(11) : targetRef;
     let sourceRef = pr.head.ref;
     const sourceBranch = sourceRef.startsWith("refs/heads/") ? sourceRef.slice(11) : sourceRef;
-
-    const octokit = new Octokit({ auth: githubTokenInput });
 
     const targetPackageFileInfo = await octokit.repos.getContent({
         owner: context.repo.owner,
@@ -48,12 +68,13 @@ export async function inspectPRVrsion() {
     const sourceBranchVersionData = extractVersionFromRef(sourceRef);
 
 
-      console.log(targetBranchVersionData);
-      console.log(sourceBranchVersionData);
+      console.log(versions);
+      console.log(highestVersion);
+      console.log(latestVersion);
 
 }
 
-export async function extractVersionFromRef(ref: string) {
+export function extractVersionFromRef(ref: string) {
     const verStr = ref.split('/').pop();
     const version = semver.coerce(verStr ?? '');
     if (!version) {
@@ -100,7 +121,6 @@ export async function inspectVersion() {
     }
     ver ??= semver.parse('0.0.0');
 
-    const octokit = new Octokit({ auth: githubTokenInput });
 
     let existingVerStrings = existingVersionsInput.length
         ? existingVersionsInput
