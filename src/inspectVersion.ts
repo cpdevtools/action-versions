@@ -54,7 +54,9 @@ export async function inspectPRVrsion() {
 }
 
 export async function extractVersionFromRef(ref: string) {
+    console.log(ref)
     const verStr = ref.split('/').pop();
+    console.log(verStr)
     const version = semver.parse(verStr ?? '');
     console.log(version)
     if (!version) {

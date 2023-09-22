@@ -15199,7 +15199,9 @@ async function inspectPRVrsion() {
 }
 exports.inspectPRVrsion = inspectPRVrsion;
 async function extractVersionFromRef(ref) {
+    console.log(ref);
     const verStr = ref.split('/').pop();
+    console.log(verStr);
     const version = semver_1.default.parse(verStr ?? '');
     console.log(version);
     if (!version) {
