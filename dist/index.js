@@ -15164,10 +15164,12 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.inspectVersion = exports.extractVersionFromRef = exports.inspectPRVrsion = exports.getRepoVersions = void 0;
 const core_1 = __nccwpck_require__(7954);
 const github_1 = __nccwpck_require__(9939);
+const rest_1 = __nccwpck_require__(3127);
+const compareVersions_1 = __nccwpck_require__(5830);
 const fs_1 = __nccwpck_require__(7147);
+const getBranchMeta_1 = __nccwpck_require__(6591);
 const semver_1 = __importDefault(__nccwpck_require__(7870));
 const evaluateVersion_1 = __nccwpck_require__(5689);
-const rest_1 = __nccwpck_require__(3127);
 const githubTokenInput = (0, core_1.getInput)('githubToken', { trimWhitespace: true });
 const octokit = new rest_1.Octokit({ auth: githubTokenInput });
 async function getRepoVersions() {
@@ -15190,6 +15192,7 @@ async function inspectPRVrsion() {
     const pr = github_1.context.payload.pull_request;
     const targetRef = pr.base.ref;
     const targetBranch = targetRef.startsWith("refs/heads/") ? targetRef.slice(11) : targetRef;
+    const targetBranchMeta = (0, getBranchMeta_1.getBranchMeta)(targetBranch);
     let sourceRef = pr.head.ref;
     const sourceBranch = sourceRef.startsWith("refs/heads/") ? sourceRef.slice(11) : sourceRef;
     const targetPackageFileInfo = await octokit.repos.getContent({
@@ -15204,28 +15207,135 @@ async function inspectPRVrsion() {
         path: 'package.json',
         ref: sourceRef
     });
+    let branchVersionParts = targetBranch.split('/');
+    branchVersionParts = branchVersionParts.pop()?.split('.') ?? [];
+    let branchVersionMin = new semver_1.default.SemVer(`0.0.0`);
+    let branchVersionMax = Math.min(3, branchVersionParts.length);
+    if (branchVersionParts.length === 1) {
+        branchVersionMin = new semver_1.default.SemVer(`${branchVersionParts[0]}.0.0`);
+    }
+    else if (branchVersionParts.length === 2) {
+        branchVersionMin = new semver_1.default.SemVer(`${branchVersionParts[0]}.${branchVersionParts[1]}.0`);
+    }
+    else {
+        branchVersionMin = new semver_1.default.SemVer(`${branchVersionParts[0]}.${branchVersionParts[1]}.${branchVersionParts[2]}`);
+    }
+    let targetBranchVersions = versions.filter(v => {
+        let isBranchV = semver_1.default.gte(v, branchVersionMin);
+        if (isBranchV) {
+            if (branchVersionMax === 3) {
+                if (v.patch !== branchVersionMin.patch) {
+                    return false;
+                }
+            }
+            if (branchVersionMax >= 2) {
+                if (v.minor !== branchVersionMin.minor) {
+                    return false;
+                }
+            }
+            if (branchVersionMax >= 1) {
+                if (v.major !== branchVersionMin.major) {
+                    return false;
+                }
+            }
+        }
+        return isBranchV;
+    });
     const targetPackageFile = JSON.parse(Buffer.from(targetPackageFileInfo.data.content, 'base64').toString('utf-8'));
     const sourcePackageFile = JSON.parse(Buffer.from(sourcePackageFileInfo.data.content, 'base64').toString('utf-8'));
-    const targetVersion = semver_1.default.parse(targetPackageFile.version);
-    const sourceVersion = semver_1.default.parse(sourcePackageFile.version);
-    const targetBranchVersionData = extractVersionFromRef(targetRef);
-    const sourceBranchVersionData = extractVersionFromRef(sourceRef);
-    const v = (0, evaluateVersion_1.evaluateVersion)(targetVersion, versions, targetBranch);
-    console.log(v);
-    //   console.log(highestVersion);
-    //   console.log(latestVersion);
+    const targetVersion = semver_1.default.parse(targetPackageFile.version) ?? semver_1.default.parse('0.0.0');
+    const sourceVersion = semver_1.default.parse(sourcePackageFile.version) ?? semver_1.default.parse('0.0.0');
+    // const targetBranchVersionData = extractVersionFromRef(targetRef);
+    // const sourceBranchVersionData = extractVersionFromRef(sourceRef);
+    const targetBranchVersionHighest = targetBranchVersions[0] ?? new semver_1.default.SemVer('0.0.0');
+    const validIsHighestVersion = (0, compareVersions_1.compareVersions)(targetVersion, highestVersion) >= 0;
+    const validIsHighestVersionInBranch = (0, compareVersions_1.compareVersions)(targetVersion, targetBranchVersionHighest) >= 0;
+    const targetIsPrerelease = !!targetVersion.prerelease?.length;
+    const existingHighestMajor = versions.find(v => v.major === targetVersion.major) ?? new semver_1.default.SemVer('0.0.0');
+    const isHighestMajor = (0, compareVersions_1.compareVersions)(targetVersion, existingHighestMajor) >= 0;
+    const existingHighestMinor = versions.find(v => v.major === targetVersion.major && v.minor === targetVersion.minor) ?? new semver_1.default.SemVer('0.0.0');
+    const isHighestMinor = (0, compareVersions_1.compareVersions)(targetVersion, existingHighestMinor) >= 0;
+    const existingLatestMajor = versions.find(v => !v.prerelease?.length && v.major === targetVersion.major) ?? new semver_1.default.SemVer('0.0.0');
+    const isLatestMajor = targetIsPrerelease ? false : ((0, compareVersions_1.compareVersions)(targetVersion, existingLatestMajor) >= 0);
+    const existingLatestMinor = versions.find(v => !v.prerelease?.length && v.major === targetVersion.major && v.minor === targetVersion.minor) ?? new semver_1.default.SemVer('0.0.0');
+    const isLatestMinor = targetIsPrerelease ? false : ((0, compareVersions_1.compareVersions)(targetVersion, existingLatestMinor) >= 0);
+    let validBranchVersionMinimum = (0, compareVersions_1.compareVersions)(targetVersion, branchVersionMin) >= 0;
+    let vaildBranchVersionMaximum = !validBranchVersionMinimum;
+    if (!vaildBranchVersionMaximum) {
+        vaildBranchVersionMaximum = true;
+        if (targetVersion.major > branchVersionMin.major) {
+            vaildBranchVersionMaximum = false;
+        }
+        if (branchVersionMax >= 2 && targetVersion.major === branchVersionMin.major) {
+            if (targetVersion.minor > branchVersionMin.minor) {
+                vaildBranchVersionMaximum = false;
+            }
+            if (branchVersionMax >= 1 && targetVersion.minor === branchVersionMin.minor) {
+                if (targetVersion.patch > branchVersionMin.patch) {
+                    vaildBranchVersionMaximum = false;
+                }
+            }
+        }
+    }
+    const validIsNewVersion = versions.find(v => v.version === targetVersion.version) === undefined;
+    const validIsSourceOrTarget = targetBranchMeta.isReleaseSourceBranch || targetBranchMeta.isReleaseTargetBranch;
+    const validCanCreate = validIsSourceOrTarget &&
+        validIsNewVersion &&
+        validBranchVersionMinimum &&
+        vaildBranchVersionMaximum &&
+        (validIsHighestVersion || validIsHighestVersionInBranch);
+    const versionEvaluation = {
+        branch: targetBranch,
+        sourceVersion: sourceVersion?.format() ?? '',
+        targetVersion: targetVersion?.format() ?? '',
+        highestVersion: highestVersion.format(),
+        latestVersion: latestVersion.format(),
+        sourceMajor: sourceVersion?.major ?? 0,
+        sourceMinor: sourceVersion?.minor ?? 0,
+        sourcePatch: sourceVersion?.patch ?? 0,
+        sourceBuild: sourceVersion?.build,
+        sourceIsPrerelease: !!sourceVersion?.prerelease?.length,
+        sourcePrerelease: sourceVersion?.prerelease?.[0] ?? undefined,
+        sourcePrereleaseBuild: sourceVersion?.prerelease?.[1] ?? undefined,
+        sourceIsStable: (sourceVersion?.major ?? 0) >= 1,
+        targetMajor: targetVersion?.major ?? 0,
+        targetMinor: targetVersion?.minor ?? 0,
+        targetPatch: targetVersion?.patch ?? 0,
+        targetBuild: targetVersion?.build,
+        targetIsPrerelease: !!targetVersion?.prerelease?.length,
+        targetPrerelease: targetVersion?.prerelease?.[0] ?? undefined,
+        targetPrereleaseBuild: targetVersion?.prerelease?.[1] ?? undefined,
+        targetIsStable: (targetVersion?.major ?? 0) >= 1,
+        isHighestVersion: semver_1.default.compare(targetVersion, highestVersion) >= 0,
+        isLatestVersion: !targetVersion?.prerelease?.length && semver_1.default.compare(targetVersion, latestVersion) >= 0,
+        isTarget: true,
+        isSource: false,
+        isHighestMajor,
+        isHighestMinor,
+        isLatestMajor,
+        isLatestMinor,
+        validIsHighestVersion,
+        validIsHighestVersionInBranch,
+        vaildBranchVersionMaximum,
+        validBranchVersionMinimum,
+        validCanCreate,
+        validIsNewVersion
+    };
+    console.log(versionEvaluation);
+    return {
+        ...versionEvaluation,
+        pullRequest: github_1.context.payload.pull_request?.id
+    };
 }
 exports.inspectPRVrsion = inspectPRVrsion;
 function extractVersionFromRef(ref) {
     const verStr = ref.split('/').pop();
-    const version = semver_1.default.coerce(verStr ?? '');
-    if (!version) {
-        return null;
+    if (verStr?.startsWith('v')) {
+        if (semver_1.default.coerce(verStr)) {
+            return verStr;
+        }
     }
-    return {
-        version,
-        check: `>=${verStr}`
-    };
+    return null;
 }
 exports.extractVersionFromRef = extractVersionFromRef;
 async function inspectVersion() {
@@ -15237,8 +15347,8 @@ async function inspectVersion() {
     const autoCreatePullRequestInput = (0, core_1.getBooleanInput)('autoCreatePullRequest');
     const draftPullRequestInput = (0, core_1.getBooleanInput)('draftPullRequest');
     if (github_1.context.eventName === 'pull_request') {
-        await inspectPRVrsion();
-        //return await inspectPRVrsion();
+        //await inspectPRVrsion();
+        return await inspectPRVrsion();
     }
     //    const git = simpleGit('.');
     const pr = github_1.context.payload.pull_request;
