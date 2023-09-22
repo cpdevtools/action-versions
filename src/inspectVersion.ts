@@ -68,7 +68,7 @@ export async function inspectPRVrsion() {
     let branchVersionParts = targetBranch.split('/');
     branchVersionParts = branchVersionParts.pop()?.split('.') ?? [];
 
-    if (branchVersionParts[0] === 'latest') {
+    if (branchVersionParts[0] === 'latest' || branchVersionParts[0] === 'main' || branchVersionParts[0] === 'master') {
         branchVersionParts = ['' + latestVersion.major, '' + latestVersion.minor, '' + latestVersion.patch];
     }
 
