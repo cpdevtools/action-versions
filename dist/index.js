@@ -15190,10 +15190,10 @@ async function inspectPRVrsion() {
     const highestVersion = versions[0];
     const latestVersion = versions.find(i => i.prerelease.length === 0) ?? highestVersion;
     const pr = github_1.context.payload.pull_request;
-    const targetRef = pr.base.ref;
+    const targetRef = pr.head.ref;
     const targetBranch = targetRef.startsWith("refs/heads/") ? targetRef.slice(11) : targetRef;
     const targetBranchMeta = (0, getBranchMeta_1.getBranchMeta)(targetBranch);
-    let sourceRef = pr.head.ref;
+    let sourceRef = pr.base.ref;
     const sourceBranch = sourceRef.startsWith("refs/heads/") ? sourceRef.slice(11) : sourceRef;
     const targetPackageFileInfo = await octokit.repos.getContent({
         owner: github_1.context.repo.owner,
