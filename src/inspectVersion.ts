@@ -57,7 +57,7 @@ export async function extractVersionFromRef(ref: string) {
     console.log(ref)
     const verStr = ref.split('/').pop();
     console.log(verStr)
-    const version = semver.parse(verStr ?? '');
+    const version = semver.parse(verStr ?? '', true);
     console.log(version)
     if (!version) {
         return null;

@@ -15202,7 +15202,7 @@ async function extractVersionFromRef(ref) {
     console.log(ref);
     const verStr = ref.split('/').pop();
     console.log(verStr);
-    const version = semver_1.default.parse(verStr ?? '');
+    const version = semver_1.default.parse(verStr ?? '', true);
     console.log(version);
     if (!version) {
         return null;
