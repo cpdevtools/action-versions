@@ -64,12 +64,13 @@ export async function inspectPRVrsion() {
         ref: sourceRef
     }) as FileContentResponse;
 
-
+    let isLatestBranch = false;
     let branchVersionParts = targetBranch.split('/');
     branchVersionParts = branchVersionParts.pop()?.split('.') ?? [];
 
     if (branchVersionParts[0] === 'latest' || branchVersionParts[0] === 'main' || branchVersionParts[0] === 'master') {
         branchVersionParts = ['' + latestVersion.major, '' + latestVersion.minor, '' + latestVersion.patch];
+        isLatestBranch = true;
     }
 
     let branchVersionMin: SemVer = new semver.SemVer(`0.0.0`);
@@ -135,10 +136,8 @@ export async function inspectPRVrsion() {
     const isLatestMinor = targetIsPrerelease ? false : (compareVersions(targetVersion, existingLatestMinor) >= 0);
 
 
-    let validBranchVersionMinimum = compareVersions(targetVersion, branchVersionMin) >= 0;
-   
-   
-    let vaildBranchVersionMaximum = !validBranchVersionMinimum;
+    let validBranchVersionMinimum = isLatestBranch || compareVersions(targetVersion, branchVersionMin) >= 0;
+    let vaildBranchVersionMaximum = isLatestBranch || !validBranchVersionMinimum;
     if (!vaildBranchVersionMaximum) {
         console.log('targetVersion', targetVersion);
         vaildBranchVersionMaximum = true;

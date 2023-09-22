@@ -15207,10 +15207,12 @@ async function inspectPRVrsion() {
         path: 'package.json',
         ref: sourceRef
     });
+    let isLatestBranch = false;
     let branchVersionParts = targetBranch.split('/');
     branchVersionParts = branchVersionParts.pop()?.split('.') ?? [];
     if (branchVersionParts[0] === 'latest' || branchVersionParts[0] === 'main' || branchVersionParts[0] === 'master') {
         branchVersionParts = ['' + latestVersion.major, '' + latestVersion.minor, '' + latestVersion.patch];
+        isLatestBranch = true;
     }
     let branchVersionMin = new semver_1.default.SemVer(`0.0.0`);
     let branchVersionMax = Math.min(3, branchVersionParts.length);
@@ -15262,8 +15264,8 @@ async function inspectPRVrsion() {
     const isLatestMajor = targetIsPrerelease ? false : ((0, compareVersions_1.compareVersions)(targetVersion, existingLatestMajor) >= 0);
     const existingLatestMinor = versions.find(v => !v.prerelease?.length && v.major === targetVersion.major && v.minor === targetVersion.minor) ?? new semver_1.default.SemVer('0.0.0');
     const isLatestMinor = targetIsPrerelease ? false : ((0, compareVersions_1.compareVersions)(targetVersion, existingLatestMinor) >= 0);
-    let validBranchVersionMinimum = (0, compareVersions_1.compareVersions)(targetVersion, branchVersionMin) >= 0;
-    let vaildBranchVersionMaximum = !validBranchVersionMinimum;
+    let validBranchVersionMinimum = isLatestBranch || (0, compareVersions_1.compareVersions)(targetVersion, branchVersionMin) >= 0;
+    let vaildBranchVersionMaximum = isLatestBranch || !validBranchVersionMinimum;
     if (!vaildBranchVersionMaximum) {
         console.log('targetVersion', targetVersion);
         vaildBranchVersionMaximum = true;
