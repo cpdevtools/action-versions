@@ -5,7 +5,19 @@ import semver from 'semver';
 import simpleGit from 'simple-git';
 import { evaluateVersion } from './evaluateVersion';
 import { Octokit } from '@octokit/rest';
+import { Endpoints } from "@octokit/types";
 import { VersionStatus } from './VersionStatus';
+
+
+export type PullRequest = Endpoints["GET /repos/{owner}/{repo}/pulls/{pull_number}"]["response"]["data"];
+
+export async function inspectPRVrsion() {
+    const pr = context.payload.pull_request as PullRequest;
+    console.log(pr);
+    
+   //const sourceRef = pr.head.ref;
+    //const sourceBranch = sourceRef.startsWith("refs/heads/") ? sourceRef.slice(11) : sourceRef;
+}
 
 export async function inspectVersion() {
     const branchInput = getInput('branch', { trimWhitespace: true }) || undefined;
@@ -16,7 +28,10 @@ export async function inspectVersion() {
     const autoCreatePullRequestInput = getBooleanInput('autoCreatePullRequest');
     const draftPullRequestInput = getBooleanInput('draftPullRequest');
 
-    console.log(`context:`, context);
+    if(context.eventName === 'pull_request') {
+        await inspectPRVrsion();
+        //return await inspectPRVrsion();
+    }
 
 //    const git = simpleGit('.');
     const pr = context.payload.pull_request as any;
