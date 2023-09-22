@@ -135,23 +135,26 @@ export async function inspectPRVrsion() {
     const isLatestMinor = targetIsPrerelease ? false : (compareVersions(targetVersion, existingLatestMinor) >= 0);
 
 
-    console.log('branchVersionMin', branchVersionMin);
-    console.log('branchVersionMax', branchVersionMax);
-
     let validBranchVersionMinimum = compareVersions(targetVersion, branchVersionMin) >= 0;
+   
+   
     let vaildBranchVersionMaximum = !validBranchVersionMinimum;
     if (!vaildBranchVersionMaximum) {
+        console.log('targetVersion', targetVersion);
         vaildBranchVersionMaximum = true;
         if (targetVersion.major > branchVersionMin.major) {
             vaildBranchVersionMaximum = false;
+            console.log('targetVersion.major > branchVersionMin.major');
         }
         if (branchVersionMax >= 2 && targetVersion.major === branchVersionMin.major) {
             if (targetVersion.minor > branchVersionMin.minor) {
                 vaildBranchVersionMaximum = false;
+                console.log('targetVersion.minor > branchVersionMin.minor');
             }
             if (branchVersionMax >= 1 && targetVersion.minor === branchVersionMin.minor) {
                 if (targetVersion.patch > branchVersionMin.patch) {
                     vaildBranchVersionMaximum = false;
+                    console.log('targetVersion.patch > branchVersionMin.patch');
                 }
             }
         }
