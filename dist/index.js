@@ -15209,6 +15209,9 @@ async function inspectPRVrsion() {
     });
     let branchVersionParts = targetBranch.split('/');
     branchVersionParts = branchVersionParts.pop()?.split('.') ?? [];
+    if (branchVersionParts[0] === 'latest') {
+        branchVersionParts = ['' + latestVersion.major, '' + latestVersion.minor, '' + latestVersion.patch];
+    }
     let branchVersionMin = new semver_1.default.SemVer(`0.0.0`);
     let branchVersionMax = Math.min(3, branchVersionParts.length);
     if (branchVersionParts.length === 1) {
