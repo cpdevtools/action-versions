@@ -15161,7 +15161,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.inspectVersion = exports.inspectPRVrsion = void 0;
+exports.inspectVersion = exports.extractVersionFromRef = exports.inspectPRVrsion = void 0;
 const core_1 = __nccwpck_require__(7954);
 const github_1 = __nccwpck_require__(9939);
 const fs_1 = __nccwpck_require__(7147);
@@ -15192,12 +15192,24 @@ async function inspectPRVrsion() {
     const sourcePackageFile = JSON.parse(Buffer.from(sourcePackageFileInfo.data.content, 'base64').toString('utf-8'));
     const targetVersion = semver_1.default.parse(targetPackageFile.version);
     const sourceVersion = semver_1.default.parse(sourcePackageFile.version);
-    console.log(targetVersion);
-    console.log(sourceVersion);
-    //const sourceRef = pr.head.ref;
-    //const sourceBranch = sourceRef.startsWith("refs/heads/") ? sourceRef.slice(11) : sourceRef;
+    const targetBranchVersionData = extractVersionFromRef(targetRef);
+    //const sourceBranchVersionData = extractVersionFromRef(sourceRef);
+    //  console.log(targetVersion);
+    //  console.log(sourceVersion);
 }
 exports.inspectPRVrsion = inspectPRVrsion;
+async function extractVersionFromRef(ref) {
+    const verStr = ref.split('/').pop();
+    const version = semver_1.default.parse(verStr ?? '');
+    console.log(version);
+    if (!version) {
+        return null;
+    }
+    return {
+        version,
+    };
+}
+exports.extractVersionFromRef = extractVersionFromRef;
 async function inspectVersion() {
     const branchInput = (0, core_1.getInput)('branch', { trimWhitespace: true }) || undefined;
     const versionFileInput = (0, core_1.getInput)('versionFile', { trimWhitespace: true }) || undefined;
