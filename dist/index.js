@@ -15188,10 +15188,12 @@ async function inspectPRVrsion() {
         path: 'package.json',
         ref: sourceRef
     });
-    const targetPackageFile = Buffer.from(targetPackageFileInfo.data.content, 'base64').toString('utf-8');
-    const sourcePackageFile = Buffer.from(sourcePackageFileInfo.data.content, 'base64').toString('utf-8');
-    console.log(targetPackageFile);
-    console.log(sourcePackageFile);
+    const targetPackageFile = JSON.parse(Buffer.from(targetPackageFileInfo.data.content, 'base64').toString('utf-8'));
+    const sourcePackageFile = JSON.parse(Buffer.from(sourcePackageFileInfo.data.content, 'base64').toString('utf-8'));
+    const targetVersion = semver_1.default.parse(targetPackageFile.version);
+    const sourceVersion = semver_1.default.parse(sourcePackageFile.version);
+    console.log(targetVersion);
+    console.log(sourceVersion);
     //const sourceRef = pr.head.ref;
     //const sourceBranch = sourceRef.startsWith("refs/heads/") ? sourceRef.slice(11) : sourceRef;
 }

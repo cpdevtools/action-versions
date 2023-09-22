@@ -38,12 +38,14 @@ export async function inspectPRVrsion() {
     }) as FileContentResponse;
 
 
-    const targetPackageFile = Buffer.from((targetPackageFileInfo.data as any).content, 'base64').toString('utf-8');
-    const sourcePackageFile = Buffer.from((sourcePackageFileInfo.data as any).content, 'base64').toString('utf-8');
+    const targetPackageFile = JSON.parse(Buffer.from((targetPackageFileInfo.data as any).content, 'base64').toString('utf-8'));
+    const sourcePackageFile = JSON.parse(Buffer.from((sourcePackageFileInfo.data as any).content, 'base64').toString('utf-8'));
 
+    const targetVersion = semver.parse(targetPackageFile.version);
+    const sourceVersion = semver.parse(sourcePackageFile.version);
 
-    console.log(targetPackageFile);
-    console.log(sourcePackageFile);
+    console.log(targetVersion);
+    console.log(sourceVersion);
    //const sourceRef = pr.head.ref;
     //const sourceBranch = sourceRef.startsWith("refs/heads/") ? sourceRef.slice(11) : sourceRef;
 }
