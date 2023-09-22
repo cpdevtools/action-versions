@@ -15169,8 +15169,27 @@ const semver_1 = __importDefault(__nccwpck_require__(7870));
 const evaluateVersion_1 = __nccwpck_require__(5689);
 const rest_1 = __nccwpck_require__(3127);
 async function inspectPRVrsion() {
+    const githubTokenInput = (0, core_1.getInput)('githubToken', { trimWhitespace: true });
     const pr = github_1.context.payload.pull_request;
-    console.log(pr);
+    const targetRef = pr.base.ref;
+    const targetBranch = targetRef.startsWith("refs/heads/") ? targetRef.slice(11) : targetRef;
+    let sourceRef = pr.head.ref;
+    const sourceBranch = sourceRef.startsWith("refs/heads/") ? sourceRef.slice(11) : sourceRef;
+    const octokit = new rest_1.Octokit({ auth: githubTokenInput });
+    const targetPackageFileInfo = await octokit.repos.getContent({
+        owner: github_1.context.repo.owner,
+        repo: github_1.context.repo.repo,
+        path: 'package.json',
+        ref: targetRef
+    });
+    const sourcePackageFileInfo = await octokit.repos.getContent({
+        owner: github_1.context.repo.owner,
+        repo: github_1.context.repo.repo,
+        path: 'package.json',
+        ref: sourceRef
+    });
+    console.log(targetPackageFileInfo.data);
+    console.log(sourcePackageFileInfo.data);
     //const sourceRef = pr.head.ref;
     //const sourceBranch = sourceRef.startsWith("refs/heads/") ? sourceRef.slice(11) : sourceRef;
 }
