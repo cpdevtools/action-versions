@@ -15262,6 +15262,8 @@ async function inspectPRVrsion() {
     const isLatestMajor = targetIsPrerelease ? false : ((0, compareVersions_1.compareVersions)(targetVersion, existingLatestMajor) >= 0);
     const existingLatestMinor = versions.find(v => !v.prerelease?.length && v.major === targetVersion.major && v.minor === targetVersion.minor) ?? new semver_1.default.SemVer('0.0.0');
     const isLatestMinor = targetIsPrerelease ? false : ((0, compareVersions_1.compareVersions)(targetVersion, existingLatestMinor) >= 0);
+    console.log('branchVersionMin', branchVersionMin);
+    console.log('branchVersionMax', branchVersionMax);
     let validBranchVersionMinimum = (0, compareVersions_1.compareVersions)(targetVersion, branchVersionMin) >= 0;
     let vaildBranchVersionMaximum = !validBranchVersionMinimum;
     if (!vaildBranchVersionMaximum) {
