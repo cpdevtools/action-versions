@@ -45,25 +45,23 @@ export async function inspectPRVrsion() {
     const sourceVersion = semver.parse(sourcePackageFile.version);
 
     const targetBranchVersionData = extractVersionFromRef(targetRef);
-    //const sourceBranchVersionData = extractVersionFromRef(sourceRef);
+    const sourceBranchVersionData = extractVersionFromRef(sourceRef);
 
 
-    //  console.log(targetVersion);
-    //  console.log(sourceVersion);
+      console.log(targetBranchVersionData);
+      console.log(sourceBranchVersionData);
 
 }
 
 export async function extractVersionFromRef(ref: string) {
-    console.log(ref)
     const verStr = ref.split('/').pop();
-    console.log(verStr)
-    const version = semver.parse(verStr ?? '', { loose: true });
-    console.log('loose:', version)
+    const version = semver.coerce(verStr ?? '');
     if (!version) {
         return null;
     }
     return {
         version,
+        check: `>=${verStr}`
     };
 }
 
