@@ -13,6 +13,7 @@ export type PullRequest = Endpoints["GET /repos/{owner}/{repo}/pulls/{pull_numbe
 
 export async function inspectPRVrsion() {
     const pr = context.payload.pull_request as PullRequest;
+    
     console.log(pr);
     
    //const sourceRef = pr.head.ref;

@@ -15161,13 +15161,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.inspectVersion = void 0;
+exports.inspectVersion = exports.inspectPRVrsion = void 0;
 const core_1 = __nccwpck_require__(7954);
 const github_1 = __nccwpck_require__(9939);
 const fs_1 = __nccwpck_require__(7147);
 const semver_1 = __importDefault(__nccwpck_require__(7870));
 const evaluateVersion_1 = __nccwpck_require__(5689);
 const rest_1 = __nccwpck_require__(3127);
+async function inspectPRVrsion() {
+    const pr = github_1.context.payload.pull_request;
+    console.log(pr);
+    //const sourceRef = pr.head.ref;
+    //const sourceBranch = sourceRef.startsWith("refs/heads/") ? sourceRef.slice(11) : sourceRef;
+}
+exports.inspectPRVrsion = inspectPRVrsion;
 async function inspectVersion() {
     const branchInput = (0, core_1.getInput)('branch', { trimWhitespace: true }) || undefined;
     const versionFileInput = (0, core_1.getInput)('versionFile', { trimWhitespace: true }) || undefined;
@@ -15176,7 +15183,10 @@ async function inspectVersion() {
     const githubTokenInput = (0, core_1.getInput)('githubToken', { trimWhitespace: true });
     const autoCreatePullRequestInput = (0, core_1.getBooleanInput)('autoCreatePullRequest');
     const draftPullRequestInput = (0, core_1.getBooleanInput)('draftPullRequest');
-    console.log(`context:`, github_1.context);
+    if (github_1.context.eventName === 'pull_request') {
+        await inspectPRVrsion();
+        //return await inspectPRVrsion();
+    }
     //    const git = simpleGit('.');
     const pr = github_1.context.payload.pull_request;
     const sourceRef = github_1.context.eventName === 'pull_request' ? pr.head.ref : github_1.context.ref;
