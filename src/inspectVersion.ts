@@ -44,10 +44,25 @@ export async function inspectPRVrsion() {
     const targetVersion = semver.parse(targetPackageFile.version);
     const sourceVersion = semver.parse(sourcePackageFile.version);
 
-    console.log(targetVersion);
-    console.log(sourceVersion);
-   //const sourceRef = pr.head.ref;
-    //const sourceBranch = sourceRef.startsWith("refs/heads/") ? sourceRef.slice(11) : sourceRef;
+    const targetBranchVersionData = extractVersionFromRef(targetRef);
+    //const sourceBranchVersionData = extractVersionFromRef(sourceRef);
+
+
+  //  console.log(targetVersion);
+  //  console.log(sourceVersion);
+
+}
+
+export async function extractVersionFromRef(ref: string) {
+    const verStr = ref.split('/').pop();
+    const version = semver.parse(verStr ?? '');
+    console.log(version)
+    if (!version) {
+        return null;
+    }
+    return {
+        version,
+    };
 }
 
 export async function inspectVersion() {
@@ -59,12 +74,12 @@ export async function inspectVersion() {
     const autoCreatePullRequestInput = getBooleanInput('autoCreatePullRequest');
     const draftPullRequestInput = getBooleanInput('draftPullRequest');
 
-    if(context.eventName === 'pull_request') {
+    if (context.eventName === 'pull_request') {
         await inspectPRVrsion();
         //return await inspectPRVrsion();
     }
 
-//    const git = simpleGit('.');
+    //    const git = simpleGit('.');
     const pr = context.payload.pull_request as any;
     const sourceRef = context.eventName === 'pull_request' ? pr.head.ref : context.ref;
     const branch = branchInput ?? sourceRef.startsWith("refs/heads/") ? sourceRef.slice(11) : sourceRef;
