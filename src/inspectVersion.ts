@@ -48,8 +48,8 @@ export async function inspectPRVrsion() {
     //const sourceBranchVersionData = extractVersionFromRef(sourceRef);
 
 
-  //  console.log(targetVersion);
-  //  console.log(sourceVersion);
+    //  console.log(targetVersion);
+    //  console.log(sourceVersion);
 
 }
 
@@ -57,8 +57,8 @@ export async function extractVersionFromRef(ref: string) {
     console.log(ref)
     const verStr = ref.split('/').pop();
     console.log(verStr)
-    const version = semver.parse(verStr ?? '', true);
-    console.log(version)
+    const version = semver.parse(verStr ?? '', { loose: true });
+    console.log('loose:', version)
     if (!version) {
         return null;
     }

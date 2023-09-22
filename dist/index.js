@@ -15202,8 +15202,8 @@ async function extractVersionFromRef(ref) {
     console.log(ref);
     const verStr = ref.split('/').pop();
     console.log(verStr);
-    const version = semver_1.default.parse(verStr ?? '', true);
-    console.log(version);
+    const version = semver_1.default.parse(verStr ?? '', { loose: true });
+    console.log('loose:', version);
     if (!version) {
         return null;
     }
