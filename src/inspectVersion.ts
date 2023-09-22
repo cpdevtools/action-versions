@@ -42,12 +42,12 @@ export async function inspectPRVrsion() {
 
 
     const pr = context.payload.pull_request as PullRequest;
-    const targetRef = pr.base.ref;
+    const targetRef = pr.head.ref;
     const targetBranch = targetRef.startsWith("refs/heads/") ? targetRef.slice(11) : targetRef;
 
     const targetBranchMeta = getBranchMeta(targetBranch);
 
-    let sourceRef = pr.head.ref;
+    let sourceRef = pr.base.ref;
     const sourceBranch = sourceRef.startsWith("refs/heads/") ? sourceRef.slice(11) : sourceRef;
 
 
