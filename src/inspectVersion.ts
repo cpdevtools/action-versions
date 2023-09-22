@@ -36,7 +36,7 @@ export async function inspectPRVrsion() {
  
     const versions = await getRepoVersions();
     const highestVersion = versions[0];
-    const latestVersion = versions.find(i => i.prerelease.length === 0);
+    const latestVersion = versions.find(i => i.prerelease.length === 0) ?? highestVersion;
 
     const pr = context.payload.pull_request as PullRequest;
     const targetRef = pr.base.ref;
@@ -67,10 +67,12 @@ export async function inspectPRVrsion() {
     const targetBranchVersionData = extractVersionFromRef(targetRef);
     const sourceBranchVersionData = extractVersionFromRef(sourceRef);
 
+    const v = evaluateVersion(targetVersion!, versions, targetBranch);
 
-      console.log(versions);
-      console.log(highestVersion);
-      console.log(latestVersion);
+
+      console.log(v);
+    //   console.log(highestVersion);
+    //   console.log(latestVersion);
 
 }
 

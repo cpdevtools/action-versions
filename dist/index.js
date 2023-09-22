@@ -15186,7 +15186,7 @@ exports.getRepoVersions = getRepoVersions;
 async function inspectPRVrsion() {
     const versions = await getRepoVersions();
     const highestVersion = versions[0];
-    const latestVersion = versions.find(i => i.prerelease.length === 0);
+    const latestVersion = versions.find(i => i.prerelease.length === 0) ?? highestVersion;
     const pr = github_1.context.payload.pull_request;
     const targetRef = pr.base.ref;
     const targetBranch = targetRef.startsWith("refs/heads/") ? targetRef.slice(11) : targetRef;
@@ -15210,9 +15210,10 @@ async function inspectPRVrsion() {
     const sourceVersion = semver_1.default.parse(sourcePackageFile.version);
     const targetBranchVersionData = extractVersionFromRef(targetRef);
     const sourceBranchVersionData = extractVersionFromRef(sourceRef);
-    console.log(versions);
-    console.log(highestVersion);
-    console.log(latestVersion);
+    const v = (0, evaluateVersion_1.evaluateVersion)(targetVersion, versions, targetBranch);
+    console.log(v);
+    //   console.log(highestVersion);
+    //   console.log(latestVersion);
 }
 exports.inspectPRVrsion = inspectPRVrsion;
 function extractVersionFromRef(ref) {
