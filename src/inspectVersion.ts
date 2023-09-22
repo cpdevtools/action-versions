@@ -10,12 +10,34 @@ import { VersionStatus } from './VersionStatus';
 
 
 export type PullRequest = Endpoints["GET /repos/{owner}/{repo}/pulls/{pull_number}"]["response"]["data"];
+export type FileContent = Endpoints["GET /repos/{owner}/{repo}/contents/{path}"]["response"];
 
 export async function inspectPRVrsion() {
+    const githubTokenInput = getInput('githubToken', { trimWhitespace: true });
+
     const pr = context.payload.pull_request as PullRequest;
-    
-    console.log(pr);
-    
+    const targetRef = pr.base.ref;
+    const targetBranch = targetRef.startsWith("refs/heads/") ? targetRef.slice(11) : targetRef;
+    let sourceRef = pr.head.ref;
+    const sourceBranch = sourceRef.startsWith("refs/heads/") ? sourceRef.slice(11) : sourceRef;
+
+    const octokit = new Octokit({ auth: githubTokenInput });
+
+    const targetPackageFileInfo = await octokit.repos.getContent({
+        owner: context.repo.owner,
+        repo: context.repo.repo,
+        path: 'package.json',
+        ref: targetRef
+    }) as FileContent;
+    const sourcePackageFileInfo = await octokit.repos.getContent({
+        owner: context.repo.owner,
+        repo: context.repo.repo,
+        path: 'package.json',
+        ref: sourceRef
+    }) as FileContent;
+
+    console.log(targetPackageFileInfo.data);
+    console.log(sourcePackageFileInfo.data);
    //const sourceRef = pr.head.ref;
     //const sourceBranch = sourceRef.startsWith("refs/heads/") ? sourceRef.slice(11) : sourceRef;
 }
