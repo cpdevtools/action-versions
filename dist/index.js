@@ -15187,7 +15187,7 @@ async function getRepoVersions() {
 exports.getRepoVersions = getRepoVersions;
 async function inspectPRVrsion() {
     const versions = await getRepoVersions();
-    const highestVersion = versions[0];
+    const highestVersion = versions[0] ?? semver_1.default.parse('0.0.0');
     const latestVersion = versions.find(i => i.prerelease.length === 0) ?? highestVersion;
     const pr = github_1.context.payload.pull_request;
     const targetRef = pr.head.ref;
